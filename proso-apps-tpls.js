@@ -3,8 +3,15 @@
  * Version: 1.0.0 - 2015-05-21
  * License: MIT
  */
-angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.flashcards-practice","proso.apps.user-user"]);
+angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.gettext","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.flashcards-practice","proso.apps.user-login","proso.apps.user-user"]);
 angular.module("proso.apps.tpls", ["templates/common-toolbar/toolbar.html","templates/feedback-comment/comment.html","templates/feedback-rating/rating.html"]);
+angular.module("proso.apps.gettext", [])
+.value("gettext", window.gettext || function(x){return x;})
+.filter("trans", ["gettext", function(gettext) {
+    return function(msgid) {
+        return gettext(msgid);
+    };
+}]);
 var configServiceLoaded;
 if (configServiceLoaded){
     throw "ConfigService already loaded";
@@ -254,15 +261,7 @@ m.directive('toolbar', [function () {
     };
 }]);
 
-var m = angular.module('proso.apps.feedback-comment', ['ui.bootstrap']);
-
-m.value('gettext', window.gettext || function(x){return x;});
-
-m.filter('trans',['gettext', function(gettext) {
-    return function(msgid) {
-        return gettext(msgid);
-    };
-}]);
+var m = angular.module('proso.apps.feedback-comment', ['ui.bootstrap', 'proso.apps.gettext']);
 
 m.directive('feedbackComment', ['$modal', '$window', 'gettext', function ($modal, $window, gettext) {
     return {
@@ -334,15 +333,7 @@ m.directive('feedbackComment', ['$modal', '$window', 'gettext', function ($modal
     };
 }]);
 
-var m = angular.module('proso.apps.feedback-rating', ['ui.bootstrap']);
-
-m.value('gettext', window.gettext || function(x){return x;});
-
-m.filter('trans', ['gettext', function(gettext) {
-    return function(msgid) {
-        return gettext(msgid);
-    };
-}]);
+var m = angular.module('proso.apps.feedback-rating', ['ui.bootstrap', 'proso.apps.gettext']);
 
 m.controller('RatingModalController', ['$scope', '$rootScope', '$modal', function ($scope, $rootScope, $modal) {
 
@@ -661,6 +652,10 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
         _loadFlashcards();
     };
 }]);
+
+var m = angular.module('proso.apps.user-login', ['ui.bootstrap']);
+
+
 
 var m = angular.module('proso.apps.user-user', ['ngCookies']);
 m.service("userService", ["$http", function($http){
