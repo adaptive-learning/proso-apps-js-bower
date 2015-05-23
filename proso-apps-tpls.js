@@ -1,9 +1,9 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-05-21
+ * Version: 1.0.0 - 2015-05-23
  * License: MIT
  */
-angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.gettext","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.flashcards-practice","proso.apps.user-login","proso.apps.user-user"]);
+angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.gettext","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.flashcards-practice","proso.apps.user-user"]);
 angular.module("proso.apps.tpls", ["templates/common-toolbar/toolbar.html","templates/feedback-comment/comment.html","templates/feedback-rating/rating.html"]);
 angular.module("proso.apps.gettext", [])
 .value("gettext", window.gettext || function(x){return x;})
@@ -546,7 +546,16 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
     };
 
     self.getSummary = function(){
-        return summary;
+        var s = angular.copy(summary);
+        for (var i = 0; i < Math.min(s.flashcards.length, s.answers.length); i++){
+            var answer = s.answers[i];
+            var flashcard = s.flashcards[i];
+            if (flashcard.id === answer.flashcard_id){
+                flashcard.answer = answer;
+            }
+            answer.correct = answer.flashcard_id === answer.flashcard_answered_id;
+        }
+        return s;
     };
 
 
@@ -652,10 +661,6 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
         _loadFlashcards();
     };
 }]);
-
-var m = angular.module('proso.apps.user-login', ['ui.bootstrap']);
-
-
 
 var m = angular.module('proso.apps.user-user', ['ngCookies']);
 m.service("userService", ["$http", function($http){
