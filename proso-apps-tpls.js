@@ -1,10 +1,10 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-05-25
+ * Version: 1.0.0 - 2015-05-26
  * License: MIT
  */
-angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.gettext","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user"]);
-angular.module("proso.apps.tpls", ["templates/common-toolbar/toolbar.html","templates/feedback-comment/comment.html","templates/feedback-rating/rating.html"]);
+angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.gettext","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.flashcards-practice","proso.apps.user-user","proso.apps.user-login"]);
+angular.module("proso.apps.tpls", ["templates/common-toolbar/toolbar.html","templates/feedback-comment/comment.html","templates/feedback-rating/rating.html","templates/user-login/login-modal.html","templates/user-login/signup-modal.html"]);
 angular.module("proso.apps.gettext", [])
 .value("gettext", window.gettext || function(x){return x;})
 .filter("trans", ["gettext", function(gettext) {
@@ -546,16 +546,7 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
     };
 
     self.getSummary = function(){
-        var s = angular.copy(summary);
-        for (var i = 0; i < Math.min(s.flashcards.length, s.answers.length); i++){
-            var answer = s.answers[i];
-            var flashcard = s.flashcards[i];
-            if (flashcard.id === answer.flashcard_id){
-                flashcard.answer = answer;
-            }
-            answer.correct = answer.flashcard_id === answer.flashcard_answered_id;
-        }
-        return s;
+        return summary;
     };
 
 
@@ -660,50 +651,6 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
         }
         _loadFlashcards();
     };
-}]);
-
-var m = angular.module('proso.apps.flashcards-userStats', ['ngCookies']);
-m.service("userStatsService", ["$http", "$cookies", function($http, $cookies){
-    var self = this;
-
-    var filters = {};
-
-    self.addGroup = function (id, data) {
-        if (!data.language){
-            delete data.language;
-        }
-        filters[id] = data;
-    };
-
-    self.addGroupParams = function (id, categories, contexts, types, language) {
-        filters[id] = {
-            categories: categories,
-            contexts: types,
-            types: types
-        };
-        if (typeof language !== "undefined"){
-            filters[id].language = language;
-        }
-    };
-
-    self.getStats = function(){
-        $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
-        return $http.get("/flashcards/user_stats/", {params: {filters: JSON.stringify(filters)}});
-    };
-
-    self.getStatsPost = function(){
-        $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
-        return $http.post("/flashcards/user_stats/", filters);
-    };
-
-    self.clean = function(){
-        filters = {};
-    };
-
-    self.getGroups = function (){
-        return angular.copy(filters);
-    };
-
 }]);
 
 var m = angular.module('proso.apps.user-user', ['ngCookies']);
@@ -891,6 +838,113 @@ m.service("userService", ["$http", function($http){
 
 }]);
 
+var m = angular.module('proso.apps.user-login', ['ui.bootstrap', 'proso.apps.gettext', 'proso.apps.user-user', 'angulartics', 'angulartics.google.analytics']);
+
+m.controller('LoginController', ['$scope', '$modalInstance', 'signupModal', 'userService', 'gettext', '$analytics',
+    function ($scope, $modalInstance, signupModal, userService, gettext, $analytics) {
+
+    $scope.credentials = {};
+    $scope.alerts = [];
+
+    $scope.cancel = function () {
+        $modalInstance.dismiss('cancel');
+    };
+
+    $scope.loginGoogle = function() {
+        $analytics.eventTrack('click', {
+            category: 'login',
+            label: '/login/google',
+        });
+        userService.loginGoogle();
+    };
+
+    $scope.loginFacebook = function() {
+        $analytics.eventTrack('click', {
+            category: 'login',
+            label: '/login/facebook',
+        });
+        userService.loginFacebook();
+    };
+
+    $scope.loginEmail = function() {
+        $analytics.eventTrack('click', {
+            category: 'login',
+            label: '/login/email',
+        });
+        userService
+            .login($scope.credentials.name, $scope.credentials.password)
+            .error($scope.onError);
+    };
+
+    $scope.openSignupModal = function() {
+        $scope.cancel();
+        signupModal.open();
+    };
+
+    $scope.signup = function() {
+        $analytics.eventTrack('click', {
+            category: 'signup',
+            label: '/signup/email',
+        });
+        userService.signupParams(
+            $scope.credentials.username,
+            $scope.credentials.email,
+            $scope.credentials.password,
+            $scope.credentials.password_check,
+            $scope.credentials.first_name,
+            $scope.credentials.last_name
+        );
+    };
+
+    $scope.onError = function(error) {
+        $analytics.eventTrack('error', {
+            category: 'login',
+            label: 'error/login'
+        });
+        $scope.alerts.push({
+            type: error.type || 'danger',
+            msg: error.msg || gettext('Something wrong has happened.')
+        });
+    };
+
+    $scope.closeAlert = function(index) {
+        $scope.alerts.splice(index, 1);
+    };
+}]);
+
+m.factory('signupModal', ['$modal', function($modal) {
+    return {
+        open: function() {
+            $modal.open({
+                templateUrl: 'templates/user-login/signup-modal.html',
+                controller: 'LoginController',
+            });
+        }
+    };
+}]);
+
+m.factory('loginModal', ["$modal", function($modal) {
+    return {
+        open: function() {
+            $modal.open({
+                templateUrl: 'templates/user-login/login-modal.html',
+                controller: 'LoginController',
+            });
+        }
+    };
+}]);
+
+m.directive('loginButton', ['loginModal', function(loginModal) {
+    return {
+        restrict: 'A',
+        link: function (scope, element) {
+            element.bind('click', function(){
+                loginModal.open();
+            });
+        }
+    };
+}]);
+
 angular.module("templates/common-toolbar/toolbar.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("templates/common-toolbar/toolbar.html",
     "<div id=\"proso-toolbar\">\n" +
@@ -992,6 +1046,124 @@ angular.module("templates/feedback-rating/rating.html", []).run(["$templateCache
     "    <button class=\"btn btn-danger\" ng-click=\"cancel()\">\n" +
     "        {{ \"Close\" | trans }}\n" +
     "    </button>\n" +
+    "</div>\n" +
+    "\n" +
+    "");
+}]);
+
+angular.module("templates/user-login/login-modal.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("templates/user-login/login-modal.html",
+    "<div class=\"modal-header text-center\">\n" +
+    "    <button type=\"button\" class=\"close\" ng-click=\"cancel()\">\n" +
+    "        <span aria-hidden=\"true\">&times;</span>\n" +
+    "    </button>\n" +
+    "    <h3 class=\"modal-title\"> {{ \"Sign In\" | trans }} </h3>\n" +
+    "</div>\n" +
+    "<div class=\"modal-body\">\n" +
+    "    <a class=\"btn btn-danger btn-lg btn-block\"\n" +
+    "        track-click=\"login\"\n" +
+    "        href=\"/login/google-oauth2/\">\n" +
+    "        <i class=\"social-google\"></i> {{ \"via Google\" | trans }}\n" +
+    "    </a>\n" +
+    "    <br>\n" +
+    "    <a class=\"btn btn-primary btn-lg btn-block\"\n" +
+    "        track-click=\"login\"\n" +
+    "        href=\"/login/facebook/\">\n" +
+    "        <i class=\"social-facebook\"></i>{{ \"via Facebook\" | trans }}\n" +
+    "    </a>\n" +
+    "\n" +
+    "    <br>\n" +
+    "    <hr>\n" +
+    "    <br>\n" +
+    "\n" +
+    "    <form role=\"form\" ng-submit=\"loginEmail()\">\n" +
+    "        <div class=\"form-group\">\n" +
+    "            <input type=\"text\" class=\"form-control\" ng-model=\"credentials.username\"\n" +
+    "            placeholder=\"{{ 'Username' | trans }}\">\n" +
+    "        </div>\n" +
+    "        <div class=\"form-group\">\n" +
+    "            <input type=\"password\" class=\"form-control\" ng-model=\"credentials.password\"\n" +
+    "            placeholder=\"{{ 'Password' | trans }}\">\n" +
+    "        </div>\n" +
+    "        <alert ng-repeat=\"alert in alerts\" type=\"{{alert.type}}\"\n" +
+    "            close=\"closeAlert($index)\">{{alert.msg}}</alert>\n" +
+    "        <button ng-disabled=\"userService.status.loading\" type=\"submit\"\n" +
+    "            class=\"btn btn-primary btn-block btn-lg\">\n" +
+    "            {{ 'Sign In' | trans }}\n" +
+    "        </button>\n" +
+    "\n" +
+    "    </form>\n" +
+    "</div>\n" +
+    "<div class=\"modal-footer\" >\n" +
+    "        <a class=\"btn btn-link\" ng-click=\"openSignupModal()\">\n" +
+    "            {{ 'Sign Up' | trans }}\n" +
+    "        </a>\n" +
+    "\n" +
+    "</div>\n" +
+    "");
+}]);
+
+angular.module("templates/user-login/signup-modal.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("templates/user-login/signup-modal.html",
+    "<div class=\"modal-header text-center\">\n" +
+    "    <button type=\"button\" class=\"close\" ng-click=\"cancel()\">\n" +
+    "        <span aria-hidden=\"true\">&times;</span>\n" +
+    "    </button>\n" +
+    "    <h3 class=\"modal-title\"> {{ \"Sign up\" | trans }} </h3>\n" +
+    "    <div ng-hide=\"success\">\n" +
+    "        {{\" and get all the benefits of registered users.\" | trans }}\n" +
+    "    </div>\n" +
+    "</div>\n" +
+    "<div class=\"modal-body\" ng-hide=\"success\">\n" +
+    "    <div ng-hide=\"activateEmail\">\n" +
+    "        <a class=\"btn btn-danger btn-lg btn-block\"\n" +
+    "            track-click=\"login\"\n" +
+    "            href=\"/login/google-oauth2/\">\n" +
+    "            <i class=\"social-google\"></i> {{ \"via Google\" | trans }}\n" +
+    "        </a>\n" +
+    "        <br>\n" +
+    "        <a class=\"btn btn-primary btn-lg btn-block\"\n" +
+    "            track-click=\"login\"\n" +
+    "            href=\"/login/facebook/\">\n" +
+    "            <i class=\"social-facebook\"></i>{{ \"via Facebook\" | trans }}\n" +
+    "        </a>\n" +
+    "        <br>\n" +
+    "        <a class=\"btn btn-info btn-lg btn-block\"\n" +
+    "            ng-click=\"activateEmail=true\"\n" +
+    "            href=\"\">\n" +
+    "            <i class=\"glyphicon glyphicon-envelope\"></i> {{ \"via E-mail\" | trans }}\n" +
+    "        </a>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <form role=\"form\" ng-show=\"activateEmail\" ng-submit=\"signup()\">\n" +
+    "        <div class=\"form-group\">\n" +
+    "            <input type=\"email\" class=\"form-control\" ng-model=\"credentials.email\"\n" +
+    "                placeholder=\"{{ 'E-mail' | trans }}\" required>\n" +
+    "        </div>\n" +
+    "        <div class=\"form-group\">\n" +
+    "            <input type=\"text\" class=\"form-control\" ng-model=\"credentials.username\"\n" +
+    "                placeholder=\"{{ 'Username' | trans }}\" required>\n" +
+    "        </div>\n" +
+    "        <div class=\"form-group\">\n" +
+    "            <input type=\"password\" class=\"form-control\" ng-model=\"credentials.password\"\n" +
+    "                placeholder=\"{{ 'Password' | trans }}\" required>\n" +
+    "        </div>\n" +
+    "        <div class=\"form-group\">\n" +
+    "            <input type=\"password\" class=\"form-control\"\n" +
+    "                ng-model=\"credentials.password_check\"\n" +
+    "                placeholder=\"{{ 'Password again' | trans }}\" required>\n" +
+    "        </div>\n" +
+    "        <alert ng-repeat=\"alert in alerts\" type=\"{{alert.type}}\"\n" +
+    "            close=\"closeAlert($index)\">{{alert.msg}}</alert>\n" +
+    "        <button ng-disabled=\"userService.status.loading\" type=\"submit\" class=\"btn btn-primary btn-block btn-lg\">\n" +
+    "            {{ 'Sign up' | trans }}\n" +
+    "        </button>\n" +
+    "    </form>\n" +
+    "</div>\n" +
+    "<div class=\"modal-body\" ng-show=\"success\" >\n" +
+    "        <alert type=\"success\">\n" +
+    "            {{ 'Registration was successful. You can continue to use the application.' | trans }}\n" +
+    "        </alert>\n" +
     "</div>\n" +
     "\n" +
     "");

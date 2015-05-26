@@ -1,9 +1,9 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-05-25
+ * Version: 1.0.0 - 2015-05-26
  * License: MIT
  */
-angular.module("proso.apps", ["proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.gettext","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user"]);
+angular.module("proso.apps", ["proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.gettext","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.flashcards-practice","proso.apps.user-user","proso.apps.user-login"]);
 angular.module("proso.apps.gettext", [])
 .value("gettext", window.gettext || function(x){return x;})
 .filter("trans", ["gettext", function(gettext) {
@@ -545,16 +545,7 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
     };
 
     self.getSummary = function(){
-        var s = angular.copy(summary);
-        for (var i = 0; i < Math.min(s.flashcards.length, s.answers.length); i++){
-            var answer = s.answers[i];
-            var flashcard = s.flashcards[i];
-            if (flashcard.id === answer.flashcard_id){
-                flashcard.answer = answer;
-            }
-            answer.correct = answer.flashcard_id === answer.flashcard_answered_id;
-        }
-        return s;
+        return summary;
     };
 
 
@@ -659,50 +650,6 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
         }
         _loadFlashcards();
     };
-}]);
-
-var m = angular.module('proso.apps.flashcards-userStats', ['ngCookies']);
-m.service("userStatsService", ["$http", "$cookies", function($http, $cookies){
-    var self = this;
-
-    var filters = {};
-
-    self.addGroup = function (id, data) {
-        if (!data.language){
-            delete data.language;
-        }
-        filters[id] = data;
-    };
-
-    self.addGroupParams = function (id, categories, contexts, types, language) {
-        filters[id] = {
-            categories: categories,
-            contexts: types,
-            types: types
-        };
-        if (typeof language !== "undefined"){
-            filters[id].language = language;
-        }
-    };
-
-    self.getStats = function(){
-        $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
-        return $http.get("/flashcards/user_stats/", {params: {filters: JSON.stringify(filters)}});
-    };
-
-    self.getStatsPost = function(){
-        $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
-        return $http.post("/flashcards/user_stats/", filters);
-    };
-
-    self.clean = function(){
-        filters = {};
-    };
-
-    self.getGroups = function (){
-        return angular.copy(filters);
-    };
-
 }]);
 
 var m = angular.module('proso.apps.user-user', ['ngCookies']);
@@ -888,6 +835,113 @@ m.service("userService", ["$http", function($http){
 
     self.init();
 
+}]);
+
+var m = angular.module('proso.apps.user-login', ['ui.bootstrap', 'proso.apps.gettext', 'proso.apps.user-user', 'angulartics', 'angulartics.google.analytics']);
+
+m.controller('LoginController', ['$scope', '$modalInstance', 'signupModal', 'userService', 'gettext', '$analytics',
+    function ($scope, $modalInstance, signupModal, userService, gettext, $analytics) {
+
+    $scope.credentials = {};
+    $scope.alerts = [];
+
+    $scope.cancel = function () {
+        $modalInstance.dismiss('cancel');
+    };
+
+    $scope.loginGoogle = function() {
+        $analytics.eventTrack('click', {
+            category: 'login',
+            label: '/login/google',
+        });
+        userService.loginGoogle();
+    };
+
+    $scope.loginFacebook = function() {
+        $analytics.eventTrack('click', {
+            category: 'login',
+            label: '/login/facebook',
+        });
+        userService.loginFacebook();
+    };
+
+    $scope.loginEmail = function() {
+        $analytics.eventTrack('click', {
+            category: 'login',
+            label: '/login/email',
+        });
+        userService
+            .login($scope.credentials.name, $scope.credentials.password)
+            .error($scope.onError);
+    };
+
+    $scope.openSignupModal = function() {
+        $scope.cancel();
+        signupModal.open();
+    };
+
+    $scope.signup = function() {
+        $analytics.eventTrack('click', {
+            category: 'signup',
+            label: '/signup/email',
+        });
+        userService.signupParams(
+            $scope.credentials.username,
+            $scope.credentials.email,
+            $scope.credentials.password,
+            $scope.credentials.password_check,
+            $scope.credentials.first_name,
+            $scope.credentials.last_name
+        );
+    };
+
+    $scope.onError = function(error) {
+        $analytics.eventTrack('error', {
+            category: 'login',
+            label: 'error/login'
+        });
+        $scope.alerts.push({
+            type: error.type || 'danger',
+            msg: error.msg || gettext('Something wrong has happened.')
+        });
+    };
+
+    $scope.closeAlert = function(index) {
+        $scope.alerts.splice(index, 1);
+    };
+}]);
+
+m.factory('signupModal', ['$modal', function($modal) {
+    return {
+        open: function() {
+            $modal.open({
+                templateUrl: 'templates/user-login/signup-modal.html',
+                controller: 'LoginController',
+            });
+        }
+    };
+}]);
+
+m.factory('loginModal', ["$modal", function($modal) {
+    return {
+        open: function() {
+            $modal.open({
+                templateUrl: 'templates/user-login/login-modal.html',
+                controller: 'LoginController',
+            });
+        }
+    };
+}]);
+
+m.directive('loginButton', ['loginModal', function(loginModal) {
+    return {
+        restrict: 'A',
+        link: function (scope, element) {
+            element.bind('click', function(){
+                loginModal.open();
+            });
+        }
+    };
 }]);
 !angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">#config-bar-show-button{position:fixed;right:-40px;top:250px;width:100px;transform:rotate(-90deg);-webkit-transform:rotate(-90deg);border:solid #808080 1px;margin:0;padding:10px;text-transform:capitalize;font-weight:bold;background-color:rgba(255,255,255,0.8);transition:all 0.2s;cursor:pointer;text-align:center;}#config-bar-show-button:hover{background-color:#1f8dd6;color:white;}#config-bar{position:fixed;right:0;top:0;bottom:0;width:500px;border-left:solid #808080 1px;background-color:rgba(255,255,255,0.8);z-index:1000;}#config-bar-header{background-color:rgba(31,141,214,0.8);margin:0;padding:10px 20px;text-align:right;color:white;}#config-bar-content .section{background-color:rgba(31,141,214,0.8);margin:0;padding:10px 20px;color:white;text-transform:uppercase;cursor:pointer;}#config-bar-hide{text-align:right;width:100%;cursor:pointer;}#config-bar-content{margin:0;list-style:none;padding:0;}#config-bar-content > li{border-bottom:1px dashed #E9F4FB;padding:10px 20px;margin:0;}#config-bar-content > li:hover{background:#E9F4FB;}#config-bar-content .reset,#config-bar-content .add-to-override{cursor:pointer;font-weight:bolder;}#config-bar-content input{padding:5px 10px;}#config-bar-content label{margin-left:10px;cursor:pointer;}#config-bar-content .link{text-transform:uppercase;cursor:pointer;font-weight:bold;}#config-bar-logging{list-style:none;margin:0;padding:0;max-height:500px;overflow-y:scroll;font-size:12px;}#config-bar-logging > li{margin:0;padding:5px 10px;border-bottom:1px solid #E9F4FB;}#config-bar-logging > li:hover{background-color:#E9F4FB;}#config-bar-logging .level{display:block;float:left;width:10%;font-weight:bold;}#config-bar-logging .url{font-weight:bold;margin-left:10px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:50%;float:left;}#config-bar-logging .filename{display:block;float:right;text-align:right;width:30%;font-weight:bold;}#config-bar-logging .message{display:block;clear:both;margin-top:20px;margin-bottom:5px;}#config-bar-content input{font-size:14px;}#config-bar-content .property-name{width:70%;}#config-bar-content .property-value{width:10%;text-align:center;}#config-bar-property-name{width:70%;}#config-bar-show-button{position:fixed;right:-40px;top:250px;width:100px;transform:rotate(-90deg);-webkit-transform:rotate(-90deg);border:solid #808080 1px;margin:0;padding:10px;text-transform:capitalize;font-weight:bold;background-color:rgba(255,255,255,0.8);transition:all 0.2s;cursor:pointer;text-align:center;}#config-bar-show-button:hover{background-color:#1f8dd6;color:white;}#config-bar{position:fixed;right:0;top:0;bottom:0;width:500px;border-left:solid #808080 1px;background-color:rgba(255,255,255,0.8);z-index:1000;}#config-bar-header{background-color:rgba(31,141,214,0.8);margin:0;padding:10px 20px;text-align:right;color:white;}#config-bar-content .section{background-color:rgba(31,141,214,0.8);margin:0;padding:10px 20px;color:white;text-transform:uppercase;cursor:pointer;}#config-bar-hide{text-align:right;width:100%;cursor:pointer;}#config-bar-content{margin:0;list-style:none;padding:0;}#config-bar-content > li{border-bottom:1px dashed #E9F4FB;padding:10px 20px;margin:0;}#config-bar-content > li:hover{background:#E9F4FB;}#config-bar-content .reset,#config-bar-content .add-to-override{cursor:pointer;font-weight:bolder;}#config-bar-content input{padding:5px 10px;}#config-bar-content label{margin-left:10px;cursor:pointer;}#config-bar-content .link{text-transform:uppercase;cursor:pointer;font-weight:bold;}#config-bar-logging{list-style:none;margin:0;padding:0;max-height:500px;overflow-y:scroll;font-size:12px;}#config-bar-logging > li{margin:0;padding:5px 10px;border-bottom:1px solid #E9F4FB;}#config-bar-logging > li:hover{background-color:#E9F4FB;}#config-bar-logging .level{display:block;float:left;width:10%;font-weight:bold;}#config-bar-logging .url{font-weight:bold;margin-left:10px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:50%;float:left;}#config-bar-logging .filename{display:block;float:right;text-align:right;width:30%;font-weight:bold;}#config-bar-logging .message{display:block;clear:both;margin-top:20px;margin-bottom:5px;}#config-bar-content input{font-size:14px;}#config-bar-content .property-name{width:70%;}#config-bar-content .property-value{width:10%;text-align:center;}#config-bar-property-name{width:70%;}</style>');
 !angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">.rating .btn{margin:20px;}</style>');
