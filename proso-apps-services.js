@@ -3,7 +3,7 @@
  * Version: 1.0.0 - 2015-05-27
  * License: MIT
  */
-angular.module("proso.apps", ["proso.apps.common-config","proso.apps.common-logging","proso.apps.gettext","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user", "proso.apps.common-toolbar"])
+angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.gettext","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user", "proso.apps.common-toolbar"])
 angular.module("proso.apps.tpls", ["templates/common-toolbar/toolbar.html"]);
 angular.module("proso.apps.gettext", [])
 .value("gettext", window.gettext || function(x){return x;})
@@ -498,14 +498,19 @@ m.service("userStatsService", ["$http", "$cookies", function($http, $cookies){
         }
     };
 
-    self.getStats = function(){
+    self.getStats = function(mastered){
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
-        return $http.get("/flashcards/user_stats/", {params: {filters: JSON.stringify(filters)}});
+        var params = {filters: JSON.stringify(filters)};
+        if (mastered){
+            params.mastered = true;
+        }
+        return $http.get("/flashcards/user_stats/", {params: params});
     };
 
-    self.getStatsPost = function(){
+    self.getStatsPost = function(mastered){
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
-        return $http.post("/flashcards/user_stats/", filters);
+        var params  = mastered ? "?mastered=true" : "";
+        return $http.post("/flashcards/user_stats/" + params, filters);
     };
 
     self.clean = function(){
@@ -751,6 +756,49 @@ m.directive('toolbar', [function () {
         controller: 'ToolbarController',
         templateUrl: 'templates/common-toolbar/toolbar.html'
     };
+}]);
+
+angular.module("templates/common-toolbar/toolbar.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("templates/common-toolbar/toolbar.html",
+    "<div id=\"proso-toolbar\">\n" +
+    "    <div id=\"config-bar-show-button\" ng-click=\"opened = !opened\" ng-hide=\"opened\"> proso bar </div>\n" +
+    "\n" +
+    "    <div id=\"config-bar\" ng-cloak ng-show=\"opened\">\n" +
+    "        <div id=\"config-bar-header\">\n" +
+    "            <span id=\"config-bar-hide\" ng-click=\"opened = !opened\">Close</span>\n" +
+    "        </div>\n" +
+    "        <ul id=\"config-bar-content\">\n" +
+    "            <li>\n" +
+    "                <span ng-click=\"addToOverride(propertyToOverride)\" class=\"add-to-override\">+</span>\n" +
+    "                <input type=\"text\" ng-model=\"propertyToOverride\" id=\"config-bar-property-name\" placeholder=\"Property Name\" />\n" +
+    "            </li>\n" +
+    "            <li>\n" +
+    "                <span ng-click=\"removeOverridden('user'); overridden.user = null;\" class=\"reset\">X</span>\n" +
+    "                <input type=\"number\" ng-model=\"overridden.user\" placeholder=\"User\" ng-change=\"override('user', overridden.user)\" />\n" +
+    "            </li>\n" +
+    "            <li>\n" +
+    "                <span ng-click=\"removeOverridden('time'); overridden.time= null;\" class=\"reset\">X</span>\n" +
+    "                <input type=\"text\" ng-model=\"overridden.time\" placeholder=\"Time\" ng-change=\"override('time', overridden.time)\" />\n" +
+    "                <i>{{date | date:'yyyy-MM-dd_HH:mm:ss'}}</i>\n" +
+    "            </li>\n" +
+    "            <li ng-repeat=\"(name, value) in getOverridden() track by name\">\n" +
+    "                <span class=\"reset\" ng-click=\"removeOverridden(name)\">X</span>\n" +
+    "                <input type=\"text\" disabled class=\"property-name\" ng-model=\"name\" />\n" +
+    "                <input type=\"text\" class=\"property-value\" placeholder=\"Value\" ng-model=\"value\" ng-change=\"override(name, value)\" />\n" +
+    "            </li>\n" +
+    "            <div class='section' ng-click=\"loggingOpened = !loggingOpened\">Logging</div>\n" +
+    "            <ul id=\"config-bar-logging\" ng-cloak ng-show=\"loggingOpened\">\n" +
+    "                <li ng-repeat=\"event in debugLog|limitTo:100\" class=\"logging-event\">\n" +
+    "                    <span class=\"level\">{{ event.level }}</span>\n" +
+    "                    <span class=\"url\">{{ event.url }}</span>\n" +
+    "                    <span class=\"filename\">{{ event.filename }}:{{ event.line_number }}</span>\n" +
+    "                    <span class=\"message\">{{ event.message }}</span>\n" +
+    "                </li>\n" +
+    "            </ul>\n" +
+    "        </ul>\n" +
+    "    </div>\n" +
+    "</div>\n" +
+    "");
 }]);
 !angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">#config-bar-show-button{position:fixed;right:-40px;top:250px;width:100px;transform:rotate(-90deg);-webkit-transform:rotate(-90deg);border:solid #808080 1px;margin:0;padding:10px;text-transform:capitalize;font-weight:bold;background-color:rgba(255,255,255,0.8);transition:all 0.2s;cursor:pointer;text-align:center;}#config-bar-show-button:hover{background-color:#1f8dd6;color:white;}#config-bar{position:fixed;right:0;top:0;bottom:0;width:500px;border-left:solid #808080 1px;background-color:rgba(255,255,255,0.8);z-index:1000;}#config-bar-header{background-color:rgba(31,141,214,0.8);margin:0;padding:10px 20px;text-align:right;color:white;}#config-bar-content .section{background-color:rgba(31,141,214,0.8);margin:0;padding:10px 20px;color:white;text-transform:uppercase;cursor:pointer;}#config-bar-hide{text-align:right;width:100%;cursor:pointer;}#config-bar-content{margin:0;list-style:none;padding:0;}#config-bar-content > li{border-bottom:1px dashed #E9F4FB;padding:10px 20px;margin:0;}#config-bar-content > li:hover{background:#E9F4FB;}#config-bar-content .reset,#config-bar-content .add-to-override{cursor:pointer;font-weight:bolder;}#config-bar-content input{padding:5px 10px;}#config-bar-content label{margin-left:10px;cursor:pointer;}#config-bar-content .link{text-transform:uppercase;cursor:pointer;font-weight:bold;}#config-bar-logging{list-style:none;margin:0;padding:0;max-height:500px;overflow-y:scroll;font-size:12px;}#config-bar-logging > li{margin:0;padding:5px 10px;border-bottom:1px solid #E9F4FB;}#config-bar-logging > li:hover{background-color:#E9F4FB;}#config-bar-logging .level{display:block;float:left;width:10%;font-weight:bold;}#config-bar-logging .url{font-weight:bold;margin-left:10px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:50%;float:left;}#config-bar-logging .filename{display:block;float:right;text-align:right;width:30%;font-weight:bold;}#config-bar-logging .message{display:block;clear:both;margin-top:20px;margin-bottom:5px;}#config-bar-content input{font-size:14px;}#config-bar-content .property-name{width:70%;}#config-bar-content .property-value{width:10%;text-align:center;}#config-bar-property-name{width:70%;}#config-bar-show-button{position:fixed;right:-40px;top:250px;width:100px;transform:rotate(-90deg);-webkit-transform:rotate(-90deg);border:solid #808080 1px;margin:0;padding:10px;text-transform:capitalize;font-weight:bold;background-color:rgba(255,255,255,0.8);transition:all 0.2s;cursor:pointer;text-align:center;}#config-bar-show-button:hover{background-color:#1f8dd6;color:white;}#config-bar{position:fixed;right:0;top:0;bottom:0;width:500px;border-left:solid #808080 1px;background-color:rgba(255,255,255,0.8);z-index:1000;}#config-bar-header{background-color:rgba(31,141,214,0.8);margin:0;padding:10px 20px;text-align:right;color:white;}#config-bar-content .section{background-color:rgba(31,141,214,0.8);margin:0;padding:10px 20px;color:white;text-transform:uppercase;cursor:pointer;}#config-bar-hide{text-align:right;width:100%;cursor:pointer;}#config-bar-content{margin:0;list-style:none;padding:0;}#config-bar-content > li{border-bottom:1px dashed #E9F4FB;padding:10px 20px;margin:0;}#config-bar-content > li:hover{background:#E9F4FB;}#config-bar-content .reset,#config-bar-content .add-to-override{cursor:pointer;font-weight:bolder;}#config-bar-content input{padding:5px 10px;}#config-bar-content label{margin-left:10px;cursor:pointer;}#config-bar-content .link{text-transform:uppercase;cursor:pointer;font-weight:bold;}#config-bar-logging{list-style:none;margin:0;padding:0;max-height:500px;overflow-y:scroll;font-size:12px;}#config-bar-logging > li{margin:0;padding:5px 10px;border-bottom:1px solid #E9F4FB;}#config-bar-logging > li:hover{background-color:#E9F4FB;}#config-bar-logging .level{display:block;float:left;width:10%;font-weight:bold;}#config-bar-logging .url{font-weight:bold;margin-left:10px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:50%;float:left;}#config-bar-logging .filename{display:block;float:right;text-align:right;width:30%;font-weight:bold;}#config-bar-logging .message{display:block;clear:both;margin-top:20px;margin-bottom:5px;}#config-bar-content input{font-size:14px;}#config-bar-content .property-name{width:70%;}#config-bar-content .property-value{width:10%;text-align:center;}#config-bar-property-name{width:70%;}</style>');
 !angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">.rating .btn{margin:20px;}</style>');
