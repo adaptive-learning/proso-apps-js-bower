@@ -6,7 +6,7 @@
     "Adaptive Learning Group <al@fi.muni.cz>"
   ],
   "description": "PROSO apps - javascript",
-  "main": "proso-apps-tpls.js",
+  "main": "proso-apps-all.js",
   "license": "MIT",
   "ignore": [
     "**/.*",
