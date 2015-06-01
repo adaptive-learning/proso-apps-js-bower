@@ -1,6 +1,6 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-05-29
+ * Version: 1.0.0 - 2015-06-01
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.gettext","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user", "proso.apps.common-toolbar"])
@@ -710,7 +710,7 @@ m.service("userService", ["$http", function($http){
 
 var m = angular.module('proso.apps.common-toolbar', ['ngCookies', 'proso.apps.common-config']);
 
-m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggingService', '$timeout', function($scope, $cookies, configService, loggingService, $timeout) {
+m.controller("ToolbarController", function($scope, $cookies, configService, loggingService) {
     $scope.override = configService.override;
     $scope.removeOverridden = configService.removeOverridden;
     $scope.date = new Date();
@@ -720,7 +720,7 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
     $scope.override('debug', true);
     $scope.overridden = configService.getOverridden();
     loggingService.addDebugLogListener(function(events) {
-        $timeout(function(){
+        $scope.$apply(function(){
             events.forEach(function (e) {
                 $scope.debugLog.unshift(e);
             });
@@ -748,7 +748,7 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
         return overridden;
     };
 
-}]);
+});
 
 m.directive('toolbar', [function () {
     return {
