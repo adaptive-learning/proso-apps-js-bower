@@ -1,6 +1,6 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-06-01
+ * Version: 1.0.0 - 2015-06-02
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.gettext","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user", "proso.apps.common-toolbar"])
@@ -498,18 +498,23 @@ m.service("userStatsService", ["$http", "$cookies", function($http, $cookies){
         }
     };
 
-    self.getStats = function(mastered){
+    self.getStats = function(mastered, username){
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
         var params = {filters: JSON.stringify(filters)};
         if (mastered){
             params.mastered = true;
         }
+        if (username){
+            params.username = username;
+        }
         return $http.get("/flashcards/user_stats/", {params: params});
     };
 
-    self.getStatsPost = function(mastered){
+    self.getStatsPost = function(mastered, username){
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
-        var params  = mastered ? "?mastered=true" : "";
+        var params = "?";
+        params += mastered ? "&mastered=true" : "";
+        params += username ? "&username="+username : "";
         return $http.post("/flashcards/user_stats/" + params, filters);
     };
 
@@ -565,10 +570,23 @@ m.service("userService", ["$http", function($http){
         });
     };
 
+    // get public user profile from backend
+    self.getUserProfile = function(username, stats){
+        var params = {username: username};
+        if (stats){
+            params.stats = true;
+        }
+        return $http.get("/user/profile/", {params: params});
+    };
+
     // get user profile from backend
-    self.loadUser = function(){
+    self.loadUser = function(stats){
         self.status.loading = true;
-        return $http.get("/user/profile/")
+        var params = {};
+        if (stats){
+            params.stats = true;
+        }
+        return $http.get("/user/profile/", {params: params})
             .success(function(response){
                 _processUser(response.data);
             })
@@ -647,8 +665,8 @@ m.service("userService", ["$http", function($http){
     };
 
 
-    self.loadUserFromJS = function (scope) {
-        scope.$apply(self.loadUser());
+    self.loadUserFromJS = function (scope, stats) {
+        scope.$apply(self.loadUser(stats));
     };
 
     self.loadSession = function(){
@@ -710,7 +728,7 @@ m.service("userService", ["$http", function($http){
 
 var m = angular.module('proso.apps.common-toolbar', ['ngCookies', 'proso.apps.common-config']);
 
-m.controller("ToolbarController", function($scope, $cookies, configService, loggingService) {
+m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggingService', '$timeout', function($scope, $cookies, configService, loggingService, $timeout) {
     $scope.override = configService.override;
     $scope.removeOverridden = configService.removeOverridden;
     $scope.date = new Date();
@@ -720,7 +738,7 @@ m.controller("ToolbarController", function($scope, $cookies, configService, logg
     $scope.override('debug', true);
     $scope.overridden = configService.getOverridden();
     loggingService.addDebugLogListener(function(events) {
-        $scope.$apply(function(){
+        $timeout(function(){
             events.forEach(function (e) {
                 $scope.debugLog.unshift(e);
             });
@@ -748,7 +766,7 @@ m.controller("ToolbarController", function($scope, $cookies, configService, logg
         return overridden;
     };
 
-});
+}]);
 
 m.directive('toolbar', [function () {
     return {
