@@ -1,6 +1,6 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-06-02
+ * Version: 1.0.0 - 2015-06-05
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.gettext","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user","proso.apps.user-login"]);
@@ -885,8 +885,8 @@ m.service("userService", ["$http", function($http){
     self.updateProfile = function(data){
         self.status.loading = true;
         _resetError();
-        $http.post("/user/profile/", data)
-            .success(function(response){
+        var promise = $http.post("/user/profile/", data);
+        promise.success(function(response){
                 _processUser(response.data);
             })
             .error(function(response){
@@ -894,6 +894,7 @@ m.service("userService", ["$http", function($http){
             }).finally(function(response){
                 self.status.loading = false;
             });
+        return promise;
     };
 
     self.loginGoogle = function() {
