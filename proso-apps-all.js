@@ -1,6 +1,6 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-06-05
+ * Version: 1.0.0 - 2015-06-07
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.gettext","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user","proso.apps.user-login"]);
@@ -811,14 +811,14 @@ m.service("userService", ["$http", function($http){
         }
     };
 
-    self.login = function(name, pass){
+    self.login = function(username, pass){
         self.status.loading = true;
         _resetError();
-        return $http.post("/user/login/", {
-            username: name,
+        var promise = $http.post("/user/login/", {
+            username: username,
             password: pass
-        })
-            .success(function(response){
+        });
+        promise.success(function(response){
                 _processUser(response.data);
             })
             .error(function(response){
@@ -827,6 +827,7 @@ m.service("userService", ["$http", function($http){
             .finally(function(response){
                 self.status.loading = false;
             });
+        return promise;
     };
 
     self.logout = function(){
@@ -959,8 +960,11 @@ m.controller('LoginController', ['$scope', '$modalInstance', 'signupModal', 'use
             label: '/login/email',
         });
         userService
-            .login($scope.credentials.name, $scope.credentials.password)
-            .error($scope.onError);
+            .login($scope.credentials.username, $scope.credentials.password)
+            .error($scope.onError)
+            .success(function() {
+                $scope.cancel();
+            });
     };
 
     $scope.openSignupModal = function() {
