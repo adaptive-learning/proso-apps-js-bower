@@ -1,6 +1,6 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-06-07
+ * Version: 1.0.0 - 2015-06-11
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.gettext","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user","proso.apps.user-login"]);
@@ -266,12 +266,6 @@ var m = angular.module('proso.apps.feedback-comment', ['ui.bootstrap', 'proso.ap
 m.directive('feedbackComment', ['$modal', '$window', 'gettext', function ($modal, $window, gettext) {
     return {
         restrict: 'A',
-        template: ['<div id="feedback">',
-                   '<a href="" class="btn btn-primary" ng-click="openFeedback()">',
-                   gettext('Write to us'),
-                   '</a>',
-                   '</div>'].join('\n'),
-
         link: function ($scope, element, attrs) {
             $scope.feedback = {
                 email: '@',
@@ -304,7 +298,7 @@ m.directive('feedbackComment', ['$modal', '$window', 'gettext', function ($modal
                 $scope.send = function() {
                     feedback.page = $location.absUrl();
                     $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
-                    $http.post('/feedback/', feedback).success(function(data){
+                    $http.post('/feedback/feedback/', feedback).success(function(data){
                         $scope.alerts.push({
                             type : 'success',
                             msg : gettext('Feedback jsme přijali. Děkujeme Vám za zaslané informace. Feedback od uživatelů je k nezaplacení.'),
@@ -329,6 +323,8 @@ m.directive('feedbackComment', ['$modal', '$window', 'gettext', function ($modal
                     $modalInstance.dismiss('cancel');
                 };
             }];
+
+            element.bind('click', $scope.openFeedback);
         }
     };
 }]);
