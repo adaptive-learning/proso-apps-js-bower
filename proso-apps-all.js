@@ -1,9 +1,9 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-06-11
+ * Version: 1.0.0 - 2015-07-02
  * License: MIT
  */
-angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.gettext","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user","proso.apps.user-login"]);
+angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.gettext","proso.apps.user-user","proso.apps.user-login"]);
 angular.module("proso.apps.tpls", ["templates/common-toolbar/toolbar.html","templates/feedback-comment/comment.html","templates/feedback-rating/rating.html","templates/user-login/login-modal.html","templates/user-login/signup-modal.html"]);
 angular.module("proso.apps.gettext", [])
 .value("gettext", window.gettext || function(x){return x;})
@@ -11,6 +11,13 @@ angular.module("proso.apps.gettext", [])
     return function(msgid) {
         return gettext(msgid);
     };
+}]);
+angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
+/* jshint -W100 */
+    gettextCatalog.setStrings('cs', {"Appropriate":"Tak akorát","Close":"Zavřít","Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.":"Narazili jste na chybu v aplikaci? Máte nápad na vylepšení? Nebo jakýkoliv jiný postřeh či komentář? Zajímá nás všechno, co nám chcete sdělit.","Don't know / Don't want to rate":"Nevím / Nechci hodnotit","E-mail":"E-mail","How difficult are the questions?":"Jak těžké se vám zdají otázky?","Password":"Heslo","Password again":"Heslo znovu","Registration was successful. You can continue to use the application.":"Registrace proběhla úspěšně. Můžete pokračovat v používání aplikace.","Send":"Odeslat","Sign In":"Přihlásit se","Sign Up":"Zaregistrovat se","Something wrong has happened.":"V aplikaci nastala chyba.","Thank you for the message. User feedback is very important for us.":"Děkujeme Vám za zaslané informace. Feedback od uživatelů je k nezaplacení.","Thank you for your rating.":"Děkujeme za vaše hodnocení.","Too difficult":"Příliš těžké","Too easy":"Příliš lehké","Username":"Uživatelské jméno","Write to us":"Napište nám","Your e-mail address (optional)":"Váš e-mail (nepovinné)","and get all the benefits of registered users.":"a získejte všechny výhody registrovaných uživatelů.","via E-mail":"přes E-mail","via Facebook":"přes Facebook","via Google":"přes Google"});
+    gettextCatalog.setStrings('en', {"Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.":"Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.","Don't know / Don't want to rate":"Don't know / Don't want to rate","E-mail":"E-mail","How difficult are the questions?":"How difficult are the questions?","Password":"Password","Password again":"Password again","Registration was successful. You can continue to use the application.":"Registration was successful. You can continue to use the application.","Send":"Send","Sign In":"Sign In","Sign Up":"Sign Up","Something wrong has happened.":"Something wrong has happened.","Thank you for the message. User feedback is very important for us.":"Thank you for the message. User feedback is very important for us.","Thank you for your rating.":"Thank you for your rating.","Too difficult":"Too difficult","Too easy":"Too easy","Username":"Username","Write to us":"Write to us","Your e-mail address (optional)":"Your e-mail address (optional)","and get all the benefits of registered users.":"and get all the benefits of registered users.","via E-mail":"via E-mail","via Facebook":"via Facebook","via Google":"via Google"});
+    gettextCatalog.setStrings('es', {"Appropriate":"Adecuado","Close":"Cerrar","Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.":"¿Encontraste algún error en el programa? ¿Tienes alguna sugerencia sobre como podemos mejorar? ¿Quieres compartir tu opinión con nosotros? Nos gustaría escuchar lo que tengas que decir.","Don't know / Don't want to rate":"No sé/No quiero calificar","E-mail":"E-mail","How difficult are the questions?":"¿Qué tan difíciles son estas preguntas?","Password":"Contraseña","Password again":"Contraseña de nuevo","Registration was successful. You can continue to use the application.":"Registro exitoso. Puedes continuar usando la aplicación.","Send":"Enviar","Sign In":"Iniciar sesión","Sign Up":"Registrarse","Something wrong has happened.":"Algo malo ha ocurrido.","Thank you for the message. User feedback is very important for us.":"Gracias por tu mensaje. Tu opinión es muy importante para nosotros.","Thank you for your rating.":"Gracias por calificarnos.","Too difficult":"Muy dificil","Too easy":"Muy facil","Username":"Nombre de usuario","Write to us":"Sugerencias","Your e-mail address (optional)":"Tu e-mail (opcional)","and get all the benefits of registered users.":"y accede a todos los benecifios de un usuario registrado.","via E-mail":"con E-mail","via Facebook":"con Facebook","via Google":"con Google"});
+/* jshint +W100 */
 }]);
 var configServiceLoaded;
 if (configServiceLoaded){
@@ -261,9 +268,9 @@ m.directive('toolbar', [function () {
     };
 }]);
 
-var m = angular.module('proso.apps.feedback-comment', ['ui.bootstrap', 'proso.apps.gettext']);
+var m = angular.module('proso.apps.feedback-comment', ['ui.bootstrap', 'gettext']);
 
-m.directive('feedbackComment', ['$modal', '$window', 'gettext', function ($modal, $window, gettext) {
+m.directive('feedbackComment', ['$modal', '$window', 'gettextCatalog', function ($modal, $window, gettextCatalog) {
     return {
         restrict: 'A',
         link: function ($scope, element, attrs) {
@@ -289,8 +296,8 @@ m.directive('feedbackComment', ['$modal', '$window', 'gettext', function ($modal
                 });
             };
 
-            var ModalFeedbackCtrl = ['$scope', '$modalInstance', '$http', '$cookies', '$location', 'feedback', 'gettext',
-                function ($scope, $modalInstance, $http, $cookies, $location, feedback, gettext) {
+            var ModalFeedbackCtrl = ['$scope', '$modalInstance', '$http', '$cookies', '$location', 'feedback', 'gettextCatalog',
+                function ($scope, $modalInstance, $http, $cookies, $location, feedback, gettextCatalog) {
 
                 $scope.feedback = feedback;
                 $scope.alerts = [];
@@ -301,14 +308,14 @@ m.directive('feedbackComment', ['$modal', '$window', 'gettext', function ($modal
                     $http.post('/feedback/feedback/', feedback).success(function(data){
                         $scope.alerts.push({
                             type : 'success',
-                            msg : gettext('Feedback jsme přijali. Děkujeme Vám za zaslané informace. Feedback od uživatelů je k nezaplacení.'),
+                            msg : gettextCatalog.getString('Thank you for the message. User feedback is very important for us.'),
                         });
                         $scope.sending = false;
                         feedback.text = '';
                     }).error(function(){
                         $scope.alerts.push({
                             type : 'danger',
-                            msg : gettext("Something wrong has happened."),
+                            msg : gettextCatalog.getString("Something wrong has happened."),
                         });
                         $scope.sending = false;
                     });
@@ -329,7 +336,7 @@ m.directive('feedbackComment', ['$modal', '$window', 'gettext', function ($modal
     };
 }]);
 
-var m = angular.module('proso.apps.feedback-rating', ['ui.bootstrap', 'proso.apps.gettext']);
+var m = angular.module('proso.apps.feedback-rating', ['ui.bootstrap', 'gettext']);
 
 m.controller('RatingModalController', ['$scope', '$rootScope', '$modal', function ($scope, $rootScope, $modal) {
 
@@ -355,7 +362,7 @@ m.controller('RatingModalController', ['$scope', '$rootScope', '$modal', functio
     });
 }]);
 
-m.controller('RatingModalInstanceController', ['$scope', '$modalInstance', '$http', '$cookies', 'gettext', function($scope, $modalInstance, $http, $cookies, gettext) {
+m.controller('RatingModalInstanceController', ['$scope', '$modalInstance', '$http', '$cookies', 'gettextCatalog', function($scope, $modalInstance, $http, $cookies, gettextCatalog) {
 
     $scope.alerts = [];
 
@@ -365,13 +372,13 @@ m.controller('RatingModalInstanceController', ['$scope', '$modalInstance', '$htt
         $http.post('/feedback/rating', {'value': answer}).success(function(data){
             $scope.alerts.push({
                 type : 'success',
-                msg : gettext('Thank you for your rating.'),
+                msg : gettextCatalog.getString('Thank you for your rating.'),
             });
             $scope.sending = false;
         }).error(function(){
             $scope.alerts.push({
                 type : 'danger',
-                msg : gettext("Something wrong has happened."),
+                msg : gettextCatalog.getString("Something wrong has happened."),
             });
             $scope.sending = false;
         });
@@ -1078,15 +1085,15 @@ angular.module("templates/common-toolbar/toolbar.html", []).run(["$templateCache
 angular.module("templates/feedback-comment/comment.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("templates/feedback-comment/comment.html",
     "<div class=\"modal-header\">\n" +
-    "    <h3 class=\"modal-title\">{{ \"Write to us\" | trans }}</h3>\n" +
+    "    <h3 class=\"modal-title\">{{ \"Write to us\" | translate }}</h3>\n" +
     "</div>\n" +
     "<div class=\"modal-body\">\n" +
     "    <label>\n" +
-    "      {{ \"Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.\" | trans }}\n" +
+    "      {{ \"Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.\" | translate }}\n" +
     "    </label>\n" +
     "    <textarea ng-model=\"feedback.text\" class=\"form-control\" rows=\"8\" ></textarea>\n" +
     "    <label>\n" +
-    "      {{ \"Your email address (optional)\" | trans }}\n" +
+    "      {{ \"Your e-mail address (optional)\" | translate }}\n" +
     "    </label>\n" +
     "    <input type=\"text\" ng-model=\"feedback.email\" class=\"form-control\"/>\n" +
     "    <br>\n" +
@@ -1094,10 +1101,10 @@ angular.module("templates/feedback-comment/comment.html", []).run(["$templateCac
     "</div>\n" +
     "<div class=\"modal-footer\">\n" +
     "    <button ng-disabled=\"sending\" class=\"btn btn-primary\" ng-click=\"send()\">\n" +
-    "      {{ \"Send\" | trans }}\n" +
+    "      {{ \"Send\" | translate }}\n" +
     "    </button>\n" +
     "    <button class=\"btn btn-danger\" ng-click=\"cancel()\">\n" +
-    "      {{ \"Close\" | trans }}\n" +
+    "      {{ \"Close\" | translate }}\n" +
     "    </button>\n" +
     "</div>\n" +
     "\n" +
@@ -1107,23 +1114,23 @@ angular.module("templates/feedback-comment/comment.html", []).run(["$templateCac
 angular.module("templates/feedback-rating/rating.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("templates/feedback-rating/rating.html",
     "<div class=\"modal-header text-center\">\n" +
-    "    <h3 class=\"modal-title\">{{ \"How difficult are the questions?\" | trans }}</h3>\n" +
+    "    <h3 class=\"modal-title\">{{ \"How difficult are the questions?\" | translate }}</h3>\n" +
     "    {{ \"Your answer helps us adjust difficulty of questions.\" | trans}}\n" +
     "</div>\n" +
     "<div class=\"rating modal-body\">\n" +
     "    <div class=\" text-center\" ng-hide=\"answer\">\n" +
     "        <a class=\"btn btn-lg btn-success\" ng-click=\"vote(1)\">\n" +
-    "            {{\"Too easy\" | trans }}\n" +
+    "            {{\"Too easy\" | translate }}\n" +
     "        </a>\n" +
     "        <a class=\"btn btn-lg btn-primary\" ng-click=\"vote(2)\">\n" +
-    "            {{ \"Appropriate\" | trans }}\n" +
+    "            {{ \"Appropriate\" | translate }}\n" +
     "        </a>\n" +
     "        <a class=\"btn btn-lg btn-danger\" ng-click=\"vote(3)\">\n" +
-    "            {{ \"Too difficult\" | trans }}\n" +
+    "            {{ \"Too difficult\" | translate }}\n" +
     "        </a>\n" +
     "        <div class=\"clearfix\"></div>\n" +
     "        <a class=\"pull-right dont-know\" href=\"\" ng-click=\"cancel()\">\n" +
-    "            {{ \"Don't know / Don't want to rate\" | trans }}\n" +
+    "            {{ \"Don't know / Don't want to rate\" | translate }}\n" +
     "        </a>\n" +
     "        <div class=\"clearfix\"></div>\n" +
     "    </div>\n" +
@@ -1131,7 +1138,7 @@ angular.module("templates/feedback-rating/rating.html", []).run(["$templateCache
     "</div>\n" +
     "<div class=\"modal-footer\" ng-show=\"answer\">\n" +
     "    <button class=\"btn btn-danger\" ng-click=\"cancel()\">\n" +
-    "        {{ \"Close\" | trans }}\n" +
+    "        {{ \"Close\" | translate }}\n" +
     "    </button>\n" +
     "</div>\n" +
     "\n" +
@@ -1144,19 +1151,19 @@ angular.module("templates/user-login/login-modal.html", []).run(["$templateCache
     "    <button type=\"button\" class=\"close\" ng-click=\"cancel()\">\n" +
     "        <span aria-hidden=\"true\">&times;</span>\n" +
     "    </button>\n" +
-    "    <h3 class=\"modal-title\"> {{ \"Sign In\" | trans }} </h3>\n" +
+    "    <h3 class=\"modal-title\"> {{ \"Sign In\" | translate }} </h3>\n" +
     "</div>\n" +
     "<div class=\"modal-body\">\n" +
     "    <a class=\"btn btn-danger btn-lg btn-block\"\n" +
     "        track-click=\"login\"\n" +
     "        href=\"/login/google-oauth2/\">\n" +
-    "        <i class=\"social-google\"></i> {{ \"via Google\" | trans }}\n" +
+    "        <i class=\"social-google\"></i> {{ \"via Google\" | translate }}\n" +
     "    </a>\n" +
     "    <br>\n" +
     "    <a class=\"btn btn-primary btn-lg btn-block\"\n" +
     "        track-click=\"login\"\n" +
     "        href=\"/login/facebook/\">\n" +
-    "        <i class=\"social-facebook\"></i>{{ \"via Facebook\" | trans }}\n" +
+    "        <i class=\"social-facebook\"></i>{{ \"via Facebook\" | translate }}\n" +
     "    </a>\n" +
     "\n" +
     "    <br>\n" +
@@ -1166,24 +1173,24 @@ angular.module("templates/user-login/login-modal.html", []).run(["$templateCache
     "    <form role=\"form\" ng-submit=\"loginEmail()\">\n" +
     "        <div class=\"form-group\">\n" +
     "            <input type=\"text\" class=\"form-control\" ng-model=\"credentials.username\"\n" +
-    "            placeholder=\"{{ 'Username' | trans }}\">\n" +
+    "            placeholder=\"{{ 'Username' | translate }}\">\n" +
     "        </div>\n" +
     "        <div class=\"form-group\">\n" +
     "            <input type=\"password\" class=\"form-control\" ng-model=\"credentials.password\"\n" +
-    "            placeholder=\"{{ 'Password' | trans }}\">\n" +
+    "            placeholder=\"{{ 'Password' | translate }}\">\n" +
     "        </div>\n" +
     "        <alert ng-repeat=\"alert in alerts\" type=\"{{alert.type}}\"\n" +
     "            close=\"closeAlert($index)\">{{alert.msg}}</alert>\n" +
     "        <button ng-disabled=\"userService.status.loading\" type=\"submit\"\n" +
     "            class=\"btn btn-primary btn-block btn-lg\">\n" +
-    "            {{ 'Sign In' | trans }}\n" +
+    "            {{ 'Sign In' | translate }}\n" +
     "        </button>\n" +
     "\n" +
     "    </form>\n" +
     "</div>\n" +
     "<div class=\"modal-footer\" >\n" +
     "        <a class=\"btn btn-link\" ng-click=\"openSignupModal()\">\n" +
-    "            {{ 'Sign Up' | trans }}\n" +
+    "            {{ 'Sign Up' | translate }}\n" +
     "        </a>\n" +
     "\n" +
     "</div>\n" +
@@ -1196,9 +1203,9 @@ angular.module("templates/user-login/signup-modal.html", []).run(["$templateCach
     "    <button type=\"button\" class=\"close\" ng-click=\"cancel()\">\n" +
     "        <span aria-hidden=\"true\">&times;</span>\n" +
     "    </button>\n" +
-    "    <h3 class=\"modal-title\"> {{ \"Sign up\" | trans }} </h3>\n" +
+    "    <h3 class=\"modal-title\"> {{ \"Sign Up\" | translate }} </h3>\n" +
     "    <div ng-hide=\"success\">\n" +
-    "        {{\" and get all the benefits of registered users.\" | trans }}\n" +
+    "        {{\" and get all the benefits of registered users.\" | translate }}\n" +
     "    </div>\n" +
     "</div>\n" +
     "<div class=\"modal-body\" ng-hide=\"success\">\n" +
@@ -1206,50 +1213,50 @@ angular.module("templates/user-login/signup-modal.html", []).run(["$templateCach
     "        <a class=\"btn btn-danger btn-lg btn-block\"\n" +
     "            track-click=\"login\"\n" +
     "            href=\"/login/google-oauth2/\">\n" +
-    "            <i class=\"social-google\"></i> {{ \"via Google\" | trans }}\n" +
+    "            <i class=\"social-google\"></i> {{ \"via Google\" | translate }}\n" +
     "        </a>\n" +
     "        <br>\n" +
     "        <a class=\"btn btn-primary btn-lg btn-block\"\n" +
     "            track-click=\"login\"\n" +
     "            href=\"/login/facebook/\">\n" +
-    "            <i class=\"social-facebook\"></i>{{ \"via Facebook\" | trans }}\n" +
+    "            <i class=\"social-facebook\"></i>{{ \"via Facebook\" | translate }}\n" +
     "        </a>\n" +
     "        <br>\n" +
     "        <a class=\"btn btn-info btn-lg btn-block\"\n" +
     "            ng-click=\"activateEmail=true\"\n" +
     "            href=\"\">\n" +
-    "            <i class=\"glyphicon glyphicon-envelope\"></i> {{ \"via E-mail\" | trans }}\n" +
+    "            <i class=\"glyphicon glyphicon-envelope\"></i> {{ \"via E-mail\" | translate }}\n" +
     "        </a>\n" +
     "    </div>\n" +
     "\n" +
     "    <form role=\"form\" ng-show=\"activateEmail\" ng-submit=\"signup()\">\n" +
     "        <div class=\"form-group\">\n" +
     "            <input type=\"email\" class=\"form-control\" ng-model=\"credentials.email\"\n" +
-    "                placeholder=\"{{ 'E-mail' | trans }}\" required>\n" +
+    "                placeholder=\"{{ 'E-mail' | translate }}\" required>\n" +
     "        </div>\n" +
     "        <div class=\"form-group\">\n" +
     "            <input type=\"text\" class=\"form-control\" ng-model=\"credentials.username\"\n" +
-    "                placeholder=\"{{ 'Username' | trans }}\" required>\n" +
+    "                placeholder=\"{{ 'Username' | translate }}\" required>\n" +
     "        </div>\n" +
     "        <div class=\"form-group\">\n" +
     "            <input type=\"password\" class=\"form-control\" ng-model=\"credentials.password\"\n" +
-    "                placeholder=\"{{ 'Password' | trans }}\" required>\n" +
+    "                placeholder=\"{{ 'Password' | translate }}\" required>\n" +
     "        </div>\n" +
     "        <div class=\"form-group\">\n" +
     "            <input type=\"password\" class=\"form-control\"\n" +
     "                ng-model=\"credentials.password_check\"\n" +
-    "                placeholder=\"{{ 'Password again' | trans }}\" required>\n" +
+    "                placeholder=\"{{ 'Password again' | translate }}\" required>\n" +
     "        </div>\n" +
     "        <alert ng-repeat=\"alert in alerts\" type=\"{{alert.type}}\"\n" +
     "            close=\"closeAlert($index)\">{{alert.msg}}</alert>\n" +
     "        <button ng-disabled=\"userService.status.loading\" type=\"submit\" class=\"btn btn-primary btn-block btn-lg\">\n" +
-    "            {{ 'Sign up' | trans }}\n" +
+    "            {{ 'Sign Up' | translate }}\n" +
     "        </button>\n" +
     "    </form>\n" +
     "</div>\n" +
     "<div class=\"modal-body\" ng-show=\"success\" >\n" +
     "        <alert type=\"success\">\n" +
-    "            {{ 'Registration was successful. You can continue to use the application.' | trans }}\n" +
+    "            {{ 'Registration was successful. You can continue to use the application.' | translate }}\n" +
     "        </alert>\n" +
     "</div>\n" +
     "\n" +
