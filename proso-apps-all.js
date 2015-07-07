@@ -1,6 +1,6 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-07-02
+ * Version: 1.0.0 - 2015-07-07
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.gettext","proso.apps.user-user","proso.apps.user-login"]);
@@ -419,6 +419,8 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
 
     var contexts = {};
 
+    var loadingFlashcards = false;
+
     // called on create and set reset
     self.initSet = function(configName){
         var key = "practice." + configName + ".";
@@ -563,6 +565,10 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
 
 
     var _loadFlashcards = function(){
+        if (loadingFlashcards){
+            return;                             // loading request is already running
+        }
+
         if (queue.length >= config.fc_queue_size_min) { return; }                                       // if there are some FC queued
             config.filter.limit  = config.fc_queue_size_max - queue.length;
         if (deferredFC && !promiseResolvedTmp) { config.filter.limit ++; }                  // if we promised one flashcard
@@ -594,6 +600,7 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
             answerQueue = [];
         }
         var request_in_set = setId;
+        loadingFlashcards = true;
         request
             .success(function(response){
                 if (request_in_set !== setId) {
@@ -613,6 +620,9 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
                     deferredFC.reject("Something went wrong while loading flashcards from backend.");
                 }
                 console.error("Something went wrong while loading flashcards from backend.");
+            })
+            .finally(function(){
+                loadingFlashcards = false;
             });
 
     };
