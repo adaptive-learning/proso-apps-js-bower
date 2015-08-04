@@ -1,9 +1,9 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-07-07
+ * Version: 1.0.0 - 2015-08-04
  * License: MIT
  */
-angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.gettext","proso.apps.user-user","proso.apps.user-login"]);
+angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user","proso.apps.user-login"]);
 angular.module("proso.apps.tpls", ["templates/common-toolbar/toolbar.html","templates/feedback-comment/comment.html","templates/feedback-rating/rating.html","templates/user-login/login-modal.html","templates/user-login/signup-modal.html"]);
 angular.module("proso.apps.gettext", [])
 .value("gettext", window.gettext || function(x){return x;})
@@ -220,7 +220,7 @@ m.config(['$httpProvider', function($httpProvider) {
 
 var m = angular.module('proso.apps.common-toolbar', ['ngCookies', 'proso.apps.common-config']);
 
-m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggingService', '$timeout', function($scope, $cookies, configService, loggingService, $timeout) {
+m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggingService', '$timeout', '$http', function($scope, $cookies, configService, loggingService, $timeout, $http) {
     $scope.override = configService.override;
     $scope.removeOverridden = configService.removeOverridden;
     $scope.date = new Date();
@@ -256,6 +256,58 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
             delete overridden[k];
         });
         return overridden;
+    };
+
+    $scope.showAuditChart = function() {
+        var params = {};
+        if ($scope.auditLimit) {
+            params['limit'] = $scope.auditLimit;
+        }
+        if ($scope.auditUser) {
+            params['user'] = $scope.auditUser;
+        }
+        $http.get("/models/audit/" + $scope.auditKey, {params: params})
+            .success(function(response) {
+                var data = new google.visualization.DataTable();
+                data.addColumn('number', 'Update');
+                data.addColumn('number', 'Value');
+                data.addColumn({type: 'datetime', role: 'tooltip'});
+                response.data.reverse();
+                var rows = [];
+                for (var i = 0; i < response.data.length; i++) {
+                    var record = response.data[i];
+                    rows.push([i, record.value, new Date(record.time)]);
+                }
+                data.addRows(rows);
+                var options = {
+                    title: $scope.auditKey,
+                    legend: {
+                        position: 'none'
+                    },
+                    vAxis: {
+                        format: '#.###'
+                    },
+                    hAxis: {
+                        title: 'Time',
+                        position: 'center'
+                    },
+                    pointSize: 10,
+                    series: {
+                        0: {
+                            pointShape: 'diamond'
+                        }
+                    },
+                    width: 450,
+                    height: 300,
+                    'chartArea': {'width': '90%', 'height': '90%'}
+                };
+                var formatter = new google.visualization.NumberFormat({
+                    fractionDigits: 3, pattern: '#.###'
+                });
+                formatter.format(data, 1);
+                var chart = new google.visualization.LineChart(document.getElementById('auditChart'));
+                chart.draw(data, options);
+            });
     };
 
 }]);
@@ -419,8 +471,6 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
 
     var contexts = {};
 
-    var loadingFlashcards = false;
-
     // called on create and set reset
     self.initSet = function(configName){
         var key = "practice." + configName + ".";
@@ -565,10 +615,6 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
 
 
     var _loadFlashcards = function(){
-        if (loadingFlashcards){
-            return;                             // loading request is already running
-        }
-
         if (queue.length >= config.fc_queue_size_min) { return; }                                       // if there are some FC queued
             config.filter.limit  = config.fc_queue_size_max - queue.length;
         if (deferredFC && !promiseResolvedTmp) { config.filter.limit ++; }                  // if we promised one flashcard
@@ -600,10 +646,8 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
             answerQueue = [];
         }
         var request_in_set = setId;
-        loadingFlashcards = true;
         request
             .success(function(response){
-                loadingFlashcards = false;
                 if (request_in_set !== setId) {
                     return;
                 }
@@ -617,12 +661,12 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
                 }
             })
             .error(function (response) {
-                loadingFlashcards = false;
                 if (deferredFC !== null){
                     deferredFC.reject("Something went wrong while loading flashcards from backend.");
                 }
                 console.error("Something went wrong while loading flashcards from backend.");
             });
+
     };
 
     var _loadContexts = function(){
@@ -937,10 +981,10 @@ m.service("userService", ["$http", function($http){
 
 }]);
 
-var m = angular.module('proso.apps.user-login', ['ui.bootstrap', 'proso.apps.gettext', 'proso.apps.user-user', 'angulartics', 'angulartics.google.analytics']);
+var m = angular.module('proso.apps.user-login', ['ui.bootstrap', 'gettext', 'proso.apps.user-user', 'angulartics', 'angulartics.google.analytics']);
 
-m.controller('LoginController', ['$scope', '$modalInstance', 'signupModal', 'userService', 'gettext', '$analytics',
-    function ($scope, $modalInstance, signupModal, userService, gettext, $analytics) {
+m.controller('LoginController', ['$scope', '$modalInstance', 'signupModal', 'userService', 'gettextCatalog', '$analytics',
+    function ($scope, $modalInstance, signupModal, userService, gettextCatalog, $analytics) {
 
     $scope.credentials = {};
     $scope.alerts = [];
@@ -1005,7 +1049,7 @@ m.controller('LoginController', ['$scope', '$modalInstance', 'signupModal', 'use
         });
         $scope.alerts.push({
             type: error.type || 'danger',
-            msg: error.msg || gettext('Something wrong has happened.')
+            msg: error.msg || gettextCatalog.getString('Something wrong has happened.')
         });
     };
 
@@ -1075,6 +1119,20 @@ angular.module("templates/common-toolbar/toolbar.html", []).run(["$templateCache
     "                <input type=\"text\" disabled class=\"property-name\" ng-model=\"name\" />\n" +
     "                <input type=\"text\" class=\"property-value\" placeholder=\"Value\" ng-model=\"value\" ng-change=\"override(name, value)\" />\n" +
     "            </li>\n" +
+    "            <div class='section' ng-click=\"auditOpened = !auditOpened\">Models Audit</div>\n" +
+    "            <ul id=\"config-bar-audit\" ng-cloak ng-show=\"auditOpened\">\n" +
+    "                <li>\n" +
+    "                    <input type=\"text\" ng-model=\"auditLimit\" placeholder=\"Limit\" />\n" +
+    "                    <input type=\"text\" ng-model=\"auditKey\" placeholder=\"Key\" id=\"config-bar-audit-key\" />\n" +
+    "                    <input type=\"text\" ng-model=\"auditUser\" placeholder=\"User\" />\n" +
+    "                </li>\n" +
+    "                <li>\n" +
+    "                    <input type=\"text\" ng-model=\"auditPrimary\" placeholder=\"Item Primary\" />\n" +
+    "                    <input type=\"text\" ng-model=\"auditSecondary\" placeholder=\"Item Secondary\" />\n" +
+    "                    <button ng-click=\"showAuditChart()\">Show Chart</button>\n" +
+    "                </li>\n" +
+    "                <div id=\"auditChart\"></div>\n" +
+    "            </ul>\n" +
     "            <div class='section' ng-click=\"loggingOpened = !loggingOpened\">Logging</div>\n" +
     "            <ul id=\"config-bar-logging\" ng-cloak ng-show=\"loggingOpened\">\n" +
     "                <li ng-repeat=\"event in debugLog|limitTo:100\" class=\"logging-event\">\n" +
@@ -1270,5 +1328,5 @@ angular.module("templates/user-login/signup-modal.html", []).run(["$templateCach
     "\n" +
     "");
 }]);
-!angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">#config-bar-show-button{position:fixed;right:-40px;top:250px;width:100px;transform:rotate(-90deg);-webkit-transform:rotate(-90deg);border:solid #808080 1px;margin:0;padding:10px;text-transform:capitalize;font-weight:bold;background-color:rgba(255,255,255,0.8);transition:all 0.2s;cursor:pointer;text-align:center;}#config-bar-show-button:hover{background-color:#1f8dd6;color:white;}#config-bar{position:fixed;right:0;top:0;bottom:0;width:500px;border-left:solid #808080 1px;background-color:rgba(255,255,255,0.8);z-index:1000;}#config-bar-header{background-color:rgba(31,141,214,0.8);margin:0;padding:10px 20px;text-align:right;color:white;}#config-bar-content .section{background-color:rgba(31,141,214,0.8);margin:0;padding:10px 20px;color:white;text-transform:uppercase;cursor:pointer;}#config-bar-hide{text-align:right;width:100%;cursor:pointer;}#config-bar-content{margin:0;list-style:none;padding:0;}#config-bar-content > li{border-bottom:1px dashed #E9F4FB;padding:10px 20px;margin:0;}#config-bar-content > li:hover{background:#E9F4FB;}#config-bar-content .reset,#config-bar-content .add-to-override{cursor:pointer;font-weight:bolder;}#config-bar-content input{padding:5px 10px;}#config-bar-content label{margin-left:10px;cursor:pointer;}#config-bar-content .link{text-transform:uppercase;cursor:pointer;font-weight:bold;}#config-bar-logging{list-style:none;margin:0;padding:0;max-height:500px;overflow-y:scroll;font-size:12px;}#config-bar-logging > li{margin:0;padding:5px 10px;border-bottom:1px solid #E9F4FB;}#config-bar-logging > li:hover{background-color:#E9F4FB;}#config-bar-logging .level{display:block;float:left;width:10%;font-weight:bold;}#config-bar-logging .url{font-weight:bold;margin-left:10px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:50%;float:left;}#config-bar-logging .filename{display:block;float:right;text-align:right;width:30%;font-weight:bold;}#config-bar-logging .message{display:block;clear:both;margin-top:20px;margin-bottom:5px;}#config-bar-content input{font-size:14px;}#config-bar-content .property-name{width:70%;}#config-bar-content .property-value{width:10%;text-align:center;}#config-bar-property-name{width:70%;}#config-bar-show-button{position:fixed;right:-40px;top:250px;width:100px;transform:rotate(-90deg);-webkit-transform:rotate(-90deg);border:solid #808080 1px;margin:0;padding:10px;text-transform:capitalize;font-weight:bold;background-color:rgba(255,255,255,0.8);transition:all 0.2s;cursor:pointer;text-align:center;}#config-bar-show-button:hover{background-color:#1f8dd6;color:white;}#config-bar{position:fixed;right:0;top:0;bottom:0;width:500px;border-left:solid #808080 1px;background-color:rgba(255,255,255,0.8);z-index:1000;}#config-bar-header{background-color:rgba(31,141,214,0.8);margin:0;padding:10px 20px;text-align:right;color:white;}#config-bar-content .section{background-color:rgba(31,141,214,0.8);margin:0;padding:10px 20px;color:white;text-transform:uppercase;cursor:pointer;}#config-bar-hide{text-align:right;width:100%;cursor:pointer;}#config-bar-content{margin:0;list-style:none;padding:0;}#config-bar-content > li{border-bottom:1px dashed #E9F4FB;padding:10px 20px;margin:0;}#config-bar-content > li:hover{background:#E9F4FB;}#config-bar-content .reset,#config-bar-content .add-to-override{cursor:pointer;font-weight:bolder;}#config-bar-content input{padding:5px 10px;}#config-bar-content label{margin-left:10px;cursor:pointer;}#config-bar-content .link{text-transform:uppercase;cursor:pointer;font-weight:bold;}#config-bar-logging{list-style:none;margin:0;padding:0;max-height:500px;overflow-y:scroll;font-size:12px;}#config-bar-logging > li{margin:0;padding:5px 10px;border-bottom:1px solid #E9F4FB;}#config-bar-logging > li:hover{background-color:#E9F4FB;}#config-bar-logging .level{display:block;float:left;width:10%;font-weight:bold;}#config-bar-logging .url{font-weight:bold;margin-left:10px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:50%;float:left;}#config-bar-logging .filename{display:block;float:right;text-align:right;width:30%;font-weight:bold;}#config-bar-logging .message{display:block;clear:both;margin-top:20px;margin-bottom:5px;}#config-bar-content input{font-size:14px;}#config-bar-content .property-name{width:70%;}#config-bar-content .property-value{width:10%;text-align:center;}#config-bar-property-name{width:70%;}</style>');
+!angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">#config-bar-show-button{position:fixed;right:-40px;top:250px;width:100px;transform:rotate(-90deg);-webkit-transform:rotate(-90deg);border:solid #808080 1px;margin:0;padding:10px;text-transform:capitalize;font-weight:bold;background-color:rgba(255,255,255,0.8);transition:all 0.2s;cursor:pointer;text-align:center;z-index:1000;}#config-bar-show-button:hover{background-color:#1f8dd6;color:white;}#config-bar{position:fixed;right:0;top:0;bottom:0;width:500px;border-left:solid #808080 1px;background-color:rgba(255,255,255,0.8);z-index:1000;}#config-bar-header{background-color:rgba(31,141,214,0.8);margin:0;padding:10px 20px;text-align:right;color:white;}#config-bar-content .section{background-color:rgba(31,141,214,0.8);margin:0;margin-top:5px;padding:10px 20px;color:white;text-transform:uppercase;cursor:pointer;}#config-bar-hide{text-align:right;width:100%;cursor:pointer;}#config-bar-content{margin:0;list-style:none;padding:0;}#config-bar-content > li{border-bottom:1px dashed #E9F4FB;padding:10px 20px;margin:0;}#config-bar-content > li:hover{background:#E9F4FB;}#config-bar-content .reset,#config-bar-content .add-to-override{cursor:pointer;font-weight:bolder;}#config-bar-content input{padding:5px 10px;}#config-bar-content label{margin-left:10px;cursor:pointer;}#config-bar-content .link{text-transform:uppercase;cursor:pointer;font-weight:bold;}#config-bar-logging{list-style:none;margin:0;padding:0;max-height:500px;overflow-y:scroll;font-size:12px;}#config-bar-logging > li{margin:0;padding:5px 10px;border-bottom:1px solid #E9F4FB;}#config-bar-logging > li:hover{background-color:#E9F4FB;}#config-bar-logging .level{display:block;float:left;width:10%;font-weight:bold;}#config-bar-logging .url{font-weight:bold;margin-left:10px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:50%;float:left;}#config-bar-logging .filename{display:block;float:right;text-align:right;width:30%;font-weight:bold;}#config-bar-logging .message{display:block;clear:both;margin-top:20px;margin-bottom:5px;}#config-bar-content input{font-size:14px;}#config-bar-content .property-name{width:70%;}#config-bar-content .property-value{width:10%;text-align:center;}#config-bar-property-name{width:70%;}#config-bar-audit{padding-left:5px;}#config-bar-audit li{list-style:none;margin-bottom:5px;}#config-bar-audit input{width:27%;}#config-bar-audit button{width:27%;}#auditChart{margin:10px auto;width:450px;}</style>');
 !angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">.rating .btn{margin:20px;}</style>');
