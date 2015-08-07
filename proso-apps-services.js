@@ -971,6 +971,30 @@ angular.module("templates/common-toolbar/toolbar.html", []).run(["$templateCache
     "                <input type=\"text\" disabled class=\"property-name\" ng-model=\"name\" />\n" +
     "                <input type=\"text\" class=\"property-value\" placeholder=\"Value\" ng-model=\"value\" ng-change=\"override(name, value)\" />\n" +
     "            </li>\n" +
+    "            <div class='section' ng-click=\"openABTesting()\">AB Testing <span id=\"abExperimentName\">{{abExperiment.identifier }}</span></div>\n" +
+    "            <ul id=\"config-bar-ab\" ng-cloak ng-show=\"abTestingOpened\">\n" +
+    "                <li>\n" +
+    "                    <ul id=\"abSetupInfo\">\n" +
+    "                        <li ng-repeat=\"setup in abExperiment.setups\">\n" +
+    "                            <strong class=\"setup-id\">#{{ setup.id }}</strong>\n" +
+    "                            <ul>\n" +
+    "                                <li ng-repeat=\"value in setup.values\">\n" +
+    "                                    <span class=\"variable-name\">{{ value.variable.app_name }}.{{ value.variable.name }}</span>\n" +
+    "                                    <span class=\"variable-value\">{{ value.value }}</span>\n" +
+    "                                    <span class=\"comma\" ng-if=\"!$last\">,</a>\n" +
+    "                                </li>\n" +
+    "                            </ul>\n" +
+    "                        </li>\n" +
+    "                    </ul>\n" +
+    "                <li>\n" +
+    "                <div id=\"abChart\"></div>\n" +
+    "                <li>\n" +
+    "                    <button ng-click=\"drawABTesting()\" class=\"ab-experiment-chart-button\">All</button>\n" +
+    "                    <button ng-click=\"drawABTesting('number_of_users')\" class=\"ab-experiment-chart-button\">Users</button>\n" +
+    "                    <button ng-click=\"drawABTesting('number_of_answers_median')\" class=\"ab-experiment-chart-button\">Answers</button>\n" +
+    "                    <button ng-click=\"drawABTesting('returning_chance')\" class=\"ab-experiment-chart-button\">Returning</button>\n" +
+    "                </li>\n" +
+    "            </ul>\n" +
     "            <div class='section' ng-click=\"flashcardsOpened = !flashcardsOpened\">Flashcards</div>\n" +
     "            <ul id=\"config-bar-flashcards\" ng-cloak ng-show=\"flashcardsOpened\">\n" +
     "                <li>\n" +
@@ -999,30 +1023,6 @@ angular.module("templates/common-toolbar/toolbar.html", []).run(["$templateCache
     "                    <button ng-click=\"showAuditChart()\">Show Chart</button>\n" +
     "                </li>\n" +
     "                <div id=\"auditChart\"></div>\n" +
-    "            </ul>\n" +
-    "            <div class='section' ng-click=\"openABTesting()\">AB Testing <span id=\"abExperimentName\">{{abExperiment.identifier }}</span></div>\n" +
-    "            <ul id=\"config-bar-ab\" ng-cloak ng-show=\"abTestingOpened\">\n" +
-    "                <li>\n" +
-    "                    <ul id=\"abSetupInfo\">\n" +
-    "                        <li ng-repeat=\"setup in abExperiment.setups\">\n" +
-    "                            <strong class=\"setup-id\">#{{ setup.id }}</strong>\n" +
-    "                            <ul>\n" +
-    "                                <li ng-repeat=\"value in setup.values\">\n" +
-    "                                    <span class=\"variable-name\">{{ value.variable.app_name }}.{{ value.variable.name }}</span>\n" +
-    "                                    <span class=\"variable-value\">{{ value.value }}</span>\n" +
-    "                                    <span class=\"comma\" ng-if=\"!$last\">,</a>\n" +
-    "                                </li>\n" +
-    "                            </ul>\n" +
-    "                        </li>\n" +
-    "                    </ul>\n" +
-    "                <li>\n" +
-    "                <div id=\"abChart\"></div>\n" +
-    "                <li>\n" +
-    "                    <button ng-click=\"drawABTesting()\" class=\"ab-experiment-chart-button\">All</button>\n" +
-    "                    <button ng-click=\"drawABTesting('number_of_users')\" class=\"ab-experiment-chart-button\">Users</button>\n" +
-    "                    <button ng-click=\"drawABTesting('number_of_answers_median')\" class=\"ab-experiment-chart-button\">Answers</button>\n" +
-    "                    <button ng-click=\"drawABTesting('returning_chance')\" class=\"ab-experiment-chart-button\">Returning</button>\n" +
-    "                </li>\n" +
     "            </ul>\n" +
     "            <div class='section' ng-click=\"loggingOpened = !loggingOpened\">Logging</div>\n" +
     "            <ul id=\"config-bar-logging\" ng-cloak ng-show=\"loggingOpened\">\n" +
