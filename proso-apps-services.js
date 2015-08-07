@@ -754,6 +754,8 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
     $scope.debugLog = [];
     $scope.opened = $cookies["toolbar:opened"] === "true";
     $scope.loggingOpened = true;
+    $scope.abTestingOpened = false;
+    $scope.flashcardsLimit = 10;
     $scope.override('debug', true);
     $scope.overridden = configService.getOverridden();
     loggingService.addDebugLogListener(function(events) {
@@ -785,6 +787,100 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
         return overridden;
     };
 
+    $scope.openABTesting = function() {
+        $scope.abTestingOpened = ! $scope.abTestingOpened;
+        if ($scope.abTestingOpened && !$scope.abExperiment) {
+            $http.get('/configab/experiments', {params: {filter_column: 'is_enabled', filter_value: true, stats: true}})
+                .success(function(response) {
+                    var data = response.data;
+                    if (data.length === 0) {
+                        return;
+                    }
+                    $scope.abExperiment = data[0];
+                    $scope.abExperiment.setups.forEach(function(setup) {
+                        setup.values.forEach(function(value) {
+                            $scope.abExperiment.variables.forEach(function(variable) {
+                                if (variable.id = value.variable_id) {
+                                    value.variable = variable;
+                                }
+                            });
+                        });
+                    });
+                    $scope.drawABTesting();
+                });
+        }
+        $scope.drawABTesting();
+    };
+
+    $scope.showFlashcardsPractice = function() {
+        var params = {
+            limit: $scope.limit
+        };
+        if ($scope.flashcardsCategories) {
+            params.categories = JSON.stringify(
+                $scope.flashcardsCategories.split(',').map(function(x) { return x.trim(); })
+            );
+        }
+        if ($scope.flashcardsContexts) {
+            params.contexts = JSON.stringify(
+                $scope.flashcardsContexts.split(',').map(function(x) { return x.trim(); })
+            );
+        }
+        if ($scope.flashcardsTypes) {
+            params.types = JSON.stringify(
+                $scope.flashcardsTypes.split(',').map(function(x) { return x.trim(); })
+            );
+        }
+        $http.get('/flashcards/practice_image', {params: params}).success(function(response) {
+            document.getElementById("flashcardsChart").innerHTML = response;
+        });
+    };
+
+    $scope.drawABTesting = function(column) {
+        if (!$scope.abExperiment) {
+            return;
+        }
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Experiment Setup');
+        data.addColumn('number', 'Number of Answers');
+        data.addColumn('number', 'Number of Users');
+        data.addColumn('number', 'Returning Chance');
+        data.addRows($scope.abExperiment.setups.map(function(setup) {
+            return [
+                'Setup #' + setup.id,
+                setup.stats.number_of_answers_median,
+                setup.stats.number_of_users,
+                setup.stats.returning_chance,
+            ];
+        }));
+        var view = data;
+        var title = 'All';
+        if (column) {
+            var columns = {
+                number_of_answers_median: 1,
+                number_of_users: 2,
+                returning_chance: 3,
+            };
+            title = column;
+            view = new google.visualization.DataView(data);
+            view.setColumns([0, columns[column]]);
+        }
+        var chart = new google.visualization.ColumnChart(document.getElementById("abChart"));
+        var options = {
+            title: title,
+            legend: {
+                position: 'none'
+            },
+            vAxis: {
+                format: '#.###'
+            },
+            width: 480,
+            height: 300,
+            'chartArea': {'width': '80%', 'height': '80%'}
+        };
+        chart.draw(view, options);
+    };
+
     $scope.showAuditChart = function() {
         var params = {};
         if ($scope.auditLimit) {
@@ -812,7 +908,7 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
                         position: 'none'
                     },
                     vAxis: {
-                        format: '%.2f'
+                        format: '#.###'
                     },
                     hAxis: {
                         title: 'Time',
@@ -824,7 +920,7 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
                             pointShape: 'diamond'
                         }
                     },
-                    width: 450,
+                    width: 480,
                     height: 300,
                     'chartArea': {'width': '80%', 'height': '90%'}
                 };
@@ -875,6 +971,21 @@ angular.module("templates/common-toolbar/toolbar.html", []).run(["$templateCache
     "                <input type=\"text\" disabled class=\"property-name\" ng-model=\"name\" />\n" +
     "                <input type=\"text\" class=\"property-value\" placeholder=\"Value\" ng-model=\"value\" ng-change=\"override(name, value)\" />\n" +
     "            </li>\n" +
+    "            <div class='section' ng-click=\"flashcardsOpened = !flashcardsOpened\">Flashcards</div>\n" +
+    "            <ul id=\"config-bar-flashcards\" ng-cloak ng-show=\"flashcardsOpened\">\n" +
+    "                <li>\n" +
+    "                    <input type=\"text\" ng-model=\"flashcardsCategories\" placeholder=\"Categories\" />\n" +
+    "                    <input type=\"text\" ng-model=\"flashcardsContexts\" placeholder=\"Contexts\" />\n" +
+    "                    <input type=\"text\" ng-model=\"flashcardsTypes\" placeholder=\"Types\" />\n" +
+    "                </li>\n" +
+    "                <li>\n" +
+    "                    <input type=\"text\" ng-model=\"flashcardsLimit\" placeholder=\"Limit\" />\n" +
+    "                    <button ng-click=\"showFlashcardsPractice()\">Show Practice</button>\n" +
+    "                </li>\n" +
+    "                <div style=\"overflow: auto; width: 100%; height: 300px;\">\n" +
+    "                    <div id=\"flashcardsChart\"></div>\n" +
+    "                </div>\n" +
+    "            </ul>\n" +
     "            <div class='section' ng-click=\"auditOpened = !auditOpened\">Models Audit</div>\n" +
     "            <ul id=\"config-bar-audit\" ng-cloak ng-show=\"auditOpened\">\n" +
     "                <li>\n" +
@@ -888,6 +999,30 @@ angular.module("templates/common-toolbar/toolbar.html", []).run(["$templateCache
     "                    <button ng-click=\"showAuditChart()\">Show Chart</button>\n" +
     "                </li>\n" +
     "                <div id=\"auditChart\"></div>\n" +
+    "            </ul>\n" +
+    "            <div class='section' ng-click=\"openABTesting()\">AB Testing <span id=\"abExperimentName\">{{abExperiment.identifier }}</span></div>\n" +
+    "            <ul id=\"config-bar-ab\" ng-cloak ng-show=\"abTestingOpened\">\n" +
+    "                <li>\n" +
+    "                    <ul id=\"abSetupInfo\">\n" +
+    "                        <li ng-repeat=\"setup in abExperiment.setups\">\n" +
+    "                            <strong class=\"setup-id\">#{{ setup.id }}</strong>\n" +
+    "                            <ul>\n" +
+    "                                <li ng-repeat=\"value in setup.values\">\n" +
+    "                                    <span class=\"variable-name\">{{ value.variable.app_name }}.{{ value.variable.name }}</span>\n" +
+    "                                    <span class=\"variable-value\">{{ value.value }}</span>\n" +
+    "                                    <span class=\"comma\" ng-if=\"!$last\">,</a>\n" +
+    "                                </li>\n" +
+    "                            </ul>\n" +
+    "                        </li>\n" +
+    "                    </ul>\n" +
+    "                <li>\n" +
+    "                <div id=\"abChart\"></div>\n" +
+    "                <li>\n" +
+    "                    <button ng-click=\"drawABTesting()\" class=\"ab-experiment-chart-button\">All</button>\n" +
+    "                    <button ng-click=\"drawABTesting('number_of_users')\" class=\"ab-experiment-chart-button\">Users</button>\n" +
+    "                    <button ng-click=\"drawABTesting('number_of_answers_median')\" class=\"ab-experiment-chart-button\">Answers</button>\n" +
+    "                    <button ng-click=\"drawABTesting('returning_chance')\" class=\"ab-experiment-chart-button\">Returning</button>\n" +
+    "                </li>\n" +
     "            </ul>\n" +
     "            <div class='section' ng-click=\"loggingOpened = !loggingOpened\">Logging</div>\n" +
     "            <ul id=\"config-bar-logging\" ng-cloak ng-show=\"loggingOpened\">\n" +
@@ -903,5 +1038,5 @@ angular.module("templates/common-toolbar/toolbar.html", []).run(["$templateCache
     "</div>\n" +
     "");
 }]);
-!angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">#config-bar-show-button{position:fixed;right:-40px;top:250px;width:100px;transform:rotate(-90deg);-webkit-transform:rotate(-90deg);border:solid #808080 1px;margin:0;padding:10px;text-transform:capitalize;font-weight:bold;background-color:rgba(255,255,255,0.8);transition:all 0.2s;cursor:pointer;text-align:center;z-index:1000;}#config-bar-show-button:hover{background-color:#1f8dd6;color:white;}#config-bar{position:fixed;right:0;top:0;bottom:0;width:500px;border-left:solid #808080 1px;background-color:rgba(255,255,255,0.8);z-index:1000;}#config-bar-header{background-color:rgba(31,141,214,0.8);margin:0;padding:10px 20px;text-align:right;color:white;}#config-bar-content .section{background-color:rgba(31,141,214,0.8);margin:0;margin-top:5px;padding:10px 20px;color:white;text-transform:uppercase;cursor:pointer;}#config-bar-hide{text-align:right;width:100%;cursor:pointer;}#config-bar-content{margin:0;list-style:none;padding:0;}#config-bar-content > li{border-bottom:1px dashed #E9F4FB;padding:10px 20px;margin:0;}#config-bar-content > li:hover{background:#E9F4FB;}#config-bar-content .reset,#config-bar-content .add-to-override{cursor:pointer;font-weight:bolder;}#config-bar-content input{padding:5px 10px;}#config-bar-content label{margin-left:10px;cursor:pointer;}#config-bar-content .link{text-transform:uppercase;cursor:pointer;font-weight:bold;}#config-bar-logging{list-style:none;margin:0;padding:0;max-height:500px;overflow-y:scroll;font-size:12px;}#config-bar-logging > li{margin:0;padding:5px 10px;border-bottom:1px solid #E9F4FB;}#config-bar-logging > li:hover{background-color:#E9F4FB;}#config-bar-logging .level{display:block;float:left;width:10%;font-weight:bold;}#config-bar-logging .url{font-weight:bold;margin-left:10px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:50%;float:left;}#config-bar-logging .filename{display:block;float:right;text-align:right;width:30%;font-weight:bold;}#config-bar-logging .message{display:block;clear:both;margin-top:20px;margin-bottom:5px;}#config-bar-content input{font-size:14px;}#config-bar-content .property-name{width:70%;}#config-bar-content .property-value{width:10%;text-align:center;}#config-bar-property-name{width:70%;}#config-bar-audit{padding-left:5px;}#config-bar-audit li{list-style:none;margin-bottom:5px;}#config-bar-audit input{width:27%;}#config-bar-audit button{width:27%;}#auditChart{margin:10px auto;width:450px;}</style>');
+!angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">#config-bar-show-button{position:fixed;right:-40px;top:250px;width:100px;transform:rotate(-90deg);-webkit-transform:rotate(-90deg);border:solid #808080 1px;margin:0;padding:10px;text-transform:capitalize;font-weight:bold;background-color:rgba(255,255,255,0.8);transition:all 0.2s;cursor:pointer;text-align:center;z-index:1000;}#config-bar-show-button:hover{background-color:#1f8dd6;color:white;}#config-bar{position:fixed;right:0;top:0;bottom:0;width:500px;border-left:solid #808080 1px;background-color:rgba(255,255,255,0.8);z-index:1000;}#config-bar-header{background-color:rgba(31,141,214,0.8);margin:0;padding:5px 10px;text-align:right;color:white;}#config-bar-content .section{background-color:rgba(31,141,214,0.8);margin:0;margin-top:5px;padding:5px 10px;color:white;text-transform:uppercase;cursor:pointer;}#config-bar-hide{text-align:right;width:100%;cursor:pointer;}#config-bar-content{margin:0;list-style:none;padding:0;}#config-bar-content > li{border-bottom:1px dashed #E9F4FB;padding:5px 10px;margin:0;}#config-bar-content > li:hover{background:#E9F4FB;}#config-bar-content .reset,#config-bar-content .add-to-override{cursor:pointer;font-weight:bolder;}#config-bar-content input{padding:5px 10px;}#config-bar-content label{margin-left:10px;cursor:pointer;}#config-bar-content .link{text-transform:uppercase;cursor:pointer;font-weight:bold;}#config-bar-logging{list-style:none;margin:0;padding:0;max-height:500px;overflow-y:scroll;font-size:12px;}#config-bar-logging > li{margin:0;padding:5px 10px;border-bottom:1px solid #E9F4FB;}#config-bar-logging > li:hover{background-color:#E9F4FB;}#config-bar-logging .level{display:block;float:left;width:10%;font-weight:bold;}#config-bar-logging .url{font-weight:bold;margin-left:10px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:50%;float:left;}#config-bar-logging .filename{display:block;float:right;text-align:right;width:30%;font-weight:bold;}#config-bar-logging .message{display:block;clear:both;margin-top:20px;margin-bottom:5px;}#config-bar-content .property-name{width:70%;}#config-bar-content .property-value{width:10%;text-align:center;}#config-bar-property-name{width:70%;}#config-bar-audit,#config-bar-ab,#config-bar-flashcards{padding-left:5px;}#config-bar-audit li,#config-bar-ab li,#config-bar-flashcards li{padding-left:0;margin-left:0;list-style:none;margin-bottom:5px;}#config-bar-ab ul{padding-left:0;margin-left:0;}.ab-experiment-chart-button{margin-left:10px;width:20%;}#config-bar-audit input,#config-bar-flashcards input{width:27%;}#config-bar-audit button,#config-bar-flashcards button{width:27%;}#auditChart{margin:10px auto;width:480px;}#abChart{margin:0 auto;width:480px;}#flashcardsChart{margin:0 auto;width:100%;height:1000px;}#abExperimentName{margin-left:20px;font-weight:bold;}#abSetupInfo > li > ul,#abSetupInfo > li > ul > li{display:inline;}</style>');
 !angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">.rating .btn{margin:20px;}</style>');
