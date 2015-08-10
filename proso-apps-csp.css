@@ -204,6 +204,13 @@
     background-color: #cc0000;
     color: white;
 }
+#flashcardsAnswers td.direction-t2d {
+    background-color: #ff9900;
+    color: white;
+}
+#flashcardsAnswers td.direction-d2t {
+    background-color: #ffff00;
+}
 
 .rating .btn {
     margin: 20px;
