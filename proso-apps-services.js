@@ -1,6 +1,6 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-08-07
+ * Version: 1.0.0 - 2015-08-10
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user", "proso.apps.common-toolbar"])
@@ -813,6 +813,7 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
     };
 
     $scope.showFlashcardsPractice = function() {
+        $scope.flashcardsAnswers = [];
         var params = {
             limit: $scope.flashcardsLimit
         };
@@ -833,6 +834,13 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
         }
         $http.get('/flashcards/practice_image', {params: params}).success(function(response) {
             document.getElementById("flashcardsChart").innerHTML = response;
+        });
+    };
+
+    $scope.showFlashcardsAnswers = function() {
+        document.getElementById("flashcardsChart").innerHTML = '';
+        $http.get('/flashcards/answers').success(function(response) {
+            $scope.flashcardsAnswers = response.data;
         });
     };
 
@@ -917,7 +925,7 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
                         format: '#.###'
                     },
                     hAxis: {
-                        title: 'Time',
+                        title: 'Update',
                         position: 'center'
                     },
                     width: 480,
@@ -930,6 +938,44 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
                 formatter.format(data, 1);
                 var chart = new google.visualization.LineChart(document.getElementById('auditChart'));
                 chart.draw(data, options);
+            });
+    };
+
+    $scope.recommendUser = function() {
+        var filter = {};
+        if ($scope.recommendationRegisterMin) {
+            filter.register_min = $scope.recommendationRegisterMin;
+        }
+        if ($scope.recommendationRegisterMax) {
+            filter.register_max = $scope.recommendationRegisterMax;
+        }
+        if ($scope.recommendationAnswersMin) {
+            filter.number_of_answers_min = $scope.recommendationAnswersMin;
+        }
+        if ($scope.recommendationAnswersMax) {
+            filter.number_of_answers_max = $scope.recommendationAnswersMax;
+        }
+        if ($scope.recommendationSuccessMin) {
+            filter.success_min = $scope.recommendationSuccessMin;
+        }
+        if ($scope.recommendationSuccessMax) {
+            filter.success_max = $scope.recommendationSuccessMax;
+        }
+        if ($scope.recommendationVariableName) {
+            filter.variable_name = $scope.recommendationVariableName;
+        }
+        if ($scope.recommendationVariableMin) {
+            filter.variable_min = $scope.recommendationVariableMin;
+        }
+        if ($scope.recommendationVariableMax) {
+            filter.variable_max = $scope.recommendationVariableMax;
+        }
+        $scope.recommendationOutput = '';
+        $http.get('/models/recommend_users', {params: filter})
+            .success(function (response) {
+                if (response.data.length > 0) {
+                    $scope.recommendationOutput = response.data[0];
+                }
             });
     };
 
@@ -1005,8 +1051,29 @@ angular.module("templates/common-toolbar/toolbar.html", []).run(["$templateCache
     "                <li>\n" +
     "                    <input type=\"text\" ng-model=\"flashcardsLimit\" placeholder=\"Limit\" />\n" +
     "                    <button ng-click=\"showFlashcardsPractice()\">Show Practice</button>\n" +
+    "                    <button ng-click=\"showFlashcardsAnswers()\">Show Answers</button>\n" +
     "                </li>\n" +
     "                <div style=\"overflow: auto; width: 100%; height: 300px;\">\n" +
+    "                    <table ng-show=\"flashcardsAnswers.length > 0\" id=\"flashcardsAnswers\">\n" +
+    "                        <thead>\n" +
+    "                            <tr>\n" +
+    "                                <th>#</th>\n" +
+    "                                <th>User</th>\n" +
+    "                                <th>Asked</th>\n" +
+    "                                <th>Answered</th>\n" +
+    "                                <th>Response</th>\n" +
+    "                            </tr>\n" +
+    "                        </thead>\n" +
+    "                        <tbody>\n" +
+    "                            <tr ng-repeat=\"answer in flashcardsAnswers\">\n" +
+    "                                <td><a href=\"/flashcards/answer/{{ answer.id }}?html\" title=\"{{answer.time | date:'yyyy-MM-dd_HH:mm:ss'}}\">{{ answer.id }}</a></td>\n" +
+    "                                <td>{{ answer.user_id }}</td>\n" +
+    "                                <td>{{ answer.flashcard_asked.identifier }}</td>\n" +
+    "                                <td ng-class=\"{true: 'correct', false: 'wrong'}[answer.item_asked_id == answer.item_answered_id]\">{{ answer.flashcard_answered.identifier }}</td>\n" +
+    "                                <td>{{ answer.response_time }}</td>\n" +
+    "                            </tr>\n" +
+    "                        </tbody>\n" +
+    "                    </table>\n" +
     "                    <div id=\"flashcardsChart\"></div>\n" +
     "                </div>\n" +
     "            </ul>\n" +
@@ -1024,6 +1091,33 @@ angular.module("templates/common-toolbar/toolbar.html", []).run(["$templateCache
     "                </li>\n" +
     "                <div id=\"auditChart\"></div>\n" +
     "            </ul>\n" +
+    "            <div class='section' ng-click=\"recommendationOpened = !recommendationOpened\">Recommend User</div>\n" +
+    "            <ul id=\"config-bar-recommendation\" ng-cloak ng-show=\"recommendationOpened\">\n" +
+    "                <li>\n" +
+    "                    <input type=\"text\" placeholder=\"Register Time\" disabled/>\n" +
+    "                    <input type=\"text\" placeholder=\"Min\" ng-model=\"recommendationRegisterMin\" />\n" +
+    "                    <input type=\"text\" placeholder=\"Max\" ng-model=\"recommendationRegisterMax\" />\n" +
+    "                </li>\n" +
+    "                <li>\n" +
+    "                    <input type=\"text\" placeholder=\"Number of Answers\" disabled/>\n" +
+    "                    <input type=\"text\" placeholder=\"Min\" ng-model=\"recommendationAnswersMin\" />\n" +
+    "                    <input type=\"text\" placeholder=\"Max\" ng-model=\"recommendationAnswersMax\" />\n" +
+    "                </li>\n" +
+    "                <li>\n" +
+    "                    <input type=\"text\" placeholder=\"Success\" disabled/>\n" +
+    "                    <input type=\"text\" placeholder=\"Min\" ng-model=\"recommendationSuccessMin\" />\n" +
+    "                    <input type=\"text\" placeholder=\"Max\" ng-model=\"recommendationSuccessMax\" />\n" +
+    "                </li>\n" +
+    "                <li>\n" +
+    "                    <input type=\"text\" placeholder=\"Variable Name\" ng-model=\"recommendationVariableName\" />\n" +
+    "                    <input type=\"text\" placeholder=\"Min\" ng-model=\"recommendationVariableMin\" />\n" +
+    "                    <input type=\"text\" placeholder=\"Max\" ng-model=\"recommendationVariableMax\" />\n" +
+    "                </li>\n" +
+    "                <li>\n" +
+    "                    <input type=\"text\" ng-model=\"recommendationOutput\" disabled />\n" +
+    "                    <button ng-click=\"recommendUser()\">Recommend</button>\n" +
+    "                </li>\n" +
+    "            </ul>\n" +
     "            <div class='section' ng-click=\"loggingOpened = !loggingOpened\">Logging</div>\n" +
     "            <ul id=\"config-bar-logging\" ng-cloak ng-show=\"loggingOpened\">\n" +
     "                <li ng-repeat=\"event in debugLog|limitTo:100\" class=\"logging-event\">\n" +
@@ -1038,5 +1132,5 @@ angular.module("templates/common-toolbar/toolbar.html", []).run(["$templateCache
     "</div>\n" +
     "");
 }]);
-!angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">#config-bar-show-button{position:fixed;right:-40px;top:250px;width:100px;transform:rotate(-90deg);-webkit-transform:rotate(-90deg);border:solid #808080 1px;margin:0;padding:10px;text-transform:capitalize;font-weight:bold;background-color:rgba(255,255,255,0.8);transition:all 0.2s;cursor:pointer;text-align:center;z-index:1000;}#config-bar-show-button:hover{background-color:#1f8dd6;color:white;}#config-bar{position:fixed;right:0;top:0;bottom:0;width:500px;border-left:solid #808080 1px;background-color:rgba(255,255,255,0.8);z-index:1000;}#config-bar-header{background-color:rgba(31,141,214,0.8);margin:0;padding:5px 10px;text-align:right;color:white;}#config-bar-content .section{background-color:rgba(31,141,214,0.8);margin:0;margin-top:5px;padding:5px 10px;color:white;text-transform:uppercase;cursor:pointer;}#config-bar-hide{text-align:right;width:100%;cursor:pointer;}#config-bar-content{margin:0;list-style:none;padding:0;}#config-bar-content > li{border-bottom:1px dashed #E9F4FB;padding:5px 10px;margin:0;}#config-bar-content > li:hover{background:#E9F4FB;}#config-bar-content .reset,#config-bar-content .add-to-override{cursor:pointer;font-weight:bolder;}#config-bar-content input{padding:5px 10px;}#config-bar-content label{margin-left:10px;cursor:pointer;}#config-bar-content .link{text-transform:uppercase;cursor:pointer;font-weight:bold;}#config-bar-logging{list-style:none;margin:0;padding:0;max-height:500px;overflow-y:scroll;font-size:12px;}#config-bar-logging > li{margin:0;padding:5px 10px;border-bottom:1px solid #E9F4FB;}#config-bar-logging > li:hover{background-color:#E9F4FB;}#config-bar-logging .level{display:block;float:left;width:10%;font-weight:bold;}#config-bar-logging .url{font-weight:bold;margin-left:10px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:50%;float:left;}#config-bar-logging .filename{display:block;float:right;text-align:right;width:30%;font-weight:bold;}#config-bar-logging .message{display:block;clear:both;margin-top:20px;margin-bottom:5px;}#config-bar-content .property-name{width:70%;}#config-bar-content .property-value{width:10%;text-align:center;}#config-bar-property-name{width:70%;}#config-bar-audit,#config-bar-ab,#config-bar-flashcards{padding-left:5px;}#config-bar-audit li,#config-bar-ab li,#config-bar-flashcards li{padding-left:0;margin-left:0;list-style:none;margin-bottom:5px;}#config-bar-ab ul{padding-left:0;margin-left:0;}.ab-experiment-chart-button{margin-left:10px;width:20%;}#config-bar-audit input,#config-bar-flashcards input{width:27%;}#config-bar-audit button,#config-bar-flashcards button{width:27%;}#auditChart{margin:10px auto;width:480px;}#abChart{margin:0 auto;width:480px;}#flashcardsChart{margin:0 auto;width:100%;height:1000px;}#abExperimentName{margin-left:20px;font-weight:bold;}#abSetupInfo > li > ul,#abSetupInfo > li > ul > li{display:inline;}</style>');
+!angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">#config-bar-show-button{position:fixed;right:-40px;top:250px;width:100px;transform:rotate(-90deg);-webkit-transform:rotate(-90deg);border:solid #808080 1px;margin:0;padding:10px;text-transform:capitalize;font-weight:bold;background-color:rgba(255,255,255,0.8);transition:all 0.2s;cursor:pointer;text-align:center;z-index:1000;}#config-bar-show-button:hover{background-color:#1f8dd6;color:white;}#config-bar{position:fixed;right:0;top:0;bottom:0;width:500px;border-left:solid #808080 1px;background-color:rgba(255,255,255,0.8);z-index:1000;}#config-bar-header{background-color:rgba(31,141,214,0.8);margin:0;padding:5px 10px;text-align:right;color:white;}#config-bar-content .section{background-color:rgba(31,141,214,0.8);margin:0;margin-top:5px;padding:5px 10px;color:white;text-transform:uppercase;cursor:pointer;}#config-bar-hide{text-align:right;width:100%;cursor:pointer;}#config-bar-content{margin:0;list-style:none;padding:0;}#config-bar-content > li{border-bottom:1px dashed #E9F4FB;padding:5px 10px;margin:0;}#config-bar-content > li:hover{background:#E9F4FB;}#config-bar-content .reset,#config-bar-content .add-to-override{cursor:pointer;font-weight:bolder;}#config-bar-content input{padding:5px 10px;}#config-bar-content label{margin-left:10px;cursor:pointer;}#config-bar-content .link{text-transform:uppercase;cursor:pointer;font-weight:bold;}#config-bar-logging{list-style:none;margin:0;padding:0;max-height:500px;overflow-y:scroll;font-size:12px;}#config-bar-logging > li{margin:0;padding:5px 10px;border-bottom:1px solid #E9F4FB;}#config-bar-logging > li:hover{background-color:#E9F4FB;}#config-bar-logging .level{display:block;float:left;width:10%;font-weight:bold;}#config-bar-logging .url{font-weight:bold;margin-left:10px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:50%;float:left;}#config-bar-logging .filename{display:block;float:right;text-align:right;width:30%;font-weight:bold;}#config-bar-logging .message{display:block;clear:both;margin-top:20px;margin-bottom:5px;}#config-bar-content .property-name{width:70%;}#config-bar-content .property-value{width:10%;text-align:center;}#config-bar-property-name{width:70%;}#config-bar-audit,#config-bar-ab,#config-bar-flashcards,#config-bar-recommendation{padding-left:5px;}#config-bar-audit li,#config-bar-ab li,#config-bar-flashcards li,#config-bar-recommendation li{padding-left:0;margin-left:0;list-style:none;margin-bottom:5px;}#config-bar-ab ul{padding-left:0;margin-left:0;}.ab-experiment-chart-button{margin-left:10px;width:20%;}#config-bar-audit input,#config-bar-flashcards input,#config-bar-recommendation input{width:27%;}#config-bar-audit button,#config-bar-flashcards button,#config-bar-recommendation button{width:27%;}#auditChart{margin:10px auto;width:480px;}#abChart{margin:0 auto;width:480px;}#flashcardsChart{margin:0 auto;width:100%;height:1000px;}#abExperimentName{margin-left:20px;font-weight:bold;}#abSetupInfo > li > ul,#abSetupInfo > li > ul > li{display:inline;}#flashcardsAnswers{width:100%;}#flashcardsAnswers thead{color:#fff;background-color:rgba(31,141,214,0.8);}#flashcardsAnswers th,#flashcardsAnswers td{text-align:center;}#flashcardsAnswers tbody tr:nth-child(even){background-color:#E9F4FB;}#flashcardsAnswers tbody tr:nth-child(odd){background-color:#fff;}#flashcardsAnswers td.correct{background-color:#009933;color:white;}#flashcardsAnswers td.wrong{background-color:#cc0000;color:white;}</style>');
 !angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">.rating .btn{margin:20px;}</style>');
