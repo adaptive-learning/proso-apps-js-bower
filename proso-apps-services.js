@@ -1,6 +1,6 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-08-10
+ * Version: 1.0.0 - 2015-08-11
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user", "proso.apps.common-toolbar"])
@@ -239,6 +239,7 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
 
         self.setFilter({});
         current = 0;
+        currentFC = null;
         self.flushAnswerQueue();
         self.clearQueue();
         deferredFC = null;
@@ -269,7 +270,7 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
     };
 
     // add answer to queue and upload queued answers if necessary
-    self.saveAnswer = function(answer, farceSave){
+    self.saveAnswer = function(answer, forceSave){
         if (answer) {
             answer.time = Date.now();
             answerQueue.push(answer);
@@ -280,7 +281,7 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
             }
         }
 
-        if (config.save_answer_immediately || farceSave || current >= config.set_length) {
+        if (config.save_answer_immediately || forceSave || current >= config.set_length) {
             if (answerQueue.length > 0) {
                 answerQueue.forEach(function(answer){
                     answer.time_gap = Math.round((Date.now() - answer.time) / 1000);
