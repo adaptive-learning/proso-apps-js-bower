@@ -1200,16 +1200,19 @@ m.controller('LoginController', ['$scope', '$modalInstance', 'signupModal', 'use
             category: 'signup',
             label: '/signup/email',
         });
-        userService.signupParams(
-            $scope.credentials.username,
-            $scope.credentials.email,
-            $scope.credentials.password,
-            $scope.credentials.password_check,
-            $scope.credentials.first_name,
-            $scope.credentials.last_name
-        ).success(function() {
-            $modalInstance.close();
-        });
+        userService
+            .signupParams(
+                $scope.credentials.username,
+                $scope.credentials.email,
+                $scope.credentials.password,
+                $scope.credentials.password_check,
+                $scope.credentials.first_name,
+                $scope.credentials.last_name
+            )
+            .error($scope.onError)
+            .success(function() {
+                $modalInstance.close();
+            });
     };
 
     $scope.onError = function(error) {
@@ -1219,7 +1222,7 @@ m.controller('LoginController', ['$scope', '$modalInstance', 'signupModal', 'use
         });
         $scope.alerts.push({
             type: error.type || 'danger',
-            msg: error.msg || gettextCatalog.getString('Something wrong has happened.')
+            msg: error.error || gettextCatalog.getString('Something wrong has happened.')
         });
     };
 
