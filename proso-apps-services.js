@@ -1,6 +1,6 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-08-11
+ * Version: 1.0.0 - 2015-08-13
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user", "proso.apps.common-toolbar"])
@@ -565,8 +565,8 @@ m.service("userService", ["$http", function($http){
     self.signup = function(data){
         self.status.loading = true;
         _resetError();
-        return $http.post("/user/signup/", data)
-            .success(function(response){
+        var promise = $http.post("/user/signup/", data);
+        promise.success(function(response){
                 _processUser(response.data);
             })
             .error(function(response){
@@ -575,6 +575,7 @@ m.service("userService", ["$http", function($http){
             .finally(function(response){
                 self.status.loading = false;
             });
+        return promise;
     };
 
     self.signupParams = function(name, email, pass, pass2, firstName, lastName){
