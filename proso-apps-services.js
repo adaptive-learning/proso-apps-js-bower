@@ -1,6 +1,6 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-08-13
+ * Version: 1.0.0 - 2015-08-14
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user", "proso.apps.common-toolbar"])
@@ -624,7 +624,7 @@ m.service("userService", ["$http", function($http){
             self.status.logged = false;
             return;
         }
-        self.status.logged = true;
+        self.status.logged = data.user && data.user.email !== undefined;
         self.user.profile = data;
         angular.extend(self.user, data.user);
         angular.extend(update, {
