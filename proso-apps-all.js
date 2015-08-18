@@ -268,7 +268,7 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
     $scope.openABTesting = function() {
         $scope.abTestingOpened = ! $scope.abTestingOpened;
         if ($scope.abTestingOpened && !$scope.abExperiment) {
-            $http.get('/configab/experiments', {params: {filter_column: 'is_enabled', filter_value: true, stats: true, learning_curve_length: 2}})
+            $http.get('/configab/experiments', {params: {filter_column: 'is_enabled', filter_value: true, stats: true, learning_curve_length: 5}})
                 .success(function(response) {
                     var data = response.data;
                     if (data.length === 0) {
