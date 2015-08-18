@@ -1069,7 +1069,7 @@ angular.module("templates/common-toolbar/toolbar.html", []).run(["$templateCache
     "                <span ng-click=\"removeOverridden('user'); overridden.user = null;\" class=\"reset\">X</span>\n" +
     "                <input type=\"number\" ng-model=\"overridden.user\" placeholder=\"User\" ng-change=\"override('user', overridden.user)\" />\n" +
     "            </li>\n" +
-    "            <li>\n" +
+    "            <li style=\"display: none\">\n" +
     "                <span ng-click=\"removeOverridden('time'); overridden.time= null;\" class=\"reset\">X</span>\n" +
     "                <input type=\"text\" ng-model=\"overridden.time\" placeholder=\"Time\" ng-change=\"override('time', overridden.time)\" />\n" +
     "                <i>{{date | date:'yyyy-MM-dd_HH:mm:ss'}}</i>\n" +
@@ -1087,8 +1087,10 @@ angular.module("templates/common-toolbar/toolbar.html", []).run(["$templateCache
     "                            <strong class=\"setup-id\">#{{ setup.id }}</strong>\n" +
     "                            <ul>\n" +
     "                                <li ng-repeat=\"value in setup.values\">\n" +
-    "                                    <span class=\"variable-name\">{{ value.variable.app_name }}.{{ value.variable.name }}</span>\n" +
-    "                                    <span class=\"variable-value\">{{ value.value }}</span>\n" +
+    "                                    <span class=\"variable-name\" title=\"{{ value.variable.app_name }}.{{ value.variable.name }} \">\n" +
+    "                                        {{ value.variable.name | limitTo: 12 }}{{ value.variable.name.length > 12 ? '...' : '' }}\n" +
+    "                                    </span>\n" +
+    "                                    <span class=\"variable-value\" title=\"{{ value.value }}\">{{ value.value | limitTo: 12 }} {{ value.value.length > 12 ? '...' : '' }}</span>\n" +
     "                                    <span class=\"comma\" ng-if=\"!$last\">,</a>\n" +
     "                                </li>\n" +
     "                            </ul>\n" +
@@ -1137,8 +1139,10 @@ angular.module("templates/common-toolbar/toolbar.html", []).run(["$templateCache
     "                                </td>\n" +
     "                                <td>{{ answer.user_id }}</td>\n" +
     "                                <td>{{ answer.item_asked_id }}</td>\n" +
-    "                                <td>{{ answer.flashcard_asked.identifier | limitTo:12 }}</td>\n" +
-    "                                <td ng-class=\"{true: 'correct', false: 'wrong'}[answer.item_asked_id == answer.item_answered_id]\">{{ answer.flashcard_answered.identifier | limitTo:12 }}</td>\n" +
+    "                                <td>{{ answer.flashcard_asked.identifier | limitTo:12 }} {{ answer.flashcard_answered.identifier.length > 12 ? '...' : '' }}</td>\n" +
+    "                                <td ng-class=\"{true: 'correct', false: 'wrong'}[answer.item_asked_id == answer.item_answered_id]\">\n" +
+    "                                    {{ answer.flashcard_answered.identifier | limitTo:12 }}{{ answer.flashcard_answered.identifier.length > 12 ? '...' : '' }}\n" +
+    "                                </td>\n" +
     "                                <td class=\"direction-{{ answer.direction }}\">{{ answer.options.length }}</td>\n" +
     "                            </tr>\n" +
     "                        </tbody>\n" +
