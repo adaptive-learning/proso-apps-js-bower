@@ -1349,9 +1349,9 @@ angular.module("templates/common-toolbar/toolbar.html", []).run(["$templateCache
     "                            <ul>\n" +
     "                                <li ng-repeat=\"value in setup.values\">\n" +
     "                                    <span class=\"variable-name\" title=\"{{ value.variable.app_name }}.{{ value.variable.name }} \">\n" +
-    "                                        {{ value.variable.name | limitTo: 12 }}{{ value.variable.name.length > 12 ? '...' : '' }}\n" +
+    "                                        {{ value.variable.name.split('.').slice(-1)[0] | limitTo: 12 }}{{ value.variable.name.split('.').slice(-1)[0].length > 12 ? '...' : '' }}\n" +
     "                                    </span>\n" +
-    "                                    <span class=\"variable-value\" title=\"{{ value.value }}\">{{ value.value | limitTo: 12 }} {{ value.value.length > 12 ? '...' : '' }}</span>\n" +
+    "                                    <span class=\"variable-value\" title=\"{{ value.value }}\">{{ value.value.split('.').slice(-1)[0] | limitTo: 12 }} {{ value.value.split('.').slice(-1)[0].length > 12 ? '...' : '' }}</span>\n" +
     "                                    <span class=\"comma\" ng-if=\"!$last\">,</a>\n" +
     "                                </li>\n" +
     "                            </ul>\n" +
