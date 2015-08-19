@@ -1,6 +1,6 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-08-18
+ * Version: 1.0.0 - 2015-08-19
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user","proso.apps.user-login"]);
@@ -381,9 +381,13 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
         chart.draw(view, options);
     };
 
-    $scope.drawABTestingLearning = function() {
+    $scope.drawABTestingLearning = function(all_users) {
         if (!$scope.abExperiment) {
             return;
+        }
+        var learning_curve_accessor = 'learning_curve';
+        if (all_users) {
+            learning_curve_accessor = 'learning_curve_all_users';
         }
         var data = new google.visualization.DataTable();
         data.addColumn({type: 'number', role: 'domain'});
@@ -392,20 +396,19 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
             data.addColumn('number', 'Setup #' + setup.id);
             data.addColumn({type: 'number', role: 'interval'});
             data.addColumn({type: 'number', role: 'interval'});
-            length = Math.max(setup.stats.learning_curve.success.length);
+            length = Math.max(setup.stats[learning_curve_accessor].success.length);
         });
         var rows = [];
         for (var i = 0; i < length; i++) {
             var row = [i];
             /*jshint -W083 */
             $scope.abExperiment.setups.forEach(function(setup) {
-                row.push(setup.stats.learning_curve.success[i].value);
-                row.push(setup.stats.learning_curve.success[i].confidence_interval.min);
-                row.push(setup.stats.learning_curve.success[i].confidence_interval.max);
+                row.push(setup.stats[learning_curve_accessor].success[i].value);
+                row.push(setup.stats[learning_curve_accessor].success[i].confidence_interval.min);
+                row.push(setup.stats[learning_curve_accessor].success[i].confidence_interval.max);
             });
             rows.push(row);
         }
-        console.log(rows);
         data.addRows(rows);
         var chart = new google.visualization.LineChart(document.getElementById("abChart"));
         var options = {
@@ -1384,7 +1387,8 @@ angular.module("templates/common-toolbar/toolbar.html", []).run(["$templateCache
     "                    <button ng-click=\"drawABTestingBar('number_of_users')\" class=\"ab-experiment-chart-button\">Users</button>\n" +
     "                    <button ng-click=\"drawABTestingBar('number_of_answers')\" class=\"ab-experiment-chart-button\">Answers</button>\n" +
     "                    <button ng-click=\"drawABTestingBar('returning_chance')\" class=\"ab-experiment-chart-button\">Return</button>\n" +
-    "                    <button ng-click=\"drawABTestingLearning()\" class=\"ab-experiment-chart-button\">Learn</button>\n" +
+    "                    <button ng-click=\"drawABTestingLearning(false)\" class=\"ab-experiment-chart-button\" title=\"Learning curve containing only users with at least the given number of testing answers\">Learn</button>\n" +
+    "                    <button ng-click=\"drawABTestingLearning(true)\" class=\"ab-experiment-chart-button\" title=\"Learning curve containing all users with at least one testing answer\">Learn (all)</button>\n" +
     "                </li>\n" +
     "            </ul>\n" +
     "            <div class='section' ng-click=\"flashcardsOpened = !flashcardsOpened\">Flashcards</div>\n" +
@@ -1667,5 +1671,5 @@ angular.module("templates/user-login/signup-modal.html", []).run(["$templateCach
     "\n" +
     "");
 }]);
-!angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">#config-bar-show-button{position:fixed;right:-40px;top:250px;width:100px;transform:rotate(-90deg);-webkit-transform:rotate(-90deg);border:solid #808080 1px;margin:0;padding:10px;text-transform:capitalize;font-weight:bold;background-color:rgba(255,255,255,0.8);transition:all 0.2s;cursor:pointer;text-align:center;z-index:1000;}#config-bar-show-button:hover{background-color:#1f8dd6;color:white;}#config-bar{position:fixed;right:0;top:0;bottom:0;width:500px;border-left:solid #808080 1px;background-color:rgba(255,255,255,0.8);z-index:1000;}#config-bar.maximized{width:100%;}#config-bar-header{background-color:rgba(31,141,214,0.8);margin:0;padding:5px 10px;text-align:right;color:white;}#config-bar-content .section{background-color:rgba(31,141,214,0.8);margin:5px 0;padding:5px 10px;color:white;text-transform:uppercase;cursor:pointer;}#config-bar-maximize{text-align:right;cursor:pointer;margin-right:20px;}#config-bar-hide{text-align:right;width:100%;cursor:pointer;}#config-bar-content{margin:0;list-style:none;padding:0;}#config-bar-content > li{border-bottom:1px dashed #E9F4FB;padding:5px 10px;margin:0;}#config-bar-content > li:hover{background:#E9F4FB;}#config-bar-content .reset,#config-bar-content .add-to-override{cursor:pointer;font-weight:bolder;}#config-bar-content input{padding:5px 10px;}#config-bar-content label{margin-left:10px;cursor:pointer;}#config-bar-content .link{text-transform:uppercase;cursor:pointer;font-weight:bold;}#config-bar-logging{list-style:none;margin:0;padding:0;max-height:500px;overflow-y:scroll;font-size:12px;}#config-bar-logging > li{margin:0;padding:5px 10px;border-bottom:1px solid #E9F4FB;}#config-bar-logging > li:hover{background-color:#E9F4FB;}#config-bar-logging .level{display:block;float:left;width:10%;font-weight:bold;}#config-bar-logging .url{font-weight:bold;margin-left:10px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:50%;float:left;}#config-bar-logging .filename{display:block;float:right;text-align:right;width:30%;font-weight:bold;}#config-bar-logging .message{display:block;clear:both;margin-top:20px;margin-bottom:5px;}#config-bar-content .property-name{width:70%;}#config-bar-content .property-value{width:10%;text-align:center;}#config-bar-property-name{width:70%;}#config-bar-audit,#config-bar-ab,#config-bar-flashcards,#config-bar-recommendation{padding-left:5px;}#config-bar-audit li,#config-bar-ab li,#config-bar-flashcards li,#config-bar-recommendation li{padding-left:0;margin-left:0;list-style:none;margin-bottom:5px;}#config-bar-ab ul{padding-left:0;margin-left:0;}.ab-experiment-chart-button{margin-left:5px;width:15%;}#config-bar-audit input,#config-bar-flashcards input,#config-bar-recommendation input{width:27%;}#config-bar-audit button,#config-bar-flashcards button,#config-bar-recommendation button{width:27%;}#auditChart{margin:10px auto;width:480px;}#abChart{margin:0 auto;width:480px;}#flashcardsChart{margin:0 auto;width:100%;height:1000px;}#abExperimentName{margin-left:20px;font-weight:bold;}#abSetupInfo > li > ul,#abSetupInfo > li > ul > li{display:inline;}#flashcardsAnswers{width:100%;}#flashcardsAnswers thead{color:#fff;background-color:rgba(31,141,214,0.8);}#flashcardsAnswers th,#flashcardsAnswers td{text-align:center;}#flashcardsAnswers tbody tr:nth-child(even){background-color:#E9F4FB;}#flashcardsAnswers tbody tr:nth-child(odd){background-color:#fff;}#flashcardsAnswers td.correct{background-color:#009933;color:white;}#flashcardsAnswers td.wrong{background-color:#cc0000;color:white;}#flashcardsAnswers td.direction-t2d{background-color:#ff9900;color:white;}#flashcardsAnswers td.direction-d2t{background-color:#ffff00;}</style>');
+!angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">#config-bar-show-button{position:fixed;right:-40px;top:250px;width:100px;transform:rotate(-90deg);-webkit-transform:rotate(-90deg);border:solid #808080 1px;margin:0;padding:10px;text-transform:capitalize;font-weight:bold;background-color:rgba(255,255,255,0.8);transition:all 0.2s;cursor:pointer;text-align:center;z-index:1000;}#config-bar-show-button:hover{background-color:#1f8dd6;color:white;}#config-bar{position:fixed;right:0;top:0;bottom:0;width:500px;border-left:solid #808080 1px;background-color:rgba(255,255,255,0.8);z-index:1000;}#config-bar.maximized{width:100%;}#config-bar-header{background-color:rgba(31,141,214,0.8);margin:0;padding:5px 10px;text-align:right;color:white;}#config-bar-content .section{background-color:rgba(31,141,214,0.8);margin:5px 0;padding:5px 10px;color:white;text-transform:uppercase;cursor:pointer;}#config-bar-maximize{text-align:right;cursor:pointer;margin-right:20px;}#config-bar-hide{text-align:right;width:100%;cursor:pointer;}#config-bar-content{margin:0;list-style:none;padding:0;}#config-bar-content > li{border-bottom:1px dashed #E9F4FB;padding:5px 10px;margin:0;}#config-bar-content > li:hover{background:#E9F4FB;}#config-bar-content .reset,#config-bar-content .add-to-override{cursor:pointer;font-weight:bolder;}#config-bar-content input{padding:5px 10px;}#config-bar-content label{margin-left:10px;cursor:pointer;}#config-bar-content .link{text-transform:uppercase;cursor:pointer;font-weight:bold;}#config-bar-logging{list-style:none;margin:0;padding:0;max-height:500px;overflow-y:scroll;font-size:12px;}#config-bar-logging > li{margin:0;padding:5px 10px;border-bottom:1px solid #E9F4FB;}#config-bar-logging > li:hover{background-color:#E9F4FB;}#config-bar-logging .level{display:block;float:left;width:10%;font-weight:bold;}#config-bar-logging .url{font-weight:bold;margin-left:10px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:50%;float:left;}#config-bar-logging .filename{display:block;float:right;text-align:right;width:30%;font-weight:bold;}#config-bar-logging .message{display:block;clear:both;margin-top:20px;margin-bottom:5px;}#config-bar-content .property-name{width:70%;}#config-bar-content .property-value{width:10%;text-align:center;}#config-bar-property-name{width:70%;}#config-bar-audit,#config-bar-ab,#config-bar-flashcards,#config-bar-recommendation{padding-left:5px;}#config-bar-audit li,#config-bar-ab li,#config-bar-flashcards li,#config-bar-recommendation li{padding-left:0;margin-left:0;list-style:none;margin-bottom:5px;}#config-bar-ab ul{padding-left:0;margin-left:0;}.ab-experiment-chart-button{font-size:13px;width:15%;}#config-bar-audit input,#config-bar-flashcards input,#config-bar-recommendation input{width:27%;}#config-bar-audit button,#config-bar-flashcards button,#config-bar-recommendation button{width:27%;}#auditChart{margin:10px auto;width:480px;}#abChart{margin:0 auto;width:480px;}#flashcardsChart{margin:0 auto;width:100%;height:1000px;}#abExperimentName{margin-left:20px;font-weight:bold;}#abSetupInfo > li > ul,#abSetupInfo > li > ul > li{display:inline;}#flashcardsAnswers{width:100%;}#flashcardsAnswers thead{color:#fff;background-color:rgba(31,141,214,0.8);}#flashcardsAnswers th,#flashcardsAnswers td{text-align:center;}#flashcardsAnswers tbody tr:nth-child(even){background-color:#E9F4FB;}#flashcardsAnswers tbody tr:nth-child(odd){background-color:#fff;}#flashcardsAnswers td.correct{background-color:#009933;color:white;}#flashcardsAnswers td.wrong{background-color:#cc0000;color:white;}#flashcardsAnswers td.direction-t2d{background-color:#ff9900;color:white;}#flashcardsAnswers td.direction-d2t{background-color:#ffff00;}</style>');
 !angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">.rating .btn{margin:20px;}</style>');
