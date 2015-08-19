@@ -1388,7 +1388,7 @@ angular.module("templates/common-toolbar/toolbar.html", []).run(["$templateCache
     "                    <button ng-click=\"drawABTestingBar('number_of_answers')\" class=\"ab-experiment-chart-button\">Answers</button>\n" +
     "                    <button ng-click=\"drawABTestingBar('returning_chance')\" class=\"ab-experiment-chart-button\">Return</button>\n" +
     "                    <button ng-click=\"drawABTestingLearning(false)\" class=\"ab-experiment-chart-button\" title=\"Learning curve containing only users with at least the given number of testing answers\">Learn</button>\n" +
-    "                    <button ng-click=\"drawABTestingLearning(true)\" class=\"ab-experiment-chart-button\" title=\"Learning curve containing all users with at least one testing answer\">Learn (all)</button>\n" +
+    "                    <button ng-click=\"drawABTestingLearning(true)\" class=\"ab-experiment-chart-button\" title=\"Learning curve containing all users with at least one testing answer\">Learn (A)</button>\n" +
     "                </li>\n" +
     "            </ul>\n" +
     "            <div class='section' ng-click=\"flashcardsOpened = !flashcardsOpened\">Flashcards</div>\n" +
