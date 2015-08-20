@@ -1585,11 +1585,11 @@ angular.module("templates/user-login/login-modal.html", []).run(["$templateCache
     "    <form role=\"form\" ng-submit=\"loginEmail()\">\n" +
     "        <div class=\"form-group\">\n" +
     "            <input type=\"text\" class=\"form-control\" ng-model=\"credentials.username\"\n" +
-    "            placeholder=\"{{ 'Username' | translate }}\">\n" +
+    "            name=\"username\" placeholder=\"{{ 'Username' | translate }}\">\n" +
     "        </div>\n" +
     "        <div class=\"form-group\">\n" +
     "            <input type=\"password\" class=\"form-control\" ng-model=\"credentials.password\"\n" +
-    "            placeholder=\"{{ 'Password' | translate }}\">\n" +
+    "            name=\"password\" placeholder=\"{{ 'Password' | translate }}\">\n" +
     "        </div>\n" +
     "        <alert ng-repeat=\"alert in alerts\" type=\"{{alert.type}}\"\n" +
     "            close=\"closeAlert($index)\">{{alert.msg}}</alert>\n" +
@@ -1648,11 +1648,11 @@ angular.module("templates/user-login/signup-modal.html", []).run(["$templateCach
     "        </div>\n" +
     "        <div class=\"form-group\">\n" +
     "            <input type=\"text\" class=\"form-control\" ng-model=\"credentials.username\"\n" +
-    "                placeholder=\"{{ 'Username' | translate }}\" required>\n" +
+    "                name=\"username\" placeholder=\"{{ 'Username' | translate }}\" required>\n" +
     "        </div>\n" +
     "        <div class=\"form-group\">\n" +
     "            <input type=\"password\" class=\"form-control\" ng-model=\"credentials.password\"\n" +
-    "                placeholder=\"{{ 'Password' | translate }}\" required>\n" +
+    "                name=\"password\" placeholder=\"{{ 'Password' | translate }}\" required>\n" +
     "        </div>\n" +
     "        <div class=\"form-group\">\n" +
     "            <input type=\"password\" class=\"form-control\"\n" +
