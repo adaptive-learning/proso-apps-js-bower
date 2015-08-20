@@ -1,6 +1,6 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-08-19
+ * Version: 1.0.0 - 2015-08-20
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user","proso.apps.user-login"]);
@@ -553,6 +553,9 @@ m.directive('feedbackComment', ['$modal', '$window', 'gettextCatalog', function 
             $scope.openFeedback = function () {
                 if (attrs.email) {
                     $scope.feedback.email = attrs.email;
+                }
+                if (attrs.text) {
+                    $scope.feedback.text = attrs.text;
                 }
 
                 $modal.open({
