@@ -1,6 +1,6 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-08-19
+ * Version: 1.0.0 - 2015-09-04
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user","proso.apps.user-login"]);
@@ -553,6 +553,9 @@ m.directive('feedbackComment', ['$modal', '$window', 'gettextCatalog', function 
             $scope.openFeedback = function () {
                 if (attrs.email) {
                     $scope.feedback.email = attrs.email;
+                }
+                if (attrs.text) {
+                    $scope.feedback.text = attrs.text;
                 }
 
                 $modal.open({
@@ -1524,7 +1527,7 @@ angular.module("templates/feedback-rating/rating.html", []).run(["$templateCache
   $templateCache.put("templates/feedback-rating/rating.html",
     "<div class=\"modal-header text-center\">\n" +
     "    <h3 class=\"modal-title\">{{ \"How difficult are the questions?\" | translate }}</h3>\n" +
-    "    {{ \"Your answer helps us adjust difficulty of questions.\" | trans}}\n" +
+    "    {{ \"Your answer helps us adjust difficulty of questions.\" | translate }}\n" +
     "</div>\n" +
     "<div class=\"rating modal-body\">\n" +
     "    <div class=\" text-center\" ng-hide=\"answer\">\n" +
@@ -1582,11 +1585,11 @@ angular.module("templates/user-login/login-modal.html", []).run(["$templateCache
     "    <form role=\"form\" ng-submit=\"loginEmail()\">\n" +
     "        <div class=\"form-group\">\n" +
     "            <input type=\"text\" class=\"form-control\" ng-model=\"credentials.username\"\n" +
-    "            placeholder=\"{{ 'Username' | translate }}\">\n" +
+    "            name=\"username\" placeholder=\"{{ 'Username' | translate }}\">\n" +
     "        </div>\n" +
     "        <div class=\"form-group\">\n" +
     "            <input type=\"password\" class=\"form-control\" ng-model=\"credentials.password\"\n" +
-    "            placeholder=\"{{ 'Password' | translate }}\">\n" +
+    "            name=\"password\" placeholder=\"{{ 'Password' | translate }}\">\n" +
     "        </div>\n" +
     "        <alert ng-repeat=\"alert in alerts\" type=\"{{alert.type}}\"\n" +
     "            close=\"closeAlert($index)\">{{alert.msg}}</alert>\n" +
@@ -1645,11 +1648,11 @@ angular.module("templates/user-login/signup-modal.html", []).run(["$templateCach
     "        </div>\n" +
     "        <div class=\"form-group\">\n" +
     "            <input type=\"text\" class=\"form-control\" ng-model=\"credentials.username\"\n" +
-    "                placeholder=\"{{ 'Username' | translate }}\" required>\n" +
+    "                name=\"username\" placeholder=\"{{ 'Username' | translate }}\" required>\n" +
     "        </div>\n" +
     "        <div class=\"form-group\">\n" +
     "            <input type=\"password\" class=\"form-control\" ng-model=\"credentials.password\"\n" +
-    "                placeholder=\"{{ 'Password' | translate }}\" required>\n" +
+    "                name=\"password\" placeholder=\"{{ 'Password' | translate }}\" required>\n" +
     "        </div>\n" +
     "        <div class=\"form-group\">\n" +
     "            <input type=\"password\" class=\"form-control\"\n" +
