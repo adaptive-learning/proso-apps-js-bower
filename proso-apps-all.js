@@ -1,6 +1,6 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-08-20
+ * Version: 1.0.0 - 2015-08-19
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user","proso.apps.user-login"]);
@@ -553,9 +553,6 @@ m.directive('feedbackComment', ['$modal', '$window', 'gettextCatalog', function 
             $scope.openFeedback = function () {
                 if (attrs.email) {
                     $scope.feedback.email = attrs.email;
-                }
-                if (attrs.text) {
-                    $scope.feedback.text = attrs.text;
                 }
 
                 $modal.open({
@@ -1585,11 +1582,11 @@ angular.module("templates/user-login/login-modal.html", []).run(["$templateCache
     "    <form role=\"form\" ng-submit=\"loginEmail()\">\n" +
     "        <div class=\"form-group\">\n" +
     "            <input type=\"text\" class=\"form-control\" ng-model=\"credentials.username\"\n" +
-    "            name=\"username\" placeholder=\"{{ 'Username' | translate }}\">\n" +
+    "            placeholder=\"{{ 'Username' | translate }}\">\n" +
     "        </div>\n" +
     "        <div class=\"form-group\">\n" +
     "            <input type=\"password\" class=\"form-control\" ng-model=\"credentials.password\"\n" +
-    "            name=\"password\" placeholder=\"{{ 'Password' | translate }}\">\n" +
+    "            placeholder=\"{{ 'Password' | translate }}\">\n" +
     "        </div>\n" +
     "        <alert ng-repeat=\"alert in alerts\" type=\"{{alert.type}}\"\n" +
     "            close=\"closeAlert($index)\">{{alert.msg}}</alert>\n" +
@@ -1648,11 +1645,11 @@ angular.module("templates/user-login/signup-modal.html", []).run(["$templateCach
     "        </div>\n" +
     "        <div class=\"form-group\">\n" +
     "            <input type=\"text\" class=\"form-control\" ng-model=\"credentials.username\"\n" +
-    "                name=\"username\" placeholder=\"{{ 'Username' | translate }}\" required>\n" +
+    "                placeholder=\"{{ 'Username' | translate }}\" required>\n" +
     "        </div>\n" +
     "        <div class=\"form-group\">\n" +
     "            <input type=\"password\" class=\"form-control\" ng-model=\"credentials.password\"\n" +
-    "                name=\"password\" placeholder=\"{{ 'Password' | translate }}\" required>\n" +
+    "                placeholder=\"{{ 'Password' | translate }}\" required>\n" +
     "        </div>\n" +
     "        <div class=\"form-group\">\n" +
     "            <input type=\"password\" class=\"form-control\"\n" +
