@@ -1,6 +1,6 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-09-04
+ * Version: 1.0.0 - 2015-09-24
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user","proso.apps.user-login"]);
@@ -695,6 +695,7 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
 
     // called on create and set reset
     self.initSet = function(configName){
+        self.flushAnswerQueue();
         var key = "practice." + configName + ".";
         config.set_length = configService.getConfig("proso_flashcards", key + "set_length", 10);
         config.fc_queue_size_max = configService.getConfig("proso_flashcards", key + "fc_queue_size_max", 1);
@@ -705,7 +706,6 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
         self.setFilter({});
         current = 0;
         currentFC = null;
-        self.flushAnswerQueue();
         self.clearQueue();
         deferredFC = null;
         setId++;
