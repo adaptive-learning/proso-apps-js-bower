@@ -1,6 +1,6 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-09-24
+ * Version: 1.0.0 - 2015-10-04
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user", "proso.apps.common-toolbar"])
@@ -228,6 +228,8 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
 
     var contexts = {};
 
+    var loadingFlashcards = false;
+
     // called on create and set reset
     self.initSet = function(configName){
         self.flushAnswerQueue();
@@ -380,6 +382,10 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
 
 
     var _loadFlashcards = function(){
+        if (loadingFlashcards){
+            return;                             // loading request is already running
+        }
+
         if (queue.length >= config.fc_queue_size_min) { return; }                                       // if there are some FC queued
             config.filter.limit  = config.fc_queue_size_max - queue.length;
         if (deferredFC && !promiseResolvedTmp) { config.filter.limit ++; }                  // if we promised one flashcard
@@ -400,8 +406,10 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
             answerQueue = [];
         }
         var request_in_set = setId;
+        loadingFlashcards = true;
         request
             .success(function(response){
+                loadingFlashcards = false;
                 if (request_in_set !== setId) {
                     return;
                 }
@@ -415,12 +423,12 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
                 }
             })
             .error(function (response) {
+                loadingFlashcards = false;
                 if (deferredFC !== null){
                     deferredFC.reject("Something went wrong while loading flashcards from backend.");
                 }
                 console.error("Something went wrong while loading flashcards from backend.");
             });
-
     };
 
     var _loadContexts = function(){
