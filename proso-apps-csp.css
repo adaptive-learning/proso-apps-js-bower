@@ -32,21 +32,28 @@
     background-color: rgba(255, 255, 255, 0.8);
     z-index: 1000;
 }
+#config-bar.maximized {
+    width: 100%;
+}
 #config-bar-header {
     background-color: rgba(31, 141, 214, 0.8);
     margin: 0;
-    padding: 10px 20px;
+    padding: 5px 10px;
     text-align: right;
     color: white;
 }
 #config-bar-content .section {
     background-color: rgba(31, 141, 214, 0.8);
-    margin: 0;
-    margin-top: 5px;
-    padding: 10px 20px;
+    margin: 5px 0;
+    padding: 5px 10px;
     color: white;
     text-transform: uppercase;
     cursor: pointer;
+}
+#config-bar-maximize {
+    text-align: right;
+    cursor: pointer;
+    margin-right: 20px;
 }
 #config-bar-hide {
     text-align: right;
@@ -60,7 +67,7 @@
 }
 #config-bar-content > li {
     border-bottom: 1px dashed #E9F4FB;
-    padding: 10px 20px;
+    padding: 5px 10px;
     margin: 0;
 }
 #config-bar-content > li:hover {
@@ -127,9 +134,6 @@
     margin-top: 20px;
     margin-bottom: 5px;
 }
-#config-bar-content input {
-    font-size: 14px;
-}
 #config-bar-content .property-name {
     width: 70%;
 }
@@ -140,22 +144,79 @@
 #config-bar-property-name {
     width: 70%;
 }
-#config-bar-audit {
+#config-bar-audit, #config-bar-ab, #config-bar-flashcards, #config-bar-recommendation {
     padding-left: 5px;
 }
-#config-bar-audit li {
+#config-bar-audit li, #config-bar-ab li, #config-bar-flashcards li, #config-bar-recommendation li {
+    padding-left: 0;
+    margin-left: 0;
     list-style: none;
     margin-bottom: 5px;
 }
-#config-bar-audit input {
+#config-bar-ab ul {
+    padding-left: 0;
+    margin-left: 0;
+}
+.ab-experiment-chart-button {
+    font-size: 13px;
+    width: 15%;
+}
+#config-bar-audit input, #config-bar-flashcards input, #config-bar-recommendation input {
     width: 27%;
 }
-#config-bar-audit button {
+#config-bar-audit button, #config-bar-flashcards button, #config-bar-recommendation button {
     width: 27%;
 }
 #auditChart {
     margin: 10px auto;
-    width: 450px;
+    width: 480px;
+}
+#abChart {
+    margin: 0 auto;
+    width: 480px;
+}
+#flashcardsChart {
+    margin: 0 auto;
+    width: 100%;
+    height: 1000px;
+}
+#abExperimentName {
+    margin-left: 20px;
+    font-weight: bold;
+}
+#abSetupInfo > li > ul, #abSetupInfo > li > ul > li {
+    display: inline;
+}
+#flashcardsAnswers {
+    width: 100%;
+}
+#flashcardsAnswers thead {
+    color: #fff;
+    background-color: rgba(31, 141, 214, 0.8);
+}
+#flashcardsAnswers th, #flashcardsAnswers td {
+    text-align: center;
+}
+#flashcardsAnswers tbody tr:nth-child(even) {
+    background-color: #E9F4FB;
+}
+#flashcardsAnswers tbody tr:nth-child(odd) {
+    background-color: #fff;
+}
+#flashcardsAnswers td.correct {
+    background-color: #009933;
+    color: white;
+}
+#flashcardsAnswers td.wrong {
+    background-color: #cc0000;
+    color: white;
+}
+#flashcardsAnswers td.direction-t2d {
+    background-color: #ff9900;
+    color: white;
+}
+#flashcardsAnswers td.direction-d2t {
+    background-color: #ffff00;
 }
 
 .rating .btn {

@@ -1,6 +1,6 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-08-04
+ * Version: 1.0.0 - 2015-10-05
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user","proso.apps.user-login"]);
@@ -14,9 +14,10 @@ angular.module("proso.apps.gettext", [])
 }]);
 angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
 /* jshint -W100 */
-    gettextCatalog.setStrings('cs', {"Appropriate":"Tak akorát","Close":"Zavřít","Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.":"Narazili jste na chybu v aplikaci? Máte nápad na vylepšení? Nebo jakýkoliv jiný postřeh či komentář? Zajímá nás všechno, co nám chcete sdělit.","Don't know / Don't want to rate":"Nevím / Nechci hodnotit","E-mail":"E-mail","How difficult are the questions?":"Jak těžké se vám zdají otázky?","Password":"Heslo","Password again":"Heslo znovu","Registration was successful. You can continue to use the application.":"Registrace proběhla úspěšně. Můžete pokračovat v používání aplikace.","Send":"Odeslat","Sign In":"Přihlásit se","Sign Up":"Zaregistrovat se","Something wrong has happened.":"V aplikaci nastala chyba.","Thank you for the message. User feedback is very important for us.":"Děkujeme Vám za zaslané informace. Feedback od uživatelů je k nezaplacení.","Thank you for your rating.":"Děkujeme za vaše hodnocení.","Too difficult":"Příliš těžké","Too easy":"Příliš lehké","Username":"Uživatelské jméno","Write to us":"Napište nám","Your e-mail address (optional)":"Váš e-mail (nepovinné)","and get all the benefits of registered users.":"a získejte všechny výhody registrovaných uživatelů.","via E-mail":"přes E-mail","via Facebook":"přes Facebook","via Google":"přes Google"});
+    gettextCatalog.setStrings('cs', {"Appropriate":"Tak akorát","Close":"Zavřít","Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.":"Narazili jste na chybu v aplikaci? Máte nápad na vylepšení? Nebo jakýkoliv jiný postřeh či komentář? Zajímá nás všechno, co nám chcete sdělit.","Don't know / Don't want to rate":"Nevím / Nechci hodnotit","E-mail":"E-mail","How difficult are the questions?":"Jak těžké se vám zdají otázky?","Password":"Heslo","Password again":"Heslo znovu","Registration was successful. You can continue to use the application.":"Registrace proběhla úspěšně. Můžete pokračovat v používání aplikace.","Send":"Odeslat","Sign In":"Přihlásit se","Sign Up":"Zaregistrovat se","Something wrong has happened.":"V aplikaci nastala chyba.","Thank you for the message. User feedback is very important for us.":"Děkujeme Vám za zaslané informace. Feedback od uživatelů je k nezaplacení.","Thank you for your rating.":"Děkujeme za vaše hodnocení.","Too difficult":"Příliš těžké","Too easy":"Příliš lehké","Username":"Uživatelské jméno","Write to us":"Napište nám","Your answer helps us adjust difficulty of questions.":"Svou odpovědí nám pomáháte přizpůsobovat obtížnost otázek.","Your e-mail address (optional)":"Váš e-mail (nepovinné)","and get all the benefits of registered users.":"a získejte všechny výhody registrovaných uživatelů.","via E-mail":"přes E-mail","via Facebook":"přes Facebook","via Google":"přes Google"});
+    gettextCatalog.setStrings('de', {"Appropriate":"genau richtig","Close":"Schließen","Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.":"Haben Sie einen Fehler in der App gefunden? Haben Sie eine Idee, wie man diese App besser machen könnte? Oder einen anderen Tipp oder Kommentar? Wir interessieren uns für alles, was Sie uns mitteilen wollen.","Don't know / Don't want to rate":"ich weiß nicht/ ich will nicht antworten","E-mail":"E-Mail","How difficult are the questions?":"Wie schwierig sind die gestellten Fragen?","Password":"Passwort","Password again":"Passwort wiederholen","Registration was successful. You can continue to use the application.":"Die Registrierung wurde erfolgreich durgeführt. Sie können fortfahren, um die App zu nutzen.","Send":"Senden","Sign In":"Anmelden","Sign Up":"Registrieren","Something wrong has happened.":"Leider ist ein Fehler aufgetreten","Thank you for the message. User feedback is very important for us.":"Vielen Dank für Ihre gesendeten Informationen. Feedback der Benutzer ist für uns unbezahlbar.","Thank you for your rating.":"Vielen Dank für Ihre Einschätzung.","Too difficult":"zu schwierig","Too easy":"zu einfach","Username":"Benutzername","Write to us":"Schreiben Sie uns","Your answer helps us adjust difficulty of questions.":"Mit ihrer Antwort helfen sie uns die Schwierigkeit der Fragen anzupassen","Your e-mail address (optional)":"Ihre E-Mail-Adresse","and get all the benefits of registered users.":"und genießen Sie alle Vorteile der registrierten Benutzer.","via E-mail":"per E-Mail","via Facebook":"via Facebook","via Google":"via Google"});
     gettextCatalog.setStrings('en', {"Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.":"Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.","Don't know / Don't want to rate":"Don't know / Don't want to rate","E-mail":"E-mail","How difficult are the questions?":"How difficult are the questions?","Password":"Password","Password again":"Password again","Registration was successful. You can continue to use the application.":"Registration was successful. You can continue to use the application.","Send":"Send","Sign In":"Sign In","Sign Up":"Sign Up","Something wrong has happened.":"Something wrong has happened.","Thank you for the message. User feedback is very important for us.":"Thank you for the message. User feedback is very important for us.","Thank you for your rating.":"Thank you for your rating.","Too difficult":"Too difficult","Too easy":"Too easy","Username":"Username","Write to us":"Write to us","Your e-mail address (optional)":"Your e-mail address (optional)","and get all the benefits of registered users.":"and get all the benefits of registered users.","via E-mail":"via E-mail","via Facebook":"via Facebook","via Google":"via Google"});
-    gettextCatalog.setStrings('es', {"Appropriate":"Adecuado","Close":"Cerrar","Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.":"¿Encontraste algún error en el programa? ¿Tienes alguna sugerencia sobre como podemos mejorar? ¿Quieres compartir tu opinión con nosotros? Nos gustaría escuchar lo que tengas que decir.","Don't know / Don't want to rate":"No sé/No quiero calificar","E-mail":"E-mail","How difficult are the questions?":"¿Qué tan difíciles son estas preguntas?","Password":"Contraseña","Password again":"Contraseña de nuevo","Registration was successful. You can continue to use the application.":"Registro exitoso. Puedes continuar usando la aplicación.","Send":"Enviar","Sign In":"Iniciar sesión","Sign Up":"Registrarse","Something wrong has happened.":"Algo malo ha ocurrido.","Thank you for the message. User feedback is very important for us.":"Gracias por tu mensaje. Tu opinión es muy importante para nosotros.","Thank you for your rating.":"Gracias por calificarnos.","Too difficult":"Muy dificil","Too easy":"Muy facil","Username":"Nombre de usuario","Write to us":"Sugerencias","Your e-mail address (optional)":"Tu e-mail (opcional)","and get all the benefits of registered users.":"y accede a todos los benecifios de un usuario registrado.","via E-mail":"con E-mail","via Facebook":"con Facebook","via Google":"con Google"});
+    gettextCatalog.setStrings('es', {"Appropriate":"Adecuado","Close":"Cerrar","Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.":"¿Encontraste algún error en el programa? ¿Tienes alguna sugerencia sobre como podemos mejorar? ¿Quieres compartir tu opinión con nosotros? Nos gustaría escuchar lo que tengas que decir.","Don't know / Don't want to rate":"No sé/No quiero calificar","E-mail":"E-mail","How difficult are the questions?":"¿Qué tan difíciles son estas preguntas?","Password":"Contraseña","Password again":"Contraseña de nuevo","Registration was successful. You can continue to use the application.":"Registro exitoso. Puedes continuar usando la aplicación.","Send":"Enviar","Sign In":"Iniciar sesión","Sign Up":"Registrarse","Something wrong has happened.":"Algo malo ha ocurrido.","Thank you for the message. User feedback is very important for us.":"Gracias por tu mensaje. Tu opinión es muy importante para nosotros.","Thank you for your rating.":"Gracias por calificarnos.","Too difficult":"Muy dificil","Too easy":"Muy facil","Username":"Nombre de usuario","Write to us":"Sugerencias","Your answer helps us adjust difficulty of questions.":"Tu respuesta ayuda a ajustar la dificultad de las preguntas.","Your e-mail address (optional)":"Tu e-mail (opcional)","and get all the benefits of registered users.":"y accede a todos los benecifios de un usuario registrado.","via E-mail":"con E-mail","via Facebook":"con Facebook","via Google":"con Google"});
 /* jshint +W100 */
 }]);
 var configServiceLoaded;
@@ -226,7 +227,10 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
     $scope.date = new Date();
     $scope.debugLog = [];
     $scope.opened = $cookies["toolbar:opened"] === "true";
+    $scope.maximized = $cookies["toolbar:maximized"] === "true";
     $scope.loggingOpened = true;
+    $scope.abTestingOpened = false;
+    $scope.flashcardsLimit = 10;
     $scope.override('debug', true);
     $scope.overridden = configService.getOverridden();
     loggingService.addDebugLogListener(function(events) {
@@ -239,6 +243,10 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
 
     $scope.$watch("opened", function(n, o){
         $cookies["toolbar:opened"] = n;
+    });
+
+    $scope.$watch("maximized", function(n, o){
+        $cookies["toolbar:maximized"] = n;
     });
 
     $scope.addToOverride = function(name) {
@@ -258,6 +266,178 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
         return overridden;
     };
 
+    $scope.openABTesting = function() {
+        $scope.abTestingOpened = ! $scope.abTestingOpened;
+        if ($scope.abTestingOpened && !$scope.abExperiment) {
+            $http.get('/configab/experiments', {params: {filter_column: 'is_enabled', filter_value: true, stats: true, learning_curve_length: 5}})
+                .success(function(response) {
+                    var data = response.data;
+                    if (data.length === 0) {
+                        return;
+                    }
+                    $scope.abExperiment = data[0];
+                    $scope.abExperiment.setups.forEach(function(setup) {
+                        setup.values.forEach(function(value) {
+                            $scope.abExperiment.variables.forEach(function(variable) {
+                                if (variable.id = value.variable_id) {
+                                    value.variable = variable;
+                                }
+                            });
+                        });
+                    });
+                    $scope.drawABTestingBar();
+                });
+        }
+        $scope.drawABTestingBar();
+    };
+
+    $scope.showFlashcardsPractice = function() {
+        $scope.flashcardsAnswers = [];
+        var params = {
+            limit: $scope.flashcardsLimit
+        };
+        if ($scope.flashcardsCategories) {
+            params.categories = JSON.stringify(
+                $scope.flashcardsCategories.split(',').map(function(x) { return x.trim(); })
+            );
+        }
+        if ($scope.flashcardsContexts) {
+            params.contexts = JSON.stringify(
+                $scope.flashcardsContexts.split(',').map(function(x) { return x.trim(); })
+            );
+        }
+        if ($scope.flashcardsTypes) {
+            params.types = JSON.stringify(
+                $scope.flashcardsTypes.split(',').map(function(x) { return x.trim(); })
+            );
+        }
+        $http.get('/flashcards/practice_image', {params: params}).success(function(response) {
+            document.getElementById("flashcardsChart").innerHTML = response;
+        });
+    };
+
+    $scope.showFlashcardsAnswers = function() {
+        document.getElementById("flashcardsChart").innerHTML = '';
+        $http.get('/flashcards/answers', {params: {limit: $scope.flashcardsLimit}}).success(function(response) {
+            $scope.flashcardsAnswers = response.data;
+        });
+    };
+
+    $scope.drawABTestingBar = function(column) {
+        if (!$scope.abExperiment) {
+            return;
+        }
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Experiment Setup');
+        data.addColumn('number', 'Number of Answers');
+        data.addColumn({type: 'number', role: 'interval'});
+        data.addColumn({type: 'number', role: 'interval'});
+        data.addColumn('number', 'Number of Users');
+        data.addColumn('number', 'Returning Chance');
+        data.addColumn({type: 'number', role: 'interval'});
+        data.addColumn({type: 'number', role: 'interval'});
+        data.addRows($scope.abExperiment.setups.map(function(setup) {
+            return [
+                'Setup #' + setup.id,
+                setup.stats.number_of_answers.value,
+                setup.stats.number_of_answers.confidence_interval.min,
+                setup.stats.number_of_answers.confidence_interval.max,
+                setup.stats.number_of_users,
+                setup.stats.returning_chance.value,
+                setup.stats.returning_chance.confidence_interval.min,
+                setup.stats.returning_chance.confidence_interval.max,
+            ];
+        }));
+        var view = data;
+        var title = 'All';
+        if (column) {
+            var columns = {
+                number_of_answers: [0, 1, 2, 3],
+                number_of_users: [0, 4],
+                returning_chance: [0, 5, 6, 7],
+            };
+            title = column;
+            view = new google.visualization.DataView(data);
+            view.setColumns(columns[column]);
+        }
+        var chart = new google.visualization.ColumnChart(document.getElementById("abChart"));
+        var options = {
+            title: title,
+            legend: {
+                position: 'none'
+            },
+            vAxis: {
+                format: '#.###'
+            },
+            width: 480,
+            height: 300,
+            intervals: {
+                styel: 'bars',
+                pointSize: 10,
+                barWidth: 0,
+                lineWidth: 4,
+            },
+            chartArea: {'width': '80%', 'height': '80%'}
+        };
+        chart.draw(view, options);
+    };
+
+    $scope.drawABTestingLearning = function(all_users) {
+        if (!$scope.abExperiment) {
+            return;
+        }
+        var learning_curve_accessor = 'learning_curve';
+        if (all_users) {
+            learning_curve_accessor = 'learning_curve_all_users';
+        }
+        var data = new google.visualization.DataTable();
+        data.addColumn({type: 'number', role: 'domain'});
+        var length = 0;
+        $scope.abExperiment.setups.forEach(function(setup) {
+            data.addColumn('number', 'Setup #' + setup.id);
+            data.addColumn({type: 'number', role: 'interval'});
+            data.addColumn({type: 'number', role: 'interval'});
+            length = Math.max(setup.stats[learning_curve_accessor].success.length);
+        });
+        var rows = [];
+        for (var i = 0; i < length; i++) {
+            var row = [i];
+            /*jshint -W083 */
+            $scope.abExperiment.setups.forEach(function(setup) {
+                row.push(setup.stats[learning_curve_accessor].success[i].value);
+                row.push(setup.stats[learning_curve_accessor].success[i].confidence_interval.min);
+                row.push(setup.stats[learning_curve_accessor].success[i].confidence_interval.max);
+            });
+            rows.push(row);
+        }
+        data.addRows(rows);
+        var chart = new google.visualization.LineChart(document.getElementById("abChart"));
+        var options = {
+            title: 'Learning',
+            legend: {
+                position: 'none'
+            },
+            vAxis: {
+                format: '#.###'
+            },
+            hAxis: {
+                title: 'Attempt',
+                position: 'center'
+            },
+            intervals: {
+                style: 'area',
+                fillOpacity: 0.2
+            },
+            lineWidth: 4,
+            pointSize: 10,
+            curveType: 'function',
+            width: 480,
+            height: 300,
+            'chartArea': {'width': '80%', 'height': '80%'}
+        };
+        chart.draw(data, options);
+    };
+
     $scope.showAuditChart = function() {
         var params = {};
         if ($scope.auditLimit) {
@@ -265,6 +445,12 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
         }
         if ($scope.auditUser) {
             params['user'] = $scope.auditUser;
+        }
+        if ($scope.auditPrimary) {
+            params['item'] = $scope.auditPrimary;
+        }
+        if ($scope.auditSecondary) {
+            params['item_secondary'] = $scope.auditSecondary;
         }
         $http.get("/models/audit/" + $scope.auditKey, {params: params})
             .success(function(response) {
@@ -288,18 +474,12 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
                         format: '#.###'
                     },
                     hAxis: {
-                        title: 'Time',
+                        title: 'Update',
                         position: 'center'
                     },
-                    pointSize: 10,
-                    series: {
-                        0: {
-                            pointShape: 'diamond'
-                        }
-                    },
-                    width: 450,
+                    width: 480,
                     height: 300,
-                    'chartArea': {'width': '90%', 'height': '90%'}
+                    'chartArea': {'width': '80%', 'height': '80%'}
                 };
                 var formatter = new google.visualization.NumberFormat({
                     fractionDigits: 3, pattern: '#.###'
@@ -307,6 +487,46 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
                 formatter.format(data, 1);
                 var chart = new google.visualization.LineChart(document.getElementById('auditChart'));
                 chart.draw(data, options);
+            });
+    };
+
+    $scope.recommendUser = function() {
+        var filter = {};
+        if ($scope.recommendationRegisterMin) {
+            filter.register_min = $scope.recommendationRegisterMin;
+        }
+        if ($scope.recommendationRegisterMax) {
+            filter.register_max = $scope.recommendationRegisterMax;
+        }
+        if ($scope.recommendationAnswersMin) {
+            filter.number_of_answers_min = $scope.recommendationAnswersMin;
+        }
+        if ($scope.recommendationAnswersMax) {
+            filter.number_of_answers_max = $scope.recommendationAnswersMax;
+        }
+        if ($scope.recommendationSuccessMin) {
+            filter.success_min = $scope.recommendationSuccessMin;
+        }
+        if ($scope.recommendationSuccessMax) {
+            filter.success_max = $scope.recommendationSuccessMax;
+        }
+        if ($scope.recommendationVariableName) {
+            filter.variable_name = $scope.recommendationVariableName;
+        }
+        if ($scope.recommendationVariableMin) {
+            filter.variable_min = $scope.recommendationVariableMin;
+        }
+        if ($scope.recommendationVariableMax) {
+            filter.variable_max = $scope.recommendationVariableMax;
+        }
+        $scope.recommendationOutput = 'Loading...';
+        $http.get('/models/recommend_users', {params: filter})
+            .success(function (response) {
+                if (response.data.length > 0) {
+                    $scope.recommendationOutput = response.data[0];
+                } else {
+                    $scope.recommendationOutput = 'Not Found';
+                }
             });
     };
 
@@ -334,6 +554,9 @@ m.directive('feedbackComment', ['$modal', '$window', 'gettextCatalog', function 
             $scope.openFeedback = function () {
                 if (attrs.email) {
                     $scope.feedback.email = attrs.email;
+                }
+                if (attrs.text) {
+                    $scope.feedback.text = attrs.text;
                 }
 
                 $modal.open({
@@ -421,7 +644,7 @@ m.controller('RatingModalInstanceController', ['$scope', '$modalInstance', '$htt
     $scope.vote = function(answer) {
         $scope.answer = answer;
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
-        $http.post('/feedback/rating', {'value': answer}).success(function(data){
+        $http.post('/feedback/rating/', {'value': answer}).success(function(data){
             $scope.alerts.push({
                 type : 'success',
                 msg : gettextCatalog.getString('Thank you for your rating.'),
@@ -471,8 +694,11 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
 
     var contexts = {};
 
+    var loadingFlashcards = false;
+
     // called on create and set reset
     self.initSet = function(configName){
+        self.flushAnswerQueue();
         var key = "practice." + configName + ".";
         config.set_length = configService.getConfig("proso_flashcards", key + "set_length", 10);
         config.fc_queue_size_max = configService.getConfig("proso_flashcards", key + "fc_queue_size_max", 1);
@@ -482,7 +708,7 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
 
         self.setFilter({});
         current = 0;
-        self.flushAnswerQueue();
+        currentFC = null;
         self.clearQueue();
         deferredFC = null;
         setId++;
@@ -512,7 +738,7 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
     };
 
     // add answer to queue and upload queued answers if necessary
-    self.saveAnswer = function(answer, farceSave){
+    self.saveAnswer = function(answer, forceSave){
         if (answer) {
             answer.time = Date.now();
             answerQueue.push(answer);
@@ -523,14 +749,14 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
             }
         }
 
-        if (config.save_answer_immediately || farceSave || current >= config.set_length) {
+        if (config.save_answer_immediately || forceSave || current >= config.set_length) {
             if (answerQueue.length > 0) {
                 answerQueue.forEach(function(answer){
                     answer.time_gap = Math.round((Date.now() - answer.time) / 1000);
                     delete answer.time;
                 });
                 $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
-                $http.post("/flashcards/answer/", {answers: answerQueue})
+                $http.post("/flashcards/answer/", {answers: answerQueue}, {params: _getFilter(['avoid', 'limit'])})
                     .error(function (response) {
                         console.error("Problem while uploading answer", response);
                     });
@@ -556,7 +782,14 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
             direction: currentFC.direction
         };
         if (meta) {
-            answer.meta = meta;
+            answer.meta = {client_meta: meta};
+        }
+        if (currentFC.practice_meta) {
+            if (answer.meta) {
+                answer.meta = angular.extend(answer.meta, currentFC.practice_meta);
+            } else {
+                answer.meta = currentFC.practice_meta;
+            }
         }
         if (currentFC.options){
             answer.option_ids = [];
@@ -615,6 +848,10 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
 
 
     var _loadFlashcards = function(){
+        if (loadingFlashcards){
+            return;                             // loading request is already running
+        }
+
         if (queue.length >= config.fc_queue_size_min) { return; }                                       // if there are some FC queued
             config.filter.limit  = config.fc_queue_size_max - queue.length;
         if (deferredFC && !promiseResolvedTmp) { config.filter.limit ++; }                  // if we promised one flashcard
@@ -625,18 +862,7 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
             config.filter.avoid.push(fc.id);
         });
 
-        var filter = {};
-        for (var key in config.filter){
-            if (config.filter[key] instanceof Array) {
-                filter[key] = JSON.stringify(config.filter[key]);
-            }else{
-                filter[key] = config.filter[key];
-            }
-        }
-        if (config.cache_context){
-            filter.without_contexts = 1;
-        }
-
+        var filter = _getFilter();
         var request;
         if (answerQueue.length === 0) {
             request = $http.get("/flashcards/practice/", {params: filter});
@@ -646,8 +872,10 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
             answerQueue = [];
         }
         var request_in_set = setId;
+        loadingFlashcards = true;
         request
             .success(function(response){
+                loadingFlashcards = false;
                 if (request_in_set !== setId) {
                     return;
                 }
@@ -661,12 +889,12 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
                 }
             })
             .error(function (response) {
+                loadingFlashcards = false;
                 if (deferredFC !== null){
                     deferredFC.reject("Something went wrong while loading flashcards from backend.");
                 }
                 console.error("Something went wrong while loading flashcards from backend.");
             });
-
     };
 
     var _loadContexts = function(){
@@ -714,6 +942,27 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
             deferredFC.resolve(currentFC);
         }
         _loadFlashcards();
+    };
+
+    var _getFilter = function(ignore) {
+        if (!ignore) {
+            ignore = [];
+        }
+        var filter = {};
+        for (var key in config.filter){
+            if (ignore.indexOf(key) !== -1) {
+                continue;
+            }
+            if (config.filter[key] instanceof Array) {
+                filter[key] = JSON.stringify(config.filter[key]);
+            }else{
+                filter[key] = config.filter[key];
+            }
+        }
+        if (config.cache_context){
+            filter.without_contexts = 1;
+        }
+        return filter;
     };
 }]);
 
@@ -790,8 +1039,8 @@ m.service("userService", ["$http", function($http){
     self.signup = function(data){
         self.status.loading = true;
         _resetError();
-        return $http.post("/user/signup/", data)
-            .success(function(response){
+        var promise = $http.post("/user/signup/", data);
+        promise.success(function(response){
                 _processUser(response.data);
             })
             .error(function(response){
@@ -800,6 +1049,7 @@ m.service("userService", ["$http", function($http){
             .finally(function(response){
                 self.status.loading = false;
             });
+        return promise;
     };
 
     self.signupParams = function(name, email, pass, pass2, firstName, lastName){
@@ -848,7 +1098,7 @@ m.service("userService", ["$http", function($http){
             self.status.logged = false;
             return;
         }
-        self.status.logged = true;
+        self.status.logged = data.user && data.user.email !== undefined;
         self.user.profile = data;
         angular.extend(self.user, data.user);
         angular.extend(update, {
@@ -988,6 +1238,7 @@ m.controller('LoginController', ['$scope', '$modalInstance', 'signupModal', 'use
 
     $scope.credentials = {};
     $scope.alerts = [];
+    $scope.heck = 1;
 
     $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
@@ -1032,14 +1283,19 @@ m.controller('LoginController', ['$scope', '$modalInstance', 'signupModal', 'use
             category: 'signup',
             label: '/signup/email',
         });
-        userService.signupParams(
-            $scope.credentials.username,
-            $scope.credentials.email,
-            $scope.credentials.password,
-            $scope.credentials.password_check,
-            $scope.credentials.first_name,
-            $scope.credentials.last_name
-        );
+        userService
+            .signupParams(
+                $scope.credentials.username,
+                $scope.credentials.email,
+                $scope.credentials.password,
+                $scope.credentials.password_check,
+                $scope.credentials.first_name,
+                $scope.credentials.last_name
+            )
+            .error($scope.onError)
+            .success(function() {
+                $modalInstance.close();
+            });
     };
 
     $scope.onError = function(error) {
@@ -1049,7 +1305,7 @@ m.controller('LoginController', ['$scope', '$modalInstance', 'signupModal', 'use
         });
         $scope.alerts.push({
             type: error.type || 'danger',
-            msg: error.msg || gettextCatalog.getString('Something wrong has happened.')
+            msg: error.error || gettextCatalog.getString('Something wrong has happened.')
         });
     };
 
@@ -1096,8 +1352,9 @@ angular.module("templates/common-toolbar/toolbar.html", []).run(["$templateCache
     "<div id=\"proso-toolbar\">\n" +
     "    <div id=\"config-bar-show-button\" ng-click=\"opened = !opened\" ng-hide=\"opened\"> proso bar </div>\n" +
     "\n" +
-    "    <div id=\"config-bar\" ng-cloak ng-show=\"opened\">\n" +
+    "    <div id=\"config-bar\" ng-cloak ng-show=\"opened\" ng-class=\"{'maximized' : maximized}\">\n" +
     "        <div id=\"config-bar-header\">\n" +
+    "            <span id=\"config-bar-maximize\" ng-click=\"maximized = !maximized\">Maximize</span>\n" +
     "            <span id=\"config-bar-hide\" ng-click=\"opened = !opened\">Close</span>\n" +
     "        </div>\n" +
     "        <ul id=\"config-bar-content\">\n" +
@@ -1109,7 +1366,7 @@ angular.module("templates/common-toolbar/toolbar.html", []).run(["$templateCache
     "                <span ng-click=\"removeOverridden('user'); overridden.user = null;\" class=\"reset\">X</span>\n" +
     "                <input type=\"number\" ng-model=\"overridden.user\" placeholder=\"User\" ng-change=\"override('user', overridden.user)\" />\n" +
     "            </li>\n" +
-    "            <li>\n" +
+    "            <li style=\"display: none\">\n" +
     "                <span ng-click=\"removeOverridden('time'); overridden.time= null;\" class=\"reset\">X</span>\n" +
     "                <input type=\"text\" ng-model=\"overridden.time\" placeholder=\"Time\" ng-change=\"override('time', overridden.time)\" />\n" +
     "                <i>{{date | date:'yyyy-MM-dd_HH:mm:ss'}}</i>\n" +
@@ -1119,6 +1376,78 @@ angular.module("templates/common-toolbar/toolbar.html", []).run(["$templateCache
     "                <input type=\"text\" disabled class=\"property-name\" ng-model=\"name\" />\n" +
     "                <input type=\"text\" class=\"property-value\" placeholder=\"Value\" ng-model=\"value\" ng-change=\"override(name, value)\" />\n" +
     "            </li>\n" +
+    "            <div class='section' ng-click=\"openABTesting()\">AB Testing <span id=\"abExperimentName\">{{abExperiment.identifier }}</span></div>\n" +
+    "            <ul id=\"config-bar-ab\" ng-cloak ng-show=\"abTestingOpened\">\n" +
+    "                <li>\n" +
+    "                    <ul id=\"abSetupInfo\">\n" +
+    "                        <li ng-repeat=\"setup in abExperiment.setups\">\n" +
+    "                            <strong class=\"setup-id\">#{{ setup.id }}</strong>\n" +
+    "                            <ul>\n" +
+    "                                <li ng-repeat=\"value in setup.values\">\n" +
+    "                                    <span class=\"variable-name\" title=\"{{ value.variable.app_name }}.{{ value.variable.name }} \">\n" +
+    "                                        {{ value.variable.name.split('.').slice(-1)[0] | limitTo: 12 }}{{ value.variable.name.split('.').slice(-1)[0].length > 12 ? '...' : '' }}\n" +
+    "                                    </span>\n" +
+    "                                    <span class=\"variable-value\" title=\"{{ value.value }}\">{{ value.value.split('.').slice(-1)[0] | limitTo: 12 }} {{ value.value.split('.').slice(-1)[0].length > 12 ? '...' : '' }}</span>\n" +
+    "                                    <span class=\"comma\" ng-if=\"!$last\">,</a>\n" +
+    "                                </li>\n" +
+    "                            </ul>\n" +
+    "                        </li>\n" +
+    "                    </ul>\n" +
+    "                <li>\n" +
+    "                <div id=\"abChart\"></div>\n" +
+    "                <li>\n" +
+    "                    <button ng-click=\"drawABTestingBar()\" class=\"ab-experiment-chart-button\">All</button>\n" +
+    "                    <button ng-click=\"drawABTestingBar('number_of_users')\" class=\"ab-experiment-chart-button\">Users</button>\n" +
+    "                    <button ng-click=\"drawABTestingBar('number_of_answers')\" class=\"ab-experiment-chart-button\">Answers</button>\n" +
+    "                    <button ng-click=\"drawABTestingBar('returning_chance')\" class=\"ab-experiment-chart-button\">Return</button>\n" +
+    "                    <button ng-click=\"drawABTestingLearning(false)\" class=\"ab-experiment-chart-button\" title=\"Learning curve containing only users with at least the given number of testing answers\">Learn</button>\n" +
+    "                    <button ng-click=\"drawABTestingLearning(true)\" class=\"ab-experiment-chart-button\" title=\"Learning curve containing all users with at least one testing answer\">Learn (A)</button>\n" +
+    "                </li>\n" +
+    "            </ul>\n" +
+    "            <div class='section' ng-click=\"flashcardsOpened = !flashcardsOpened\">Flashcards</div>\n" +
+    "            <ul id=\"config-bar-flashcards\" ng-cloak ng-show=\"flashcardsOpened\">\n" +
+    "                <li>\n" +
+    "                    <input type=\"text\" ng-model=\"flashcardsCategories\" placeholder=\"Categories\" />\n" +
+    "                    <input type=\"text\" ng-model=\"flashcardsContexts\" placeholder=\"Contexts\" />\n" +
+    "                    <input type=\"text\" ng-model=\"flashcardsTypes\" placeholder=\"Types\" />\n" +
+    "                </li>\n" +
+    "                <li>\n" +
+    "                    <input type=\"text\" ng-model=\"flashcardsLimit\" placeholder=\"Limit\" />\n" +
+    "                    <button ng-click=\"showFlashcardsPractice()\">Show Practice</button>\n" +
+    "                    <button ng-click=\"showFlashcardsAnswers()\">Show Answers</button>\n" +
+    "                </li>\n" +
+    "                <div style=\"overflow: auto; width: 100%; height: 300px;\">\n" +
+    "                    <table ng-show=\"flashcardsAnswers.length > 0\" id=\"flashcardsAnswers\">\n" +
+    "                        <thead>\n" +
+    "                            <tr>\n" +
+    "                                <th>#</th>\n" +
+    "                                <th>User</th>\n" +
+    "                                <th>Item</th>\n" +
+    "                                <th>Asked</th>\n" +
+    "                                <th>Answered</th>\n" +
+    "                                <th>Opt.</th>\n" +
+    "                            </tr>\n" +
+    "                        </thead>\n" +
+    "                        <tbody>\n" +
+    "                            <tr ng-repeat=\"answer in flashcardsAnswers\">\n" +
+    "                                <td>\n" +
+    "                                    <a href=\"/flashcards/answer/{{ answer.id }}?html\" title=\"{{answer.time | date:'yyyy-MM-dd_HH:mm:ss'}}, direction: {{ answer.direction }}\">\n" +
+    "                                        {{ answer.id }}\n" +
+    "                                    </a>\n" +
+    "                                </td>\n" +
+    "                                <td>{{ answer.user_id }}</td>\n" +
+    "                                <td>{{ answer.item_asked_id }}</td>\n" +
+    "                                <td>{{ answer.flashcard_asked.identifier | limitTo:12 }} {{ answer.flashcard_answered.identifier.length > 12 ? '...' : '' }}</td>\n" +
+    "                                <td ng-class=\"{true: 'correct', false: 'wrong'}[answer.item_asked_id == answer.item_answered_id]\">\n" +
+    "                                    {{ answer.flashcard_answered.identifier | limitTo:12 }}{{ answer.flashcard_answered.identifier.length > 12 ? '...' : '' }}\n" +
+    "                                </td>\n" +
+    "                                <td class=\"direction-{{ answer.direction }}\">{{ answer.options.length }}</td>\n" +
+    "                            </tr>\n" +
+    "                        </tbody>\n" +
+    "                    </table>\n" +
+    "                    <div id=\"flashcardsChart\"></div>\n" +
+    "                </div>\n" +
+    "            </ul>\n" +
     "            <div class='section' ng-click=\"auditOpened = !auditOpened\">Models Audit</div>\n" +
     "            <ul id=\"config-bar-audit\" ng-cloak ng-show=\"auditOpened\">\n" +
     "                <li>\n" +
@@ -1132,6 +1461,33 @@ angular.module("templates/common-toolbar/toolbar.html", []).run(["$templateCache
     "                    <button ng-click=\"showAuditChart()\">Show Chart</button>\n" +
     "                </li>\n" +
     "                <div id=\"auditChart\"></div>\n" +
+    "            </ul>\n" +
+    "            <div class='section' ng-click=\"recommendationOpened = !recommendationOpened\">Recommend User</div>\n" +
+    "            <ul id=\"config-bar-recommendation\" ng-cloak ng-show=\"recommendationOpened\">\n" +
+    "                <li>\n" +
+    "                    <input type=\"text\" placeholder=\"Register Time\" disabled/>\n" +
+    "                    <input type=\"text\" placeholder=\"Min\" ng-model=\"recommendationRegisterMin\" />\n" +
+    "                    <input type=\"text\" placeholder=\"Max\" ng-model=\"recommendationRegisterMax\" />\n" +
+    "                </li>\n" +
+    "                <li>\n" +
+    "                    <input type=\"text\" placeholder=\"Number of Answers\" disabled/>\n" +
+    "                    <input type=\"text\" placeholder=\"Min\" ng-model=\"recommendationAnswersMin\" />\n" +
+    "                    <input type=\"text\" placeholder=\"Max\" ng-model=\"recommendationAnswersMax\" />\n" +
+    "                </li>\n" +
+    "                <li>\n" +
+    "                    <input type=\"text\" placeholder=\"Success\" disabled/>\n" +
+    "                    <input type=\"text\" placeholder=\"Min\" ng-model=\"recommendationSuccessMin\" />\n" +
+    "                    <input type=\"text\" placeholder=\"Max\" ng-model=\"recommendationSuccessMax\" />\n" +
+    "                </li>\n" +
+    "                <li>\n" +
+    "                    <input type=\"text\" placeholder=\"Variable Name\" ng-model=\"recommendationVariableName\" />\n" +
+    "                    <input type=\"text\" placeholder=\"Min\" ng-model=\"recommendationVariableMin\" />\n" +
+    "                    <input type=\"text\" placeholder=\"Max\" ng-model=\"recommendationVariableMax\" />\n" +
+    "                </li>\n" +
+    "                <li>\n" +
+    "                    <input type=\"text\" ng-model=\"recommendationOutput\" disabled />\n" +
+    "                    <button ng-click=\"recommendUser()\">Recommend</button>\n" +
+    "                </li>\n" +
     "            </ul>\n" +
     "            <div class='section' ng-click=\"loggingOpened = !loggingOpened\">Logging</div>\n" +
     "            <ul id=\"config-bar-logging\" ng-cloak ng-show=\"loggingOpened\">\n" +
@@ -1181,7 +1537,7 @@ angular.module("templates/feedback-rating/rating.html", []).run(["$templateCache
   $templateCache.put("templates/feedback-rating/rating.html",
     "<div class=\"modal-header text-center\">\n" +
     "    <h3 class=\"modal-title\">{{ \"How difficult are the questions?\" | translate }}</h3>\n" +
-    "    {{ \"Your answer helps us adjust difficulty of questions.\" | trans}}\n" +
+    "    {{ \"Your answer helps us adjust difficulty of questions.\" | translate }}\n" +
     "</div>\n" +
     "<div class=\"rating modal-body\">\n" +
     "    <div class=\" text-center\" ng-hide=\"answer\">\n" +
@@ -1239,11 +1595,11 @@ angular.module("templates/user-login/login-modal.html", []).run(["$templateCache
     "    <form role=\"form\" ng-submit=\"loginEmail()\">\n" +
     "        <div class=\"form-group\">\n" +
     "            <input type=\"text\" class=\"form-control\" ng-model=\"credentials.username\"\n" +
-    "            placeholder=\"{{ 'Username' | translate }}\">\n" +
+    "            name=\"username\" placeholder=\"{{ 'Username' | translate }}\">\n" +
     "        </div>\n" +
     "        <div class=\"form-group\">\n" +
     "            <input type=\"password\" class=\"form-control\" ng-model=\"credentials.password\"\n" +
-    "            placeholder=\"{{ 'Password' | translate }}\">\n" +
+    "            name=\"password\" placeholder=\"{{ 'Password' | translate }}\">\n" +
     "        </div>\n" +
     "        <alert ng-repeat=\"alert in alerts\" type=\"{{alert.type}}\"\n" +
     "            close=\"closeAlert($index)\">{{alert.msg}}</alert>\n" +
@@ -1302,11 +1658,11 @@ angular.module("templates/user-login/signup-modal.html", []).run(["$templateCach
     "        </div>\n" +
     "        <div class=\"form-group\">\n" +
     "            <input type=\"text\" class=\"form-control\" ng-model=\"credentials.username\"\n" +
-    "                placeholder=\"{{ 'Username' | translate }}\" required>\n" +
+    "                name=\"username\" placeholder=\"{{ 'Username' | translate }}\" required>\n" +
     "        </div>\n" +
     "        <div class=\"form-group\">\n" +
     "            <input type=\"password\" class=\"form-control\" ng-model=\"credentials.password\"\n" +
-    "                placeholder=\"{{ 'Password' | translate }}\" required>\n" +
+    "                name=\"password\" placeholder=\"{{ 'Password' | translate }}\" required>\n" +
     "        </div>\n" +
     "        <div class=\"form-group\">\n" +
     "            <input type=\"password\" class=\"form-control\"\n" +
@@ -1328,5 +1684,5 @@ angular.module("templates/user-login/signup-modal.html", []).run(["$templateCach
     "\n" +
     "");
 }]);
-!angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">#config-bar-show-button{position:fixed;right:-40px;top:250px;width:100px;transform:rotate(-90deg);-webkit-transform:rotate(-90deg);border:solid #808080 1px;margin:0;padding:10px;text-transform:capitalize;font-weight:bold;background-color:rgba(255,255,255,0.8);transition:all 0.2s;cursor:pointer;text-align:center;z-index:1000;}#config-bar-show-button:hover{background-color:#1f8dd6;color:white;}#config-bar{position:fixed;right:0;top:0;bottom:0;width:500px;border-left:solid #808080 1px;background-color:rgba(255,255,255,0.8);z-index:1000;}#config-bar-header{background-color:rgba(31,141,214,0.8);margin:0;padding:10px 20px;text-align:right;color:white;}#config-bar-content .section{background-color:rgba(31,141,214,0.8);margin:0;margin-top:5px;padding:10px 20px;color:white;text-transform:uppercase;cursor:pointer;}#config-bar-hide{text-align:right;width:100%;cursor:pointer;}#config-bar-content{margin:0;list-style:none;padding:0;}#config-bar-content > li{border-bottom:1px dashed #E9F4FB;padding:10px 20px;margin:0;}#config-bar-content > li:hover{background:#E9F4FB;}#config-bar-content .reset,#config-bar-content .add-to-override{cursor:pointer;font-weight:bolder;}#config-bar-content input{padding:5px 10px;}#config-bar-content label{margin-left:10px;cursor:pointer;}#config-bar-content .link{text-transform:uppercase;cursor:pointer;font-weight:bold;}#config-bar-logging{list-style:none;margin:0;padding:0;max-height:500px;overflow-y:scroll;font-size:12px;}#config-bar-logging > li{margin:0;padding:5px 10px;border-bottom:1px solid #E9F4FB;}#config-bar-logging > li:hover{background-color:#E9F4FB;}#config-bar-logging .level{display:block;float:left;width:10%;font-weight:bold;}#config-bar-logging .url{font-weight:bold;margin-left:10px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:50%;float:left;}#config-bar-logging .filename{display:block;float:right;text-align:right;width:30%;font-weight:bold;}#config-bar-logging .message{display:block;clear:both;margin-top:20px;margin-bottom:5px;}#config-bar-content input{font-size:14px;}#config-bar-content .property-name{width:70%;}#config-bar-content .property-value{width:10%;text-align:center;}#config-bar-property-name{width:70%;}#config-bar-audit{padding-left:5px;}#config-bar-audit li{list-style:none;margin-bottom:5px;}#config-bar-audit input{width:27%;}#config-bar-audit button{width:27%;}#auditChart{margin:10px auto;width:450px;}</style>');
+!angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">#config-bar-show-button{position:fixed;right:-40px;top:250px;width:100px;transform:rotate(-90deg);-webkit-transform:rotate(-90deg);border:solid #808080 1px;margin:0;padding:10px;text-transform:capitalize;font-weight:bold;background-color:rgba(255,255,255,0.8);transition:all 0.2s;cursor:pointer;text-align:center;z-index:1000;}#config-bar-show-button:hover{background-color:#1f8dd6;color:white;}#config-bar{position:fixed;right:0;top:0;bottom:0;width:500px;border-left:solid #808080 1px;background-color:rgba(255,255,255,0.8);z-index:1000;}#config-bar.maximized{width:100%;}#config-bar-header{background-color:rgba(31,141,214,0.8);margin:0;padding:5px 10px;text-align:right;color:white;}#config-bar-content .section{background-color:rgba(31,141,214,0.8);margin:5px 0;padding:5px 10px;color:white;text-transform:uppercase;cursor:pointer;}#config-bar-maximize{text-align:right;cursor:pointer;margin-right:20px;}#config-bar-hide{text-align:right;width:100%;cursor:pointer;}#config-bar-content{margin:0;list-style:none;padding:0;}#config-bar-content > li{border-bottom:1px dashed #E9F4FB;padding:5px 10px;margin:0;}#config-bar-content > li:hover{background:#E9F4FB;}#config-bar-content .reset,#config-bar-content .add-to-override{cursor:pointer;font-weight:bolder;}#config-bar-content input{padding:5px 10px;}#config-bar-content label{margin-left:10px;cursor:pointer;}#config-bar-content .link{text-transform:uppercase;cursor:pointer;font-weight:bold;}#config-bar-logging{list-style:none;margin:0;padding:0;max-height:500px;overflow-y:scroll;font-size:12px;}#config-bar-logging > li{margin:0;padding:5px 10px;border-bottom:1px solid #E9F4FB;}#config-bar-logging > li:hover{background-color:#E9F4FB;}#config-bar-logging .level{display:block;float:left;width:10%;font-weight:bold;}#config-bar-logging .url{font-weight:bold;margin-left:10px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:50%;float:left;}#config-bar-logging .filename{display:block;float:right;text-align:right;width:30%;font-weight:bold;}#config-bar-logging .message{display:block;clear:both;margin-top:20px;margin-bottom:5px;}#config-bar-content .property-name{width:70%;}#config-bar-content .property-value{width:10%;text-align:center;}#config-bar-property-name{width:70%;}#config-bar-audit,#config-bar-ab,#config-bar-flashcards,#config-bar-recommendation{padding-left:5px;}#config-bar-audit li,#config-bar-ab li,#config-bar-flashcards li,#config-bar-recommendation li{padding-left:0;margin-left:0;list-style:none;margin-bottom:5px;}#config-bar-ab ul{padding-left:0;margin-left:0;}.ab-experiment-chart-button{font-size:13px;width:15%;}#config-bar-audit input,#config-bar-flashcards input,#config-bar-recommendation input{width:27%;}#config-bar-audit button,#config-bar-flashcards button,#config-bar-recommendation button{width:27%;}#auditChart{margin:10px auto;width:480px;}#abChart{margin:0 auto;width:480px;}#flashcardsChart{margin:0 auto;width:100%;height:1000px;}#abExperimentName{margin-left:20px;font-weight:bold;}#abSetupInfo > li > ul,#abSetupInfo > li > ul > li{display:inline;}#flashcardsAnswers{width:100%;}#flashcardsAnswers thead{color:#fff;background-color:rgba(31,141,214,0.8);}#flashcardsAnswers th,#flashcardsAnswers td{text-align:center;}#flashcardsAnswers tbody tr:nth-child(even){background-color:#E9F4FB;}#flashcardsAnswers tbody tr:nth-child(odd){background-color:#fff;}#flashcardsAnswers td.correct{background-color:#009933;color:white;}#flashcardsAnswers td.wrong{background-color:#cc0000;color:white;}#flashcardsAnswers td.direction-t2d{background-color:#ff9900;color:white;}#flashcardsAnswers td.direction-d2t{background-color:#ffff00;}</style>');
 !angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">.rating .btn{margin:20px;}</style>');
