@@ -1238,6 +1238,7 @@ m.controller('LoginController', ['$scope', '$modalInstance', 'signupModal', 'use
 
     $scope.credentials = {};
     $scope.alerts = [];
+    $scope.heck = 1;
 
     $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
