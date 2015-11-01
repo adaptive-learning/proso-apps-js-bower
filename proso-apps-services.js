@@ -1,6 +1,6 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-10-05
+ * Version: 1.0.0 - 2015-11-01
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user", "proso.apps.common-toolbar"])
@@ -163,7 +163,7 @@ if (loggingServiceLoaded){
 }
 loggingServiceLoaded = true;
 
-var m = angular.module('proso.apps.common-logging', []);
+var m = angular.module('proso.apps.common-logging', ['proso.apps.common-config']);
 
 m.factory("loggingService", ["$window", function($window) {
     if (!!$window.loggingService){
@@ -194,6 +194,77 @@ m.factory("loggingService", ["$window", function($window) {
 
     $window.loggingService = self;
     return self;
+}]);
+
+m.factory("serverLogger", [function() {
+
+    var self = this;
+    var processing = {};
+
+    self.debug = function(jsonEvent) {
+        self.log(jsonEvent, "debug");
+    };
+
+    self.info = function(jsonEvent) {
+        self.log(jsonEvent, "info");
+    };
+
+    self.warn = function(jsonEvent) {
+        self.log(jsonEvent, "warn");
+    };
+
+    self.error = function(jsonEvent) {
+        self.log(jsonEvent, "error");
+    };
+
+    self.log = function(jsonEvent, level) {
+        jsonEvent['level'] = level;
+        var eventKey = angular.toJson(jsonEvent);
+        if (processing[eventKey]) {
+            return;
+        }
+        processing[eventKey] = true;
+        $.ajax({
+            type: "POST",
+            url: "/common/log/",
+            beforeSend: function (request) {
+                request.setRequestHeader("X-CSRFToken", self.cookie('csrftoken'));
+            },
+            contentType: "application/json",
+            data: angular.toJson(jsonEvent)
+        });
+    };
+
+    self.cookie = function(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = $.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    };
+
+    return self;
+}]);
+
+m.config(["$provide", function($provide) {
+    var configService;
+    $provide.decorator("$exceptionHandler", ["serverLogger", "$injector", "$delegate", function(serverLogger, $injector, $delegate) {
+        return function(exception, cause) {
+            configService = configService || $injector.get("configService");
+            $delegate(exception, cause);
+            if (configService.getConfig("proso_common", "logging.js_errors", false)) {
+                serverLogger.error({exception: exception.message});
+            }
+        };
+    }]);
 }]);
 
 m.config(['$httpProvider', function($httpProvider) {
@@ -524,6 +595,11 @@ m.service("userStatsService", ["$http", "$cookies", function($http, $cookies){
         }
     };
 
+    self.getFlashcardCounts = function(){
+        $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+        return $http.post("/flashcards/flashcard_counts/", filters);
+    };
+
     self.getStats = function(mastered, username){
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
         var params = {filters: JSON.stringify(filters)};
@@ -836,9 +912,8 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
         }
         $scope.drawABTestingBar();
     };
-
-    $scope.showFlashcardsPractice = function() {
-        $scope.flashcardsAnswers = [];
+    
+    var getFlashcardFilterParams = function(){
         var params = {
             limit: $scope.flashcardsLimit
         };
@@ -857,14 +932,23 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
                 $scope.flashcardsTypes.split(',').map(function(x) { return x.trim(); })
             );
         }
+        return params;
+    };
+
+    $scope.showFlashcardsPractice = function() {
+        $scope.flashcardsAnswers = [];
+        var params = getFlashcardFilterParams();
+
         $http.get('/flashcards/practice_image', {params: params}).success(function(response) {
             document.getElementById("flashcardsChart").innerHTML = response;
         });
     };
 
     $scope.showFlashcardsAnswers = function() {
+        var params = getFlashcardFilterParams();
+
         document.getElementById("flashcardsChart").innerHTML = '';
-        $http.get('/flashcards/answers', {params: {limit: $scope.flashcardsLimit}}).success(function(response) {
+        $http.get('/flashcards/answers', {params: params}).success(function(response) {
             $scope.flashcardsAnswers = response.data;
         });
     };
