@@ -1,6 +1,6 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-11-01
+ * Version: 1.0.0 - 2015-09-13
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user","proso.apps.user-login"]);
@@ -171,7 +171,7 @@ if (loggingServiceLoaded){
 }
 loggingServiceLoaded = true;
 
-var m = angular.module('proso.apps.common-logging', ['proso.apps.common-config']);
+var m = angular.module('proso.apps.common-logging', []);
 
 m.factory("loggingService", ["$window", function($window) {
     if (!!$window.loggingService){
@@ -202,77 +202,6 @@ m.factory("loggingService", ["$window", function($window) {
 
     $window.loggingService = self;
     return self;
-}]);
-
-m.factory("serverLogger", [function() {
-
-    var self = this;
-    var processing = {};
-
-    self.debug = function(jsonEvent) {
-        self.log(jsonEvent, "debug");
-    };
-
-    self.info = function(jsonEvent) {
-        self.log(jsonEvent, "info");
-    };
-
-    self.warn = function(jsonEvent) {
-        self.log(jsonEvent, "warn");
-    };
-
-    self.error = function(jsonEvent) {
-        self.log(jsonEvent, "error");
-    };
-
-    self.log = function(jsonEvent, level) {
-        jsonEvent['level'] = level;
-        var eventKey = angular.toJson(jsonEvent);
-        if (processing[eventKey]) {
-            return;
-        }
-        processing[eventKey] = true;
-        $.ajax({
-            type: "POST",
-            url: "/common/log/",
-            beforeSend: function (request) {
-                request.setRequestHeader("X-CSRFToken", self.cookie('csrftoken'));
-            },
-            contentType: "application/json",
-            data: angular.toJson(jsonEvent)
-        });
-    };
-
-    self.cookie = function(name) {
-        var cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            var cookies = document.cookie.split(';');
-            for (var i = 0; i < cookies.length; i++) {
-                var cookie = $.trim(cookies[i]);
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    };
-
-    return self;
-}]);
-
-m.config(["$provide", function($provide) {
-    var configService;
-    $provide.decorator("$exceptionHandler", ["serverLogger", "$injector", "$delegate", function(serverLogger, $injector, $delegate) {
-        return function(exception, cause) {
-            configService = configService || $injector.get("configService");
-            $delegate(exception, cause);
-            if (configService.getConfig("proso_common", "logging.js_errors", false)) {
-                serverLogger.error({exception: exception.message});
-            }
-        };
-    }]);
 }]);
 
 m.config(['$httpProvider', function($httpProvider) {
@@ -765,11 +694,8 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
 
     var contexts = {};
 
-    var loadingFlashcards = false;
-
     // called on create and set reset
     self.initSet = function(configName){
-        self.flushAnswerQueue();
         var key = "practice." + configName + ".";
         config.set_length = configService.getConfig("proso_flashcards", key + "set_length", 10);
         config.fc_queue_size_max = configService.getConfig("proso_flashcards", key + "fc_queue_size_max", 1);
@@ -780,6 +706,7 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
         self.setFilter({});
         current = 0;
         currentFC = null;
+        self.flushAnswerQueue();
         self.clearQueue();
         deferredFC = null;
         setId++;
@@ -919,10 +846,6 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
 
 
     var _loadFlashcards = function(){
-        if (loadingFlashcards){
-            return;                             // loading request is already running
-        }
-
         if (queue.length >= config.fc_queue_size_min) { return; }                                       // if there are some FC queued
             config.filter.limit  = config.fc_queue_size_max - queue.length;
         if (deferredFC && !promiseResolvedTmp) { config.filter.limit ++; }                  // if we promised one flashcard
@@ -943,10 +866,8 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
             answerQueue = [];
         }
         var request_in_set = setId;
-        loadingFlashcards = true;
         request
             .success(function(response){
-                loadingFlashcards = false;
                 if (request_in_set !== setId) {
                     return;
                 }
@@ -960,12 +881,12 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
                 }
             })
             .error(function (response) {
-                loadingFlashcards = false;
                 if (deferredFC !== null){
                     deferredFC.reject("Something went wrong while loading flashcards from backend.");
                 }
                 console.error("Something went wrong while loading flashcards from backend.");
             });
+
     };
 
     var _loadContexts = function(){
@@ -1064,11 +985,11 @@ m.service("userStatsService", ["$http", "$cookies", function($http, $cookies){
     self.getStats = function(mastered, username){
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
         var params = {filters: JSON.stringify(filters)};
-        if (username){
-            params.username = username;
-        }
         if (mastered){
             params.mastered = true;
+        }
+        if (username){
+            params.username = username;
         }
         return $http.get("/flashcards/user_stats/", {params: params});
     };
