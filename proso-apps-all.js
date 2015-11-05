@@ -1,6 +1,6 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-11-02
+ * Version: 1.0.0 - 2015-11-03
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user","proso.apps.user-login"]);
@@ -230,7 +230,7 @@ m.factory("serverLogger", [function() {
             message: message,
             level: level
         };
-        if (data) {
+        if (data !== undefined) {
             jsonEvent['data'] = data;
         }
         var eventKey = angular.toJson(jsonEvent);
@@ -277,7 +277,7 @@ m.config(["$provide", function($provide) {
             configService = configService || $injector.get("configService");
             $delegate(exception, cause);
             if (configService.getConfig("proso_common", "logging.js_errors", false)) {
-                serverLogger.error(exception.message);
+                serverLogger.error(exception.message, {'stack': exception.stack.split('\n').map(function (line) { return line.trim(); })});
             }
         };
     }]);
@@ -369,9 +369,8 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
         }
         $scope.drawABTestingBar();
     };
-
-    $scope.showFlashcardsPractice = function() {
-        $scope.flashcardsAnswers = [];
+    
+    var getFlashcardFilterParams = function(){
         var params = {
             limit: $scope.flashcardsLimit
         };
@@ -390,14 +389,23 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
                 $scope.flashcardsTypes.split(',').map(function(x) { return x.trim(); })
             );
         }
+        return params;
+    };
+
+    $scope.showFlashcardsPractice = function() {
+        $scope.flashcardsAnswers = [];
+        var params = getFlashcardFilterParams();
+
         $http.get('/flashcards/practice_image', {params: params}).success(function(response) {
             document.getElementById("flashcardsChart").innerHTML = response;
         });
     };
 
     $scope.showFlashcardsAnswers = function() {
+        var params = getFlashcardFilterParams();
+
         document.getElementById("flashcardsChart").innerHTML = '';
-        $http.get('/flashcards/answers', {params: {limit: $scope.flashcardsLimit}}).success(function(response) {
+        $http.get('/flashcards/answers', {params: params}).success(function(response) {
             $scope.flashcardsAnswers = response.data;
         });
     };
@@ -1077,11 +1085,11 @@ m.service("userStatsService", ["$http", "$cookies", function($http, $cookies){
     self.getStats = function(mastered, username){
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
         var params = {filters: JSON.stringify(filters)};
-        if (username){
-            params.username = username;
-        }
         if (mastered){
             params.mastered = true;
+        }
+        if (username){
+            params.username = username;
         }
         return $http.get("/flashcards/user_stats/", {params: params});
     };
