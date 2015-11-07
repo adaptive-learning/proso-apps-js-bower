@@ -1,6 +1,6 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-11-03
+ * Version: 1.0.0 - 2015-11-07
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user","proso.apps.user-login"]);
@@ -209,30 +209,24 @@ m.factory("serverLogger", [function() {
     var self = this;
     var processing = {};
 
-    self.debug = function(message, data) {
-        self.log(message, data, "debug");
+    self.debug = function(jsonEvent) {
+        self.log(jsonEvent, "debug");
     };
 
-    self.info = function(message, data) {
-        self.log(message, data, "info");
+    self.info = function(jsonEvent) {
+        self.log(jsonEvent, "info");
     };
 
-    self.warn = function(message, data) {
-        self.log(message, data, "warn");
+    self.warn = function(jsonEvent) {
+        self.log(jsonEvent, "warn");
     };
 
-    self.error = function(message, data) {
-        self.log(message, data, "error");
+    self.error = function(jsonEvent) {
+        self.log(jsonEvent, "error");
     };
 
-    self.log = function(message, data, level) {
-        var jsonEvent = {
-            message: message,
-            level: level
-        };
-        if (data !== undefined) {
-            jsonEvent['data'] = data;
-        }
+    self.log = function(jsonEvent, level) {
+        jsonEvent['level'] = level;
         var eventKey = angular.toJson(jsonEvent);
         if (processing[eventKey]) {
             return;
@@ -246,8 +240,6 @@ m.factory("serverLogger", [function() {
             },
             contentType: "application/json",
             data: angular.toJson(jsonEvent)
-        }).always(function() {
-            delete processing[eventKey];
         });
     };
 
@@ -277,7 +269,7 @@ m.config(["$provide", function($provide) {
             configService = configService || $injector.get("configService");
             $delegate(exception, cause);
             if (configService.getConfig("proso_common", "logging.js_errors", false)) {
-                serverLogger.error(exception.message, {'stack': exception.stack.split('\n').map(function (line) { return line.trim(); })});
+                serverLogger.error({exception: exception.message});
             }
         };
     }]);
@@ -369,8 +361,9 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
         }
         $scope.drawABTestingBar();
     };
-    
-    var getFlashcardFilterParams = function(){
+
+    $scope.showFlashcardsPractice = function() {
+        $scope.flashcardsAnswers = [];
         var params = {
             limit: $scope.flashcardsLimit
         };
@@ -389,23 +382,14 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
                 $scope.flashcardsTypes.split(',').map(function(x) { return x.trim(); })
             );
         }
-        return params;
-    };
-
-    $scope.showFlashcardsPractice = function() {
-        $scope.flashcardsAnswers = [];
-        var params = getFlashcardFilterParams();
-
         $http.get('/flashcards/practice_image', {params: params}).success(function(response) {
             document.getElementById("flashcardsChart").innerHTML = response;
         });
     };
 
     $scope.showFlashcardsAnswers = function() {
-        var params = getFlashcardFilterParams();
-
         document.getElementById("flashcardsChart").innerHTML = '';
-        $http.get('/flashcards/answers', {params: params}).success(function(response) {
+        $http.get('/flashcards/answers', {params: {limit: $scope.flashcardsLimit}}).success(function(response) {
             $scope.flashcardsAnswers = response.data;
         });
     };
@@ -993,7 +977,7 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
                     }
                 }else{
                     contexts[fc.context_id] = "loading";
-                    $http.get("/flashcards/context/" + fc.context_id)
+                    $http.get("/flashcards/context/" + fc.context_id, {cache: true})
                         .success(function(response){
                             contexts[fc.context_id] = response.data;
                             _resolvePromise();
@@ -1079,17 +1063,17 @@ m.service("userStatsService", ["$http", "$cookies", function($http, $cookies){
 
     self.getFlashcardCounts = function(){
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
-        return $http.post("/flashcards/flashcard_counts/", filters);
+        return $http.post("/flashcards/flashcard_counts/", filters, {cache: true});
     };
 
     self.getStats = function(mastered, username){
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
         var params = {filters: JSON.stringify(filters)};
-        if (mastered){
-            params.mastered = true;
-        }
         if (username){
             params.username = username;
+        }
+        if (mastered){
+            params.mastered = true;
         }
         return $http.get("/flashcards/user_stats/", {params: params});
     };
