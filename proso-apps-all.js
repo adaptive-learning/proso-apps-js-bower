@@ -1,6 +1,6 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-11-01
+ * Version: 1.0.0 - 2015-11-07
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user","proso.apps.user-login"]);
@@ -361,8 +361,9 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
         }
         $scope.drawABTestingBar();
     };
-    
-    var getFlashcardFilterParams = function(){
+
+    $scope.showFlashcardsPractice = function() {
+        $scope.flashcardsAnswers = [];
         var params = {
             limit: $scope.flashcardsLimit
         };
@@ -381,23 +382,14 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
                 $scope.flashcardsTypes.split(',').map(function(x) { return x.trim(); })
             );
         }
-        return params;
-    };
-
-    $scope.showFlashcardsPractice = function() {
-        $scope.flashcardsAnswers = [];
-        var params = getFlashcardFilterParams();
-
         $http.get('/flashcards/practice_image', {params: params}).success(function(response) {
             document.getElementById("flashcardsChart").innerHTML = response;
         });
     };
 
     $scope.showFlashcardsAnswers = function() {
-        var params = getFlashcardFilterParams();
-
         document.getElementById("flashcardsChart").innerHTML = '';
-        $http.get('/flashcards/answers', {params: params}).success(function(response) {
+        $http.get('/flashcards/answers', {params: {limit: $scope.flashcardsLimit}}).success(function(response) {
             $scope.flashcardsAnswers = response.data;
         });
     };
@@ -985,7 +977,7 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
                     }
                 }else{
                     contexts[fc.context_id] = "loading";
-                    $http.get("/flashcards/context/" + fc.context_id)
+                    $http.get("/flashcards/context/" + fc.context_id, {cache: true})
                         .success(function(response){
                             contexts[fc.context_id] = response.data;
                             _resolvePromise();
@@ -1071,17 +1063,17 @@ m.service("userStatsService", ["$http", "$cookies", function($http, $cookies){
 
     self.getFlashcardCounts = function(){
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
-        return $http.post("/flashcards/flashcard_counts/", filters);
+        return $http.post("/flashcards/flashcard_counts/", filters, {cache: true});
     };
 
     self.getStats = function(mastered, username){
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
         var params = {filters: JSON.stringify(filters)};
-        if (mastered){
-            params.mastered = true;
-        }
         if (username){
             params.username = username;
+        }
+        if (mastered){
+            params.mastered = true;
         }
         return $http.get("/flashcards/user_stats/", {params: params});
     };
