@@ -1,10 +1,10 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-11-07
+ * Version: 1.0.0 - 2016-02-25
  * License: MIT
  */
-angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user","proso.apps.user-login"]);
-angular.module("proso.apps.tpls", ["templates/common-toolbar/toolbar.html","templates/feedback-comment/comment.html","templates/feedback-rating/rating.html","templates/user-login/login-modal.html","templates/user-login/signup-modal.html"]);
+angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user","proso.apps.user-login","proso.apps.user-questions"]);
+angular.module("proso.apps.tpls", ["templates/common-toolbar/toolbar.html","templates/feedback-comment/comment.html","templates/feedback-rating/rating.html","templates/user-login/login-modal.html","templates/user-login/signup-modal.html","templates/user-questions/user_questions_banner.html"]);
 angular.module("proso.apps.gettext", [])
 .value("gettext", window.gettext || function(x){return x;})
 .filter("trans", ["gettext", function(gettext) {
@@ -1430,6 +1430,71 @@ m.directive('loginButton', ['loginModal', function(loginModal) {
     };
 }]);
 
+var m = angular.module('proso.apps.user-questions', []);
+m.factory('userQuestionsService', ["$http", function($http) {
+  return {
+    getQuestions: function() {
+      return $http.get('/user/questions/?all=true');
+    },
+    getQuestionsToAsk: function() {
+      return $http.get('/user/questions_to_ask/');
+    },
+    saveAnswer: function(question, answer) {
+      var answer_dict = {
+        question : question.id,
+      };
+      if (answer && answer.id) {
+        answer_dict.closed_answer = answer.id;
+      } else if (answer) {
+        answer_dict.open_answer = answer;
+      }
+      var data = {
+        answers : [answer_dict],
+      };
+      return $http.post('/user/answer_question/', data);
+    }
+  };
+}]);
+
+m.directive('userQuestionsBanner', ['userQuestionsService', '$rootScope', 'userService',
+    function(userQuestionsService, $rootScope, userService) {
+  return {
+    restrict: 'A',
+    templateUrl : 'templates/user-questions/user_questions_banner.html',
+    link: function ($scope) {
+      var eventName = 'questionSetFinished';
+      $rootScope.$on(eventName, function() {
+        var answered_count = userService.user.profile.number_of_answers;
+        userQuestionsService.getQuestionsToAsk().success(function(data) {
+          $scope.questions = data.data.filter(function(q) {
+            return q.on_events && q.on_events[0] &&
+              q.on_events[0].type === eventName &&
+              q.on_events[0].value <= answered_count &&
+              answered_count < q.on_events[0].value + 10;
+          });
+          $scope.questions = $scope.questions.slice(0, 1);
+        });
+      });
+
+      $scope.saveUserQuesiton = function(question, answer) {
+        if (answer) {
+          question.answer = answer;
+        }
+        question.processing = true;
+        userQuestionsService.saveAnswer(
+            question, question.answer).success(function(data) {
+          question.processing = false;
+          question.saved = true;
+        }).error(function(data) {
+          question.processing = false;
+          question.error = true;
+        });
+      };
+    }
+  };
+}]);
+
+
 angular.module("templates/common-toolbar/toolbar.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("templates/common-toolbar/toolbar.html",
     "<div id=\"proso-toolbar\">\n" +
@@ -1763,6 +1828,57 @@ angular.module("templates/user-login/signup-modal.html", []).run(["$templateCach
     "        <alert type=\"success\">\n" +
     "            {{ 'Registration was successful. You can continue to use the application.' | translate }}\n" +
     "        </alert>\n" +
+    "</div>\n" +
+    "\n" +
+    "");
+}]);
+
+angular.module("templates/user-questions/user_questions_banner.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("templates/user-questions/user_questions_banner.html",
+    "<div class=\"bottom-alert text-center alert alert-{{question.saved ? 'success' : 'info'}} form-inline\"\n" +
+    "  ng-repeat=\"question in questions\"\n" +
+    "  ng-if=\"!userService.status.loading && userService.user.profile.number_of_answers >= 2\">\n" +
+    "  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"\n" +
+    "      track-click=\"close user question banner\">\n" +
+    "    <span aria-hidden=\"true\">&times;</span>\n" +
+    "    <span class=\"sr-only\" translate>Close</span>\n" +
+    "  </button>\n" +
+    "  <div ng-if=\"!question.saved\">\n" +
+    "    <span>\n" +
+    "    {{question.content}}\n" +
+    "    </span>\n" +
+    "    <input ng-model=\"question.answer\"\n" +
+    "      ng-if=\"question.answer_type != 'c'\"\n" +
+    "      class=\"form-control\"\n" +
+    "      typeahead-min-length=\"0\"\n" +
+    "      typeahead=\"option as option.content for option in question.possible_answers |\n" +
+    "        filter:{content: $viewValue} |\n" +
+    "        limitTo:($viewValue.length ? $viewValue.length * 2 : 2)\">\n" +
+    "    </input>\n" +
+    "    <span ng-model=\"question.answer\"\n" +
+    "      ng-repeat=\"option in question.possible_answers\"\n" +
+    "      ng-if=\"question.answer_type == 'c'\"\n" +
+    "      ng-bind=\"option.content\"\n" +
+    "      ng-click=\"saveUserQuesiton(question, option)\"\n" +
+    "      class=\"btn btn-default\">\n" +
+    "    </span>\n" +
+    "    <a href=\"\"\n" +
+    "       class=\"btn btn-primary\"\n" +
+    "       ng-if=\"question.answer_type != 'c'\"\n" +
+    "       track-click=\"user question banner\"\n" +
+    "       ng-click=\"saveUserQuesiton(question)\"\n" +
+    "       ng-disabled=\"question.processing || !question.answer\"\n" +
+    "      >\n" +
+    "      <span translate ng-if=\"question.processing\">Saving...</span>\n" +
+    "      <span translate ng-if=\"!question.processing\">Save</span>\n" +
+    "    </a>\n" +
+    "    <div ng-if=\"question.answer_type == 'm'\">\n" +
+    "    <br> <br> <br> <br>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "  <div ng-if=\"question.saved\" translate>\n" +
+    "    Thank you for your response.\n" +
+    "  </div>\n" +
     "</div>\n" +
     "\n" +
     "");
