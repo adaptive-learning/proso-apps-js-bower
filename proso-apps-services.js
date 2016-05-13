@@ -1,9 +1,9 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-11-07
+ * Version: 1.0.0 - 2016-05-13
  * License: MIT
  */
-angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user", "proso.apps.common-toolbar"])
+angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.flashcards-userStats","proso.apps.models-practice","proso.apps.user-user", "proso.apps.common-toolbar"])
 angular.module("proso.apps.tpls", ["templates/common-toolbar/toolbar.html"]);
 angular.module("proso.apps.gettext", [])
 .value("gettext", window.gettext || function(x){return x;})
@@ -201,24 +201,30 @@ m.factory("serverLogger", [function() {
     var self = this;
     var processing = {};
 
-    self.debug = function(jsonEvent) {
-        self.log(jsonEvent, "debug");
+    self.debug = function(message, data) {
+        self.log(message, data, "debug");
     };
 
-    self.info = function(jsonEvent) {
-        self.log(jsonEvent, "info");
+    self.info = function(message, data) {
+        self.log(message, data, "info");
     };
 
-    self.warn = function(jsonEvent) {
-        self.log(jsonEvent, "warn");
+    self.warn = function(message, data) {
+        self.log(message, data, "warn");
     };
 
-    self.error = function(jsonEvent) {
-        self.log(jsonEvent, "error");
+    self.error = function(message, data) {
+        self.log(message, data, "error");
     };
 
-    self.log = function(jsonEvent, level) {
-        jsonEvent['level'] = level;
+    self.log = function(message, data, level) {
+        var jsonEvent = {
+            message: message,
+            level: level
+        };
+        if (data !== undefined) {
+            jsonEvent['data'] = data;
+        }
         var eventKey = angular.toJson(jsonEvent);
         if (processing[eventKey]) {
             return;
@@ -232,6 +238,8 @@ m.factory("serverLogger", [function() {
             },
             contentType: "application/json",
             data: angular.toJson(jsonEvent)
+        }).always(function() {
+            delete processing[eventKey];
         });
     };
 
@@ -261,7 +269,7 @@ m.config(["$provide", function($provide) {
             configService = configService || $injector.get("configService");
             $delegate(exception, cause);
             if (configService.getConfig("proso_common", "logging.js_errors", false)) {
-                serverLogger.error({exception: exception.message});
+                serverLogger.error(exception.message, {'stack': exception.stack.split('\n').map(function (line) { return line.trim(); })});
             }
         };
     }]);
@@ -280,295 +288,6 @@ m.config(['$httpProvider', function($httpProvider) {
             }
         };
     });
-}]);
-
-var m = angular.module('proso.apps.flashcards-practice', ['ngCookies', 'proso.apps.common-config']);
-m.service("practiceService", ["$http", "$q", "configService", "$cookies", function($http, $q, configService, $cookies){
-    var self = this;
-
-    var queue = [];
-    var deferredFC = null;
-    var promiseResolvedTmp = false;
-    var currentFC = null;
-    var answerQueue = [];
-
-    var config = {};
-    var current = 0;
-    var setId = 0;
-    var summary = {};
-
-    var contexts = {};
-
-    var loadingFlashcards = false;
-
-    // called on create and set reset
-    self.initSet = function(configName){
-        self.flushAnswerQueue();
-        var key = "practice." + configName + ".";
-        config.set_length = configService.getConfig("proso_flashcards", key + "set_length", 10);
-        config.fc_queue_size_max = configService.getConfig("proso_flashcards", key + "fc_queue_size_max", 1);
-        config.fc_queue_size_min = configService.getConfig("proso_flashcards", key + "fc_queue_size_min", 1);
-        config.save_answer_immediately = configService.getConfig("proso_flashcards", key + "save_answer_immediately", false);
-        config.cache_context = configService.getConfig("proso_flashcards", key + "cache_context", false);
-
-        self.setFilter({});
-        current = 0;
-        currentFC = null;
-        self.clearQueue();
-        deferredFC = null;
-        setId++;
-        summary = {
-            flashcards: [],
-            answers: [],
-            correct: 0,
-            count: 0
-        };
-    };
-
-    self.setFilter = function(filter){
-        config.filter = {
-            contexts: [],
-            categories: [],
-            types: []
-        };
-        angular.extend(config.filter, filter);
-    };
-
-    self.getCurrent = function(){
-        return current;
-    };
-
-    self.getConfig = function(){
-        return angular.copy(config);
-    };
-
-    // add answer to queue and upload queued answers if necessary
-    self.saveAnswer = function(answer, forceSave){
-        if (answer) {
-            answer.time = Date.now();
-            answerQueue.push(answer);
-            summary.answers.push(answer);
-            summary.count++;
-            if (answer.flashcard_id === answer.flashcard_answered_id) {
-                summary.correct++;
-            }
-        }
-
-        if (config.save_answer_immediately || forceSave || current >= config.set_length) {
-            if (answerQueue.length > 0) {
-                answerQueue.forEach(function(answer){
-                    answer.time_gap = Math.round((Date.now() - answer.time) / 1000);
-                    delete answer.time;
-                });
-                $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
-                $http.post("/flashcards/answer/", {answers: answerQueue}, {params: _getFilter(['avoid', 'limit'])})
-                    .error(function (response) {
-                        console.error("Problem while uploading answer", response);
-                    });
-                answerQueue = [];
-            }
-        }
-    };
-
-    self.flushAnswerQueue = function(){
-        self.saveAnswer(null, true);
-    };
-
-    // build answer from current FC and save
-    self.saveAnswerToCurrentFC = function(answeredFCId, responseTime, meta){
-        if (!currentFC) {
-            console.error("There is no current flashcard");
-            return;
-        }
-        var answer = {
-            flashcard_id: currentFC.id,
-            flashcard_answered_id: answeredFCId,
-            response_time: responseTime,
-            direction: currentFC.direction
-        };
-        if (meta) {
-            answer.meta = {client_meta: meta};
-        }
-        if (currentFC.practice_meta) {
-            if (answer.meta) {
-                answer.meta = angular.extend(answer.meta, currentFC.practice_meta);
-            } else {
-                answer.meta = currentFC.practice_meta;
-            }
-        }
-        if (currentFC.options){
-            answer.option_ids = [];
-            currentFC.options.forEach(function(o){
-                if (o.id !== currentFC.id) {
-                    answer.option_ids.push(o.id);
-                }
-            });
-        }
-        self.saveAnswer(answer);
-    };
-
-    // return promise of flashcard
-    self.getFlashcard = function(){
-        if(deferredFC){
-            return $q(function(resolve, reject){
-                reject("Already one flashcard promised");
-            });
-        }
-        deferredFC  = $q.defer();
-        promiseResolvedTmp = false;
-        _resolvePromise();
-        deferredFC.promise.then(function(){ deferredFC = null;}, function(){ deferredFC = null;});
-        return deferredFC.promise;
-    };
-
-    self.clearQueue = function(){
-        queue = [];
-    };
-
-    // preload flashcards
-    self.preloadFlashcards = function(){
-        _loadFlashcards();
-    };
-
-    self.getFCQueue = function(){
-        return queue;
-    };
-
-    self.getAnswerQueue = function(){
-        return answerQueue;
-    };
-
-    self.getSummary = function(){
-        var s = angular.copy(summary);
-        for (var i = 0; i < Math.min(s.flashcards.length, s.answers.length); i++){
-            var answer = s.answers[i];
-            var flashcard = s.flashcards[i];
-            if (flashcard.id === answer.flashcard_id){
-                flashcard.answer = answer;
-            }
-            answer.correct = answer.flashcard_id === answer.flashcard_answered_id;
-        }
-        return s;
-    };
-
-
-    var _loadFlashcards = function(){
-        if (loadingFlashcards){
-            return;                             // loading request is already running
-        }
-
-        if (queue.length >= config.fc_queue_size_min) { return; }                                       // if there are some FC queued
-            config.filter.limit  = config.fc_queue_size_max - queue.length;
-        if (deferredFC && !promiseResolvedTmp) { config.filter.limit ++; }                  // if we promised one flashcard
-        config.filter.limit = Math.min(config.filter.limit, config.set_length - current - queue.length);  // check size of set
-        if (config.filter.limit === 0) {return;}                         // nothing to do
-        config.filter.avoid = currentFC ? [currentFC.id] : [];      // avoid current FC
-        queue.forEach(function(fc){
-            config.filter.avoid.push(fc.id);
-        });
-
-        var filter = _getFilter();
-        var request;
-        if (answerQueue.length === 0) {
-            request = $http.get("/flashcards/practice/", {params: filter});
-        }else{
-            $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
-            request = $http.post("/flashcards/practice/", {answers: answerQueue}, {params: filter});
-            answerQueue = [];
-        }
-        var request_in_set = setId;
-        loadingFlashcards = true;
-        request
-            .success(function(response){
-                loadingFlashcards = false;
-                if (request_in_set !== setId) {
-                    return;
-                }
-                queue = queue.concat(response.data.flashcards);
-                _loadContexts();
-                if (queue.length > 0) {
-                    _resolvePromise();
-                }
-                else{
-                    console.error("No Flashcards to practice");
-                }
-            })
-            .error(function (response) {
-                loadingFlashcards = false;
-                if (deferredFC !== null){
-                    deferredFC.reject("Something went wrong while loading flashcards from backend.");
-                }
-                console.error("Something went wrong while loading flashcards from backend.");
-            });
-    };
-
-    var _loadContexts = function(){
-        if (config.cache_context){
-            queue.forEach(function(fc){
-                if (fc.context_id in contexts){
-                    if (contexts[fc.context_id] !== "loading"){
-                        fc.context = contexts[fc.context_id];
-                    }
-                }else{
-                    contexts[fc.context_id] = "loading";
-                    $http.get("/flashcards/context/" + fc.context_id, {cache: true})
-                        .success(function(response){
-                            contexts[fc.context_id] = response.data;
-                            _resolvePromise();
-                        }).error(function(){
-                            delete contexts[fc.context_id];
-                            console.error("Error while loading context from backend");
-                        });
-                }
-            });
-        }
-    };
-
-    var _resolvePromise = function(){
-        if (deferredFC === null){
-            return;
-        }
-        if (config.set_length === current){
-            deferredFC.reject("Set was completed");
-            return;
-        }
-        if (queue.length > 0) {
-            if (config.cache_context){
-                if (typeof contexts[queue[0].context_id]  === 'object'){
-                    queue[0].context = contexts[queue[0].context_id];
-                }else{
-                    return;
-                }
-            }
-            currentFC = queue.shift();
-            current++;
-            promiseResolvedTmp = true;
-            summary.flashcards.push(currentFC);
-            deferredFC.resolve(currentFC);
-        }
-        _loadFlashcards();
-    };
-
-    var _getFilter = function(ignore) {
-        if (!ignore) {
-            ignore = [];
-        }
-        var filter = {};
-        for (var key in config.filter){
-            if (ignore.indexOf(key) !== -1) {
-                continue;
-            }
-            if (config.filter[key] instanceof Array) {
-                filter[key] = JSON.stringify(config.filter[key]);
-            }else{
-                filter[key] = config.filter[key];
-            }
-        }
-        if (config.cache_context){
-            filter.without_contexts = 1;
-        }
-        return filter;
-    };
 }]);
 
 var m = angular.module('proso.apps.flashcards-userStats', ['ngCookies']);
@@ -603,11 +322,11 @@ m.service("userStatsService", ["$http", "$cookies", function($http, $cookies){
     self.getStats = function(mastered, username){
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
         var params = {filters: JSON.stringify(filters)};
-        if (username){
-            params.username = username;
-        }
         if (mastered){
             params.mastered = true;
+        }
+        if (username){
+            params.username = username;
         }
         return $http.get("/flashcards/user_stats/", {params: params});
     };
@@ -628,6 +347,294 @@ m.service("userStatsService", ["$http", "$cookies", function($http, $cookies){
         return angular.copy(filters);
     };
 
+}]);
+
+var m = angular.module('proso.apps.models-practice', ['ngCookies', 'proso.apps.common-config']);
+m.service("practiceService", ["$http", "$q", "configService", "$cookies", function($http, $q, configService, $cookies){
+    var self = this;
+
+    var queue = [];
+    var deferredQuestion = null;
+    var promiseResolvedTmp = false;
+    var currentQuestion = null;
+    var answerQueue = [];
+
+    var config = {};
+    var current = 0;
+    var setId = 0;
+    var summary = {};
+
+    var contexts = {};
+
+    var loadingQuestions = false;
+
+    // called on create and set reset
+    self.initSet = function(configName){
+        self.flushAnswerQueue();
+        var key = "practice." + configName + ".";
+        config.set_length = configService.getConfig("proso_models", key + "set_length", 10);
+        config.question_queue_size_max = configService.getConfig("proso_models", key + "question_queue_size_max", 1);
+        config.question_queue_size_min = configService.getConfig("proso_models", key + "question_queue_size_min", 1);
+        config.save_answer_immediately = configService.getConfig("proso_models", key + "save_answer_immediately", false);
+        config.cache_context = configService.getConfig("proso_models", key + "cache_context", false);
+
+        self.setFilter({});
+        current = 0;
+        currentQuestion = null;
+        self.clearQueue();
+        deferredQuestion = null;
+        setId++;
+        summary = {
+            questions: [],
+            answers: [],
+            correct: 0,
+            count: 0
+        };
+    };
+
+    self.setFilter = function(filter){
+        config.filter = {
+            filter: [],
+        };
+        angular.extend(config.filter, filter);
+    };
+
+    self.getCurrent = function(){
+        return current;
+    };
+
+    self.getConfig = function(){
+        return angular.copy(config);
+    };
+
+    // add answer to queue and upload queued answers if necessary
+    self.saveAnswer = function(answer, forceSave){
+        if (answer) {
+            answer.time = Date.now();
+            answerQueue.push(answer);
+            summary.answers.push(answer);
+            summary.count++;
+            if (answer.flashcard_id === answer.flashcard_answered_id) {
+                summary.correct++;
+            }
+        }
+
+        if (config.save_answer_immediately || forceSave || current >= config.set_length) {
+            if (answerQueue.length > 0) {
+                answerQueue.forEach(function(answer){
+                    answer.time_gap = Math.round((Date.now() - answer.time) / 1000);
+                    delete answer.time;
+                });
+                $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+                $http.post("/models/answer/", {answers: answerQueue}, {params: _getFilter(['avoid', 'limit'])})
+                    .error(function (response) {
+                        console.error("Problem while uploading answer", response);
+                    });
+                answerQueue = [];
+            }
+        }
+    };
+
+    self.flushAnswerQueue = function(){
+        self.saveAnswer(null, true);
+    };
+
+    // build answer from current question and save
+    self.saveAnswerToCurrentQuestion = function(answeredId, responseTime, meta){
+        if (!currentQuestion) {
+            console.error("There is no current flashcard");
+            return;
+        }
+        var answer = {
+            flashcard_id: currentQuestion.payload.id,
+            flashcard_answered_id: answeredId,
+            response_time: responseTime,
+            question_type: currentQuestion.question_type,
+            answer_class: currentQuestion.answer_class,
+        };
+        if (meta) {
+            answer.meta = {client_meta: meta};
+        }
+        if (currentQuestion.practice_meta) {
+            if (answer.meta) {
+                answer.meta = angular.extend(answer.meta, currentQuestion.practice_meta);
+            } else {
+                answer.meta = currentQuestion.practice_meta;
+            }
+        }
+        if (currentQuestion.options){
+            answer.option_ids = [];
+            currentQuestion.options.forEach(function(o){
+                if (o.id !== currentQuestion.id) {
+                    answer.option_ids.push(o.id);
+                }
+            });
+        }
+        self.saveAnswer(answer);
+    };
+
+    // return promise of question
+    self.getQuestion = function(){
+        if(deferredQuestion){
+            return $q(function(resolve, reject){
+                reject("Already one question promised");
+            });
+        }
+        deferredQuestion  = $q.defer();
+        promiseResolvedTmp = false;
+        _resolvePromise();
+        deferredQuestion.promise.then(function(){ deferredQuestion = null;}, function(){ deferredQuestion = null;});
+        return deferredQuestion.promise;
+    };
+
+    self.clearQueue = function(){
+        queue = [];
+    };
+
+    // preload questions
+    self.preloadQuestions = function(){
+        _loadQuestions();
+    };
+
+    self.getQuestionQueue = function(){
+        return queue;
+    };
+
+    self.getAnswerQueue = function(){
+        return answerQueue;
+    };
+
+    self.getSummary = function(){
+        var s = angular.copy(summary);
+        for (var i = 0; i < Math.min(s.questions.length, s.answers.length); i++){
+            var answer = s.answers[i];
+            var question = s.questions[i];
+            if (question.id === answer.flashcard_id){
+                question.answer = answer;
+            }
+            answer.correct = answer.flashcard_id === answer.flashcard_answered_id;
+        }
+        return s;
+    };
+
+
+    var _loadQuestions = function(){
+        if (loadingQuestions){
+            return;                             // loading request is already running
+        }
+
+        if (queue.length >= config.question_queue_size_min) { return; }                                       // if there are some questions queued
+            config.filter.limit  = config.question_queue_size_max - queue.length;
+        if (deferredQuestion && !promiseResolvedTmp) { config.filter.limit ++; }                  // if we promised one question
+        config.filter.limit = Math.min(config.filter.limit, config.set_length - current - queue.length);  // check size of set
+        if (config.filter.limit === 0) {return;}                         // nothing to do
+        config.filter.avoid = currentQuestion && currentQuestion.payload ? [currentQuestion.payload.id] : [];      // avoid current question
+        queue.forEach(function(question){
+            config.filter.avoid.push(question.payload.id);
+        });
+
+        var filter = _getFilter();
+        var request;
+        if (answerQueue.length === 0) {
+            request = $http.get("/models/practice/", {params: filter});
+        }else{
+            $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+            request = $http.post("/models/practice/", {answers: answerQueue}, {params: filter});
+            answerQueue = [];
+        }
+        var request_in_set = setId;
+        loadingQuestions = true;
+        request
+            .success(function(response){
+                loadingQuestions = false;
+                if (request_in_set !== setId) {
+                    return;
+                }
+                queue = queue.concat(response.data);
+                _loadContexts();
+                if (queue.length > 0) {
+                    _resolvePromise();
+                }
+                else{
+                    console.error("No Questions to practice");
+                }
+            })
+            .error(function (response) {
+                loadingQuestions = false;
+                if (deferredQuestion !== null){
+                    deferredQuestion.reject("Something went wrong while loading questions from backend.");
+                }
+                console.error("Something went wrong while loading questions from backend.");
+            });
+    };
+
+    var _loadContexts = function(){
+        if (config.cache_context){
+            queue.forEach(function(question){
+                if (question.context_id in contexts){
+                    if (contexts[question.context_id] !== "loading"){
+                        question.context = contexts[question.context_id];
+                    }
+                }else{
+                    contexts[question.context_id] = "loading";
+                    $http.get("/flashcards/context/" + question.context_id, {cache: true})
+                        .success(function(response){
+                            contexts[question.context_id] = response.data;
+                            _resolvePromise();
+                        }).error(function(){
+                            delete contexts[question.context_id];
+                            console.error("Error while loading context from backend");
+                        });
+                }
+            });
+        }
+    };
+
+    var _resolvePromise = function(){
+        if (deferredQuestion === null){
+            return;
+        }
+        if (config.set_length === current){
+            deferredQuestion.reject("Set was completed");
+            return;
+        }
+        if (queue.length > 0) {
+            if (config.cache_context){
+                if (typeof contexts[queue[0].context_id]  === 'object'){
+                    queue[0].context = contexts[queue[0].context_id];
+                }else{
+                    return;
+                }
+            }
+            currentQuestion = queue.shift();
+            current++;
+            promiseResolvedTmp = true;
+            summary.questions.push(currentQuestion);
+            deferredQuestion.resolve(currentQuestion);
+        }
+        _loadQuestions();
+    };
+
+    var _getFilter = function(ignore) {
+        if (!ignore) {
+            ignore = [];
+        }
+        var filter = {};
+        for (var key in config.filter){
+            if (ignore.indexOf(key) !== -1) {
+                continue;
+            }
+            if (config.filter[key] instanceof Array) {
+                filter[key] = JSON.stringify(config.filter[key]);
+            }else{
+                filter[key] = config.filter[key];
+            }
+        }
+        if (config.cache_context){
+            filter.without_contexts = 1;
+        }
+        return filter;
+    };
 }]);
 
 var m = angular.module('proso.apps.user-user', ['ngCookies']);
@@ -831,6 +838,10 @@ m.service("userService", ["$http", function($http){
         _openPopup('/login/facebook/', '/user/close_popup/');
     };
 
+    self.loginEdookit = function() {
+        _openPopup('/login/edookit/', '/user/close_popup/');
+    };
+
     var _openPopup = function(url, next){
         var settings = 'height=700,width=700,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=yes,directories=no,status=yes';
         url += "?next=" + next;
@@ -912,9 +923,8 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
         }
         $scope.drawABTestingBar();
     };
-
-    $scope.showFlashcardsPractice = function() {
-        $scope.flashcardsAnswers = [];
+    
+    var getFlashcardFilterParams = function(){
         var params = {
             limit: $scope.flashcardsLimit
         };
@@ -933,14 +943,23 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
                 $scope.flashcardsTypes.split(',').map(function(x) { return x.trim(); })
             );
         }
+        return params;
+    };
+
+    $scope.showFlashcardsPractice = function() {
+        $scope.flashcardsAnswers = [];
+        var params = getFlashcardFilterParams();
+
         $http.get('/flashcards/practice_image', {params: params}).success(function(response) {
             document.getElementById("flashcardsChart").innerHTML = response;
         });
     };
 
     $scope.showFlashcardsAnswers = function() {
+        var params = getFlashcardFilterParams();
+
         document.getElementById("flashcardsChart").innerHTML = '';
-        $http.get('/flashcards/answers', {params: {limit: $scope.flashcardsLimit}}).success(function(response) {
+        $http.get('/flashcards/answers', {params: params}).success(function(response) {
             $scope.flashcardsAnswers = response.data;
         });
     };
