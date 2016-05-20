@@ -1,10 +1,10 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2015-11-07
+ * Version: 1.0.0 - 2016-05-20
  * License: MIT
  */
-angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.flashcards-practice","proso.apps.flashcards-userStats","proso.apps.user-user","proso.apps.user-login"]);
-angular.module("proso.apps.tpls", ["templates/common-toolbar/toolbar.html","templates/feedback-comment/comment.html","templates/feedback-rating/rating.html","templates/user-login/login-modal.html","templates/user-login/signup-modal.html"]);
+angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.models-practice","proso.apps.models-userStats","proso.apps.user-user","proso.apps.user-login","proso.apps.user-questions"]);
+angular.module("proso.apps.tpls", ["templates/common-toolbar/toolbar.html","templates/feedback-comment/comment.html","templates/feedback-rating/rating.html","templates/user-login/login-modal.html","templates/user-login/signup-modal.html","templates/user-questions/user_questions_banner.html"]);
 angular.module("proso.apps.gettext", [])
 .value("gettext", window.gettext || function(x){return x;})
 .filter("trans", ["gettext", function(gettext) {
@@ -14,7 +14,7 @@ angular.module("proso.apps.gettext", [])
 }]);
 angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
 /* jshint -W100 */
-    gettextCatalog.setStrings('cs', {"Appropriate":"Tak akorát","Close":"Zavřít","Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.":"Narazili jste na chybu v aplikaci? Máte nápad na vylepšení? Nebo jakýkoliv jiný postřeh či komentář? Zajímá nás všechno, co nám chcete sdělit.","Don't know / Don't want to rate":"Nevím / Nechci hodnotit","E-mail":"E-mail","How difficult are the questions?":"Jak těžké se vám zdají otázky?","Password":"Heslo","Password again":"Heslo znovu","Registration was successful. You can continue to use the application.":"Registrace proběhla úspěšně. Můžete pokračovat v používání aplikace.","Send":"Odeslat","Sign In":"Přihlásit se","Sign Up":"Zaregistrovat se","Something wrong has happened.":"V aplikaci nastala chyba.","Thank you for the message. User feedback is very important for us.":"Děkujeme Vám za zaslané informace. Feedback od uživatelů je k nezaplacení.","Thank you for your rating.":"Děkujeme za vaše hodnocení.","Too difficult":"Příliš těžké","Too easy":"Příliš lehké","Username":"Uživatelské jméno","Write to us":"Napište nám","Your answer helps us adjust difficulty of questions.":"Svou odpovědí nám pomáháte přizpůsobovat obtížnost otázek.","Your e-mail address (optional)":"Váš e-mail (nepovinné)","and get all the benefits of registered users.":"a získejte všechny výhody registrovaných uživatelů.","via E-mail":"přes E-mail","via Facebook":"přes Facebook","via Google":"přes Google"});
+    gettextCatalog.setStrings('cs', {"Appropriate":"Tak akorát","Close":"Zavřít","Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.":"Narazili jste na chybu v aplikaci? Máte nápad na vylepšení? Nebo jakýkoliv jiný postřeh či komentář? Zajímá nás všechno, co nám chcete sdělit.","Don't know / Don't want to rate":"Nevím / Nechci hodnotit","E-mail":"E-mail","How difficult are the questions?":"Jak těžké se vám zdají otázky?","Password":"Heslo","Password again":"Heslo znovu","Registration was successful. You can continue to use the application.":"Registrace proběhla úspěšně. Můžete pokračovat v používání aplikace.","Save":"Uložit","Saving...":"Ukládání...","Send":"Odeslat","Sign In":"Přihlásit se","Sign Up":"Zaregistrovat se","Something wrong has happened.":"V aplikaci nastala chyba.","Thank you for the message. User feedback is very important for us.":"Děkujeme Vám za zaslané informace. Feedback od uživatelů je k nezaplacení.","Thank you for your rating.":"Děkujeme za vaše hodnocení.","Thank you for your response.":"Děkujeme za odpověď.","Too difficult":"Příliš těžké","Too easy":"Příliš lehké","Username":"Uživatelské jméno","Write to us":"Napište nám","Your answer helps us adjust difficulty of questions.":"Svou odpovědí nám pomáháte přizpůsobovat obtížnost otázek.","Your e-mail address (optional)":"Váš e-mail (nepovinné)","and get all the benefits of registered users.":"a získejte všechny výhody registrovaných uživatelů.","via E-mail":"přes E-mail","via Facebook":"přes Facebook","via Google":"přes Google"});
     gettextCatalog.setStrings('de', {"Appropriate":"genau richtig","Close":"Schließen","Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.":"Haben Sie einen Fehler in der App gefunden? Haben Sie eine Idee, wie man diese App besser machen könnte? Oder einen anderen Tipp oder Kommentar? Wir interessieren uns für alles, was Sie uns mitteilen wollen.","Don't know / Don't want to rate":"ich weiß nicht/ ich will nicht antworten","E-mail":"E-Mail","How difficult are the questions?":"Wie schwierig sind die gestellten Fragen?","Password":"Passwort","Password again":"Passwort wiederholen","Registration was successful. You can continue to use the application.":"Die Registrierung wurde erfolgreich durgeführt. Sie können fortfahren, um die App zu nutzen.","Send":"Senden","Sign In":"Anmelden","Sign Up":"Registrieren","Something wrong has happened.":"Leider ist ein Fehler aufgetreten","Thank you for the message. User feedback is very important for us.":"Vielen Dank für Ihre gesendeten Informationen. Feedback der Benutzer ist für uns unbezahlbar.","Thank you for your rating.":"Vielen Dank für Ihre Einschätzung.","Too difficult":"zu schwierig","Too easy":"zu einfach","Username":"Benutzername","Write to us":"Schreiben Sie uns","Your answer helps us adjust difficulty of questions.":"Mit ihrer Antwort helfen sie uns die Schwierigkeit der Fragen anzupassen","Your e-mail address (optional)":"Ihre E-Mail-Adresse","and get all the benefits of registered users.":"und genießen Sie alle Vorteile der registrierten Benutzer.","via E-mail":"per E-Mail","via Facebook":"via Facebook","via Google":"via Google"});
     gettextCatalog.setStrings('en', {"Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.":"Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.","Don't know / Don't want to rate":"Don't know / Don't want to rate","E-mail":"E-mail","How difficult are the questions?":"How difficult are the questions?","Password":"Password","Password again":"Password again","Registration was successful. You can continue to use the application.":"Registration was successful. You can continue to use the application.","Send":"Send","Sign In":"Sign In","Sign Up":"Sign Up","Something wrong has happened.":"Something wrong has happened.","Thank you for the message. User feedback is very important for us.":"Thank you for the message. User feedback is very important for us.","Thank you for your rating.":"Thank you for your rating.","Too difficult":"Too difficult","Too easy":"Too easy","Username":"Username","Write to us":"Write to us","Your e-mail address (optional)":"Your e-mail address (optional)","and get all the benefits of registered users.":"and get all the benefits of registered users.","via E-mail":"via E-mail","via Facebook":"via Facebook","via Google":"via Google"});
     gettextCatalog.setStrings('es', {"Appropriate":"Adecuado","Close":"Cerrar","Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.":"¿Encontraste algún error en el programa? ¿Tienes alguna sugerencia sobre como podemos mejorar? ¿Quieres compartir tu opinión con nosotros? Nos gustaría escuchar lo que tengas que decir.","Don't know / Don't want to rate":"No sé/No quiero calificar","E-mail":"E-mail","How difficult are the questions?":"¿Qué tan difíciles son estas preguntas?","Password":"Contraseña","Password again":"Contraseña de nuevo","Registration was successful. You can continue to use the application.":"Registro exitoso. Puedes continuar usando la aplicación.","Send":"Enviar","Sign In":"Iniciar sesión","Sign Up":"Registrarse","Something wrong has happened.":"Algo malo ha ocurrido.","Thank you for the message. User feedback is very important for us.":"Gracias por tu mensaje. Tu opinión es muy importante para nosotros.","Thank you for your rating.":"Gracias por calificarnos.","Too difficult":"Muy dificil","Too easy":"Muy facil","Username":"Nombre de usuario","Write to us":"Sugerencias","Your answer helps us adjust difficulty of questions.":"Tu respuesta ayuda a ajustar la dificultad de las preguntas.","Your e-mail address (optional)":"Tu e-mail (opcional)","and get all the benefits of registered users.":"y accede a todos los benecifios de un usuario registrado.","via E-mail":"con E-mail","via Facebook":"con Facebook","via Google":"con Google"});
@@ -209,24 +209,30 @@ m.factory("serverLogger", [function() {
     var self = this;
     var processing = {};
 
-    self.debug = function(jsonEvent) {
-        self.log(jsonEvent, "debug");
+    self.debug = function(message, data) {
+        self.log(message, data, "debug");
     };
 
-    self.info = function(jsonEvent) {
-        self.log(jsonEvent, "info");
+    self.info = function(message, data) {
+        self.log(message, data, "info");
     };
 
-    self.warn = function(jsonEvent) {
-        self.log(jsonEvent, "warn");
+    self.warn = function(message, data) {
+        self.log(message, data, "warn");
     };
 
-    self.error = function(jsonEvent) {
-        self.log(jsonEvent, "error");
+    self.error = function(message, data) {
+        self.log(message, data, "error");
     };
 
-    self.log = function(jsonEvent, level) {
-        jsonEvent['level'] = level;
+    self.log = function(message, data, level) {
+        var jsonEvent = {
+            message: message,
+            level: level
+        };
+        if (data !== undefined) {
+            jsonEvent['data'] = data;
+        }
         var eventKey = angular.toJson(jsonEvent);
         if (processing[eventKey]) {
             return;
@@ -240,6 +246,8 @@ m.factory("serverLogger", [function() {
             },
             contentType: "application/json",
             data: angular.toJson(jsonEvent)
+        }).always(function() {
+            delete processing[eventKey];
         });
     };
 
@@ -269,7 +277,7 @@ m.config(["$provide", function($provide) {
             configService = configService || $injector.get("configService");
             $delegate(exception, cause);
             if (configService.getConfig("proso_common", "logging.js_errors", false)) {
-                serverLogger.error({exception: exception.message});
+                serverLogger.error(exception.message, {'stack': exception.stack.split('\n').map(function (line) { return line.trim(); })});
             }
         };
     }]);
@@ -361,9 +369,8 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
         }
         $scope.drawABTestingBar();
     };
-
-    $scope.showFlashcardsPractice = function() {
-        $scope.flashcardsAnswers = [];
+    
+    var getFlashcardFilterParams = function(){
         var params = {
             limit: $scope.flashcardsLimit
         };
@@ -382,14 +389,23 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
                 $scope.flashcardsTypes.split(',').map(function(x) { return x.trim(); })
             );
         }
+        return params;
+    };
+
+    $scope.showFlashcardsPractice = function() {
+        $scope.flashcardsAnswers = [];
+        var params = getFlashcardFilterParams();
+
         $http.get('/flashcards/practice_image', {params: params}).success(function(response) {
             document.getElementById("flashcardsChart").innerHTML = response;
         });
     };
 
     $scope.showFlashcardsAnswers = function() {
+        var params = getFlashcardFilterParams();
+
         document.getElementById("flashcardsChart").innerHTML = '';
-        $http.get('/flashcards/answers', {params: {limit: $scope.flashcardsLimit}}).success(function(response) {
+        $http.get('/flashcards/answers', {params: params}).success(function(response) {
             $scope.flashcardsAnswers = response.data;
         });
     };
@@ -748,14 +764,14 @@ m.directive('ratingModal', ['$window', function ($window) {
 }]);
 
 
-var m = angular.module('proso.apps.flashcards-practice', ['ngCookies', 'proso.apps.common-config']);
+var m = angular.module('proso.apps.models-practice', ['ngCookies', 'proso.apps.common-config']);
 m.service("practiceService", ["$http", "$q", "configService", "$cookies", function($http, $q, configService, $cookies){
     var self = this;
 
     var queue = [];
-    var deferredFC = null;
+    var deferredQuestion = null;
     var promiseResolvedTmp = false;
-    var currentFC = null;
+    var currentQuestion = null;
     var answerQueue = [];
 
     var config = {};
@@ -765,26 +781,26 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
 
     var contexts = {};
 
-    var loadingFlashcards = false;
+    var loadingQuestions = false;
 
     // called on create and set reset
     self.initSet = function(configName){
         self.flushAnswerQueue();
         var key = "practice." + configName + ".";
-        config.set_length = configService.getConfig("proso_flashcards", key + "set_length", 10);
-        config.fc_queue_size_max = configService.getConfig("proso_flashcards", key + "fc_queue_size_max", 1);
-        config.fc_queue_size_min = configService.getConfig("proso_flashcards", key + "fc_queue_size_min", 1);
-        config.save_answer_immediately = configService.getConfig("proso_flashcards", key + "save_answer_immediately", false);
-        config.cache_context = configService.getConfig("proso_flashcards", key + "cache_context", false);
+        config.set_length = configService.getConfig("proso_models", key + "set_length", 10);
+        config.question_queue_size_max = configService.getConfig("proso_models", key + "question_queue_size_max", 1);
+        config.question_queue_size_min = configService.getConfig("proso_models", key + "question_queue_size_min", 1);
+        config.save_answer_immediately = configService.getConfig("proso_models", key + "save_answer_immediately", false);
+        config.cache_context = configService.getConfig("proso_models", key + "cache_context", false);
 
         self.setFilter({});
         current = 0;
-        currentFC = null;
+        currentQuestion = null;
         self.clearQueue();
-        deferredFC = null;
+        deferredQuestion = null;
         setId++;
         summary = {
-            flashcards: [],
+            questions: [],
             answers: [],
             correct: 0,
             count: 0
@@ -793,9 +809,7 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
 
     self.setFilter = function(filter){
         config.filter = {
-            contexts: [],
-            categories: [],
-            types: []
+            filter: [],
         };
         angular.extend(config.filter, filter);
     };
@@ -827,7 +841,7 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
                     delete answer.time;
                 });
                 $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
-                $http.post("/flashcards/answer/", {answers: answerQueue}, {params: _getFilter(['avoid', 'limit'])})
+                $http.post("/models/answer/", {answers: answerQueue}, {params: _getFilter(['avoid', 'limit'])})
                     .error(function (response) {
                         console.error("Problem while uploading answer", response);
                     });
@@ -840,32 +854,33 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
         self.saveAnswer(null, true);
     };
 
-    // build answer from current FC and save
-    self.saveAnswerToCurrentFC = function(answeredFCId, responseTime, meta){
-        if (!currentFC) {
+    // build answer from current question and save
+    self.saveAnswerToCurrentQuestion = function(answeredId, responseTime, meta){
+        if (!currentQuestion) {
             console.error("There is no current flashcard");
             return;
         }
         var answer = {
-            flashcard_id: currentFC.id,
-            flashcard_answered_id: answeredFCId,
+            flashcard_id: currentQuestion.payload.id,
+            flashcard_answered_id: answeredId,
             response_time: responseTime,
-            direction: currentFC.direction
+            question_type: currentQuestion.question_type,
+            answer_class: currentQuestion.answer_class,
         };
         if (meta) {
             answer.meta = {client_meta: meta};
         }
-        if (currentFC.practice_meta) {
+        if (currentQuestion.practice_meta) {
             if (answer.meta) {
-                answer.meta = angular.extend(answer.meta, currentFC.practice_meta);
+                answer.meta = angular.extend(answer.meta, currentQuestion.practice_meta);
             } else {
-                answer.meta = currentFC.practice_meta;
+                answer.meta = currentQuestion.practice_meta;
             }
         }
-        if (currentFC.options){
+        if (currentQuestion.payload.options && currentQuestion.payload.options.length){
             answer.option_ids = [];
-            currentFC.options.forEach(function(o){
-                if (o.id !== currentFC.id) {
+            currentQuestion.payload.options.forEach(function(o){
+                if (o.id !== currentQuestion.payload.id) {
                     answer.option_ids.push(o.id);
                 }
             });
@@ -873,30 +888,30 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
         self.saveAnswer(answer);
     };
 
-    // return promise of flashcard
-    self.getFlashcard = function(){
-        if(deferredFC){
+    // return promise of question
+    self.getQuestion = function(){
+        if(deferredQuestion){
             return $q(function(resolve, reject){
-                reject("Already one flashcard promised");
+                reject("Already one question promised");
             });
         }
-        deferredFC  = $q.defer();
+        deferredQuestion  = $q.defer();
         promiseResolvedTmp = false;
         _resolvePromise();
-        deferredFC.promise.then(function(){ deferredFC = null;}, function(){ deferredFC = null;});
-        return deferredFC.promise;
+        deferredQuestion.promise.then(function(){ deferredQuestion = null;}, function(){ deferredQuestion = null;});
+        return deferredQuestion.promise;
     };
 
     self.clearQueue = function(){
         queue = [];
     };
 
-    // preload flashcards
-    self.preloadFlashcards = function(){
-        _loadFlashcards();
+    // preload questions
+    self.preloadQuestions = function(){
+        _loadQuestions();
     };
 
-    self.getFCQueue = function(){
+    self.getQuestionQueue = function(){
         return queue;
     };
 
@@ -906,11 +921,11 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
 
     self.getSummary = function(){
         var s = angular.copy(summary);
-        for (var i = 0; i < Math.min(s.flashcards.length, s.answers.length); i++){
+        for (var i = 0; i < Math.min(s.questions.length, s.answers.length); i++){
             var answer = s.answers[i];
-            var flashcard = s.flashcards[i];
-            if (flashcard.id === answer.flashcard_id){
-                flashcard.answer = answer;
+            var question = s.questions[i];
+            if (question.id === answer.flashcard_id){
+                question.answer = answer;
             }
             answer.correct = answer.flashcard_id === answer.flashcard_answered_id;
         }
@@ -918,71 +933,71 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
     };
 
 
-    var _loadFlashcards = function(){
-        if (loadingFlashcards){
+    var _loadQuestions = function(){
+        if (loadingQuestions){
             return;                             // loading request is already running
         }
 
-        if (queue.length >= config.fc_queue_size_min) { return; }                                       // if there are some FC queued
-            config.filter.limit  = config.fc_queue_size_max - queue.length;
-        if (deferredFC && !promiseResolvedTmp) { config.filter.limit ++; }                  // if we promised one flashcard
+        if (queue.length >= config.question_queue_size_min) { return; }                                       // if there are some questions queued
+            config.filter.limit  = config.question_queue_size_max - queue.length;
+        if (deferredQuestion && !promiseResolvedTmp) { config.filter.limit ++; }                  // if we promised one question
         config.filter.limit = Math.min(config.filter.limit, config.set_length - current - queue.length);  // check size of set
         if (config.filter.limit === 0) {return;}                         // nothing to do
-        config.filter.avoid = currentFC ? [currentFC.id] : [];      // avoid current FC
-        queue.forEach(function(fc){
-            config.filter.avoid.push(fc.id);
+        config.filter.avoid = currentQuestion && currentQuestion.payload ? [currentQuestion.payload.id] : [];      // avoid current question
+        queue.forEach(function(question){
+            config.filter.avoid.push(question.payload.id);
         });
 
         var filter = _getFilter();
         var request;
         if (answerQueue.length === 0) {
-            request = $http.get("/flashcards/practice/", {params: filter});
+            request = $http.get("/models/practice/", {params: filter});
         }else{
             $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
-            request = $http.post("/flashcards/practice/", {answers: answerQueue}, {params: filter});
+            request = $http.post("/models/practice/", {answers: answerQueue}, {params: filter});
             answerQueue = [];
         }
         var request_in_set = setId;
-        loadingFlashcards = true;
+        loadingQuestions = true;
         request
             .success(function(response){
-                loadingFlashcards = false;
+                loadingQuestions = false;
                 if (request_in_set !== setId) {
                     return;
                 }
-                queue = queue.concat(response.data.flashcards);
+                queue = queue.concat(response.data);
                 _loadContexts();
                 if (queue.length > 0) {
                     _resolvePromise();
                 }
                 else{
-                    console.error("No Flashcards to practice");
+                    console.error("No Questions to practice");
                 }
             })
             .error(function (response) {
-                loadingFlashcards = false;
-                if (deferredFC !== null){
-                    deferredFC.reject("Something went wrong while loading flashcards from backend.");
+                loadingQuestions = false;
+                if (deferredQuestion !== null){
+                    deferredQuestion.reject("Something went wrong while loading questions from backend.");
                 }
-                console.error("Something went wrong while loading flashcards from backend.");
+                console.error("Something went wrong while loading questions from backend.");
             });
     };
 
     var _loadContexts = function(){
         if (config.cache_context){
-            queue.forEach(function(fc){
-                if (fc.context_id in contexts){
-                    if (contexts[fc.context_id] !== "loading"){
-                        fc.context = contexts[fc.context_id];
+            queue.forEach(function(question){
+                if (question.context_id in contexts){
+                    if (contexts[question.context_id] !== "loading"){
+                        question.context = contexts[question.context_id];
                     }
                 }else{
-                    contexts[fc.context_id] = "loading";
-                    $http.get("/flashcards/context/" + fc.context_id, {cache: true})
+                    contexts[question.context_id] = "loading";
+                    $http.get("/flashcards/context/" + question.context_id, {cache: true})
                         .success(function(response){
-                            contexts[fc.context_id] = response.data;
+                            contexts[question.context_id] = response.data;
                             _resolvePromise();
                         }).error(function(){
-                            delete contexts[fc.context_id];
+                            delete contexts[question.context_id];
                             console.error("Error while loading context from backend");
                         });
                 }
@@ -991,11 +1006,11 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
     };
 
     var _resolvePromise = function(){
-        if (deferredFC === null){
+        if (deferredQuestion === null){
             return;
         }
         if (config.set_length === current){
-            deferredFC.reject("Set was completed");
+            deferredQuestion.reject("Set was completed");
             return;
         }
         if (queue.length > 0) {
@@ -1006,13 +1021,13 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
                     return;
                 }
             }
-            currentFC = queue.shift();
+            currentQuestion = queue.shift();
             current++;
             promiseResolvedTmp = true;
-            summary.flashcards.push(currentFC);
-            deferredFC.resolve(currentFC);
+            summary.questions.push(currentQuestion);
+            deferredQuestion.resolve(currentQuestion);
         }
-        _loadFlashcards();
+        _loadQuestions();
     };
 
     var _getFilter = function(ignore) {
@@ -1037,45 +1052,43 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
     };
 }]);
 
-var m = angular.module('proso.apps.flashcards-userStats', ['ngCookies']);
+var m = angular.module('proso.apps.models-userStats', ['ngCookies']);
 m.service("userStatsService", ["$http", "$cookies", function($http, $cookies){
     var self = this;
 
-    var filters = {};
+    var filters = {
+      filters: {},
+    };
 
     self.addGroup = function (id, data) {
         if (!data.language){
             delete data.language;
         }
-        filters[id] = data;
+        filters.filters[id] = data;
     };
 
-    self.addGroupParams = function (id, categories, contexts, types, language) {
-        filters[id] = {
-            categories: categories,
-            contexts: contexts,
-            types: types
-        };
+    self.addGroupParams = function (id, filter, language) {
+        filters.filters[id] = filter;
         if (typeof language !== "undefined"){
-            filters[id].language = language;
+            filters.language = language;
         }
     };
 
-    self.getFlashcardCounts = function(){
+    self.getToPracticeCounts = function(){
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
-        return $http.post("/flashcards/flashcard_counts/", filters, {cache: true});
+        return $http.post("/models/to_practice_counts/", filters, {cache: true});
     };
 
     self.getStats = function(mastered, username){
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
-        var params = {filters: JSON.stringify(filters)};
-        if (username){
-            params.username = username;
-        }
+        var params = {filters: JSON.stringify(filters.filters)};
         if (mastered){
             params.mastered = true;
         }
-        return $http.get("/flashcards/user_stats/", {params: params});
+        if (username){
+            params.username = username;
+        }
+        return $http.get("/models/user_stats/", {params: params});
     };
 
     self.getStatsPost = function(mastered, username){
@@ -1083,7 +1096,7 @@ m.service("userStatsService", ["$http", "$cookies", function($http, $cookies){
         var params = "?";
         params += mastered ? "&mastered=true" : "";
         params += username ? "&username="+username : "";
-        return $http.post("/flashcards/user_stats/" + params, filters);
+        return $http.post("/models/user_stats/" + params, filters);
     };
 
     self.clean = function(){
@@ -1297,6 +1310,10 @@ m.service("userService", ["$http", function($http){
         _openPopup('/login/facebook/', '/user/close_popup/');
     };
 
+    self.loginEdookit = function() {
+        _openPopup('/login/edookit/', '/user/close_popup/');
+    };
+
     var _openPopup = function(url, next){
         var settings = 'height=700,width=700,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=yes,directories=no,status=yes';
         url += "?next=" + next;
@@ -1421,6 +1438,71 @@ m.directive('loginButton', ['loginModal', function(loginModal) {
         }
     };
 }]);
+
+var m = angular.module('proso.apps.user-questions', []);
+m.factory('userQuestionsService', ["$http", function($http) {
+  return {
+    getQuestions: function() {
+      return $http.get('/user/questions/?all=true');
+    },
+    getQuestionsToAsk: function() {
+      return $http.get('/user/questions_to_ask/');
+    },
+    saveAnswer: function(question, answer) {
+      var answer_dict = {
+        question : question.id,
+      };
+      if (answer && answer.id) {
+        answer_dict.closed_answer = answer.id;
+      } else if (answer) {
+        answer_dict.open_answer = answer;
+      }
+      var data = {
+        answers : [answer_dict],
+      };
+      return $http.post('/user/answer_question/', data);
+    }
+  };
+}]);
+
+m.directive('userQuestionsBanner', ['userQuestionsService', '$rootScope', 'userService',
+    function(userQuestionsService, $rootScope, userService) {
+  return {
+    restrict: 'A',
+    templateUrl : 'templates/user-questions/user_questions_banner.html',
+    link: function ($scope) {
+      var eventName = 'questionSetFinished';
+      $rootScope.$on(eventName, function() {
+        var answered_count = userService.user.profile.number_of_answers;
+        userQuestionsService.getQuestionsToAsk().success(function(data) {
+          $scope.questions = data.data.filter(function(q) {
+            return q.on_events && q.on_events[0] &&
+              q.on_events[0].type === eventName &&
+              q.on_events[0].value <= answered_count &&
+              answered_count < q.on_events[0].value + 10;
+          });
+          $scope.questions = $scope.questions.slice(0, 1);
+        });
+      });
+
+      $scope.saveUserQuesiton = function(question, answer) {
+        if (answer) {
+          question.answer = answer;
+        }
+        question.processing = true;
+        userQuestionsService.saveAnswer(
+            question, question.answer).success(function(data) {
+          question.processing = false;
+          question.saved = true;
+        }).error(function(data) {
+          question.processing = false;
+          question.error = true;
+        });
+      };
+    }
+  };
+}]);
+
 
 angular.module("templates/common-toolbar/toolbar.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("templates/common-toolbar/toolbar.html",
@@ -1702,7 +1784,7 @@ angular.module("templates/user-login/signup-modal.html", []).run(["$templateCach
     "    </button>\n" +
     "    <h3 class=\"modal-title\"> {{ \"Sign Up\" | translate }} </h3>\n" +
     "    <div ng-hide=\"success\">\n" +
-    "        {{\" and get all the benefits of registered users.\" | translate }}\n" +
+    "        {{\"and get all the benefits of registered users.\" | translate }}\n" +
     "    </div>\n" +
     "</div>\n" +
     "<div class=\"modal-body\" ng-hide=\"success\">\n" +
@@ -1755,6 +1837,57 @@ angular.module("templates/user-login/signup-modal.html", []).run(["$templateCach
     "        <alert type=\"success\">\n" +
     "            {{ 'Registration was successful. You can continue to use the application.' | translate }}\n" +
     "        </alert>\n" +
+    "</div>\n" +
+    "\n" +
+    "");
+}]);
+
+angular.module("templates/user-questions/user_questions_banner.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("templates/user-questions/user_questions_banner.html",
+    "<div class=\"bottom-alert text-center alert alert-{{question.saved ? 'success' : 'info'}} form-inline\"\n" +
+    "  ng-repeat=\"question in questions\"\n" +
+    "  ng-if=\"!userService.status.loading && userService.user.profile.number_of_answers >= 2\">\n" +
+    "  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"\n" +
+    "      track-click=\"close user question banner\">\n" +
+    "    <span aria-hidden=\"true\">&times;</span>\n" +
+    "    <span class=\"sr-only\" translate>Close</span>\n" +
+    "  </button>\n" +
+    "  <div ng-if=\"!question.saved\">\n" +
+    "    <span>\n" +
+    "    {{question.content}}\n" +
+    "    </span>\n" +
+    "    <input ng-model=\"question.answer\"\n" +
+    "      ng-if=\"question.answer_type != 'c'\"\n" +
+    "      class=\"form-control\"\n" +
+    "      typeahead-min-length=\"0\"\n" +
+    "      typeahead=\"option as option.content for option in question.possible_answers |\n" +
+    "        filter:{content: $viewValue} |\n" +
+    "        limitTo:($viewValue.length ? $viewValue.length * 2 : 2)\">\n" +
+    "    </input>\n" +
+    "    <span ng-model=\"question.answer\"\n" +
+    "      ng-repeat=\"option in question.possible_answers\"\n" +
+    "      ng-if=\"question.answer_type == 'c'\"\n" +
+    "      ng-bind=\"option.content\"\n" +
+    "      ng-click=\"saveUserQuesiton(question, option)\"\n" +
+    "      class=\"btn btn-default\">\n" +
+    "    </span>\n" +
+    "    <a href=\"\"\n" +
+    "       class=\"btn btn-primary\"\n" +
+    "       ng-if=\"question.answer_type != 'c'\"\n" +
+    "       track-click=\"user question banner\"\n" +
+    "       ng-click=\"saveUserQuesiton(question)\"\n" +
+    "       ng-disabled=\"question.processing || !question.answer\"\n" +
+    "      >\n" +
+    "      <span translate ng-if=\"question.processing\">Saving...</span>\n" +
+    "      <span translate ng-if=\"!question.processing\">Save</span>\n" +
+    "    </a>\n" +
+    "    <div ng-if=\"question.answer_type == 'm'\">\n" +
+    "    <br> <br> <br> <br>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "  <div ng-if=\"question.saved\" translate>\n" +
+    "    Thank you for your response.\n" +
+    "  </div>\n" +
     "</div>\n" +
     "\n" +
     "");
