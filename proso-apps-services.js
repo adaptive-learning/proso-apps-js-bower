@@ -1,9 +1,9 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2016-05-13
+ * Version: 1.0.0 - 2016-05-20
  * License: MIT
  */
-angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.flashcards-userStats","proso.apps.models-practice","proso.apps.user-user", "proso.apps.common-toolbar"])
+angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.flashcards-userStats","proso.apps.models-practice","proso.apps.models-userStats","proso.apps.user-user", "proso.apps.common-toolbar"])
 angular.module("proso.apps.tpls", ["templates/common-toolbar/toolbar.html"]);
 angular.module("proso.apps.gettext", [])
 .value("gettext", window.gettext || function(x){return x;})
