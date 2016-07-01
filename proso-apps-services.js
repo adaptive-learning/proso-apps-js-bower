@@ -626,7 +626,9 @@ m.service("userStatsService", ["$http", "$cookies", function($http, $cookies){
     };
 
     self.clean = function(){
-        filters = {};
+        filters = {
+          filters: {},
+        };
     };
 
     self.getGroups = function (){
