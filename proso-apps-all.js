@@ -1,9 +1,9 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2016-05-25
+ * Version: 1.0.0 - 2016-07-08
  * License: MIT
  */
-angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.models-practice","proso.apps.models-userStats","proso.apps.user-user","proso.apps.user-login","proso.apps.user-questions"]);
+angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.concept-concept","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.models-practice","proso.apps.models-userStats","proso.apps.user-user","proso.apps.user-login","proso.apps.user-questions"]);
 angular.module("proso.apps.tpls", ["templates/common-toolbar/toolbar.html","templates/feedback-comment/comment.html","templates/feedback-rating/rating.html","templates/user-login/login-modal.html","templates/user-login/signup-modal.html","templates/user-questions/user_questions_banner.html"]);
 angular.module("proso.apps.gettext", [])
 .value("gettext", window.gettext || function(x){return x;})
@@ -627,6 +627,138 @@ m.directive('toolbar', [function () {
     };
 }]);
 
+var m = angular.module('proso.apps.concept-concept', []);
+m.service("conceptService", ["$http", "$q", function($http, $q) {
+    var self = this;
+    var concepts = null;
+    var conceptsPromise = null;
+    var userStats = null;
+    var userStatsPromise = null;
+
+    var _getConcepts = function () {
+        if (conceptsPromise){
+            return conceptsPromise;
+        }
+        conceptsPromise = $http.get("/concepts/concepts?all=True")
+            .success(function(response){
+                concepts = response.data;
+                angular.forEach(concepts, function (concept) {
+                    concept.tags_raw = [];
+                    angular.forEach(concept.tags, function (tag) {
+                        concept.tags_raw.push(tag.type + ':' + tag.value);
+                    });
+                });
+            }).error(function(){
+                console.error("Error while loading concepts from backend");
+            });
+        return conceptsPromise;
+    };
+
+    var _getUserStats = function () {
+        if (userStatsPromise){
+            return userStatsPromise;
+        }
+        userStatsPromise = $http.get("/concepts/user_stats")
+            .success(function(response){
+                userStats = response.data;
+            }).error(function(){
+                console.error("Error while loading user stats from backend");
+            });
+        return userStatsPromise;
+    };
+
+    // get all concepts
+    self.getConcepts = function () {
+        return $q(function(resolve, reject) {
+            if (concepts !== null) {
+                resolve(angular.copy(concepts));
+            } else {
+                _getConcepts()
+                    .success(function(){
+                        resolve(angular.copy(concepts));
+                    }).error(function(){
+                        reject("Error while loading concepts from backend");
+                });
+            }
+        });
+    };
+
+    self.getUserStats = function (getFromServer) {
+        return $q(function(resolve, reject) {
+            if (userStats !== null && !getFromServer ) {
+                resolve(angular.copy(userStats));
+            } else {
+                userStatsPromise = null;
+                _getUserStats()
+                    .success(function(){
+                        resolve(angular.copy(userStats));
+                    }).error(function(){
+                    reject("Error while loading userStats from backend");
+                });
+            }
+        });
+    };
+
+    // get all concepts containing all provided tags (form 'type:value')
+    self.getConceptsWithTags = function (tags) {
+        if (typeof tags !== 'object'){
+            tags = tags ? [tags] : [];
+        }
+        return $q(function(resolve, reject) {
+            self.getConcepts().then(
+                function (concepts) {
+                    var filtered_concepts = [];
+                    angular.forEach(concepts, function (concept) {
+                        var isIn = true;
+                        angular.forEach(tags, function (tag) {
+                            if (concept.tags_raw.indexOf(tag) === -1){
+                                isIn = false;
+                            }
+                        });
+                        if (isIn){
+                            filtered_concepts.push(concept);
+                        }
+                    });
+                    resolve(filtered_concepts);
+                }, function (msg) {
+                    reject(msg);
+            });
+        });
+    };
+
+    var getConceptByParam = function (param, value) {
+        return $q(function(resolve, reject) {
+            self.getConcepts().then(
+                function (concepts) {
+                    var found_concept = {};
+                    angular.forEach(concepts, function (concept) {
+                        if (concept[param] === value){
+                            found_concept = concept;
+                        }
+                    });
+                    resolve(found_concept);
+                }, function (msg) {
+                    reject(msg);
+                });
+        });
+    };
+
+    self.getConceptByName = function (name) {
+        return getConceptByParam('name', name);
+    };
+
+    self.getConceptByIdentifier = function (identifier) {
+        return getConceptByParam('identifier', identifier);
+    };
+
+    self.getConceptByQuery = function (query) {
+        return getConceptByParam('identifier', query);
+    };
+
+    self.getUserStatsBulk = function (users) {
+        return $http.get("/concepts/user_stats_bulk", {params: {users: JSON.stringify(users)}});
+    };
+}]);
 var m = angular.module('proso.apps.feedback-comment', ['ui.bootstrap', 'gettext']);
 
 m.directive('feedbackComment', ['$modal', '$window', 'gettextCatalog', function ($modal, $window, gettextCatalog) {
@@ -855,18 +987,24 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
     };
 
     // build answer from current question and save
-    self.saveAnswerToCurrentQuestion = function(answeredId, responseTime, meta){
+    self.saveAnswerToCurrentQuestion = function(answeredId, responseTime, meta, extra){
         if (!currentQuestion) {
             console.error("There is no current flashcard");
             return;
         }
         var answer = {
-            flashcard_id: currentQuestion.payload.id,
-            flashcard_answered_id: answeredId,
             response_time: responseTime,
-            question_type: currentQuestion.question_type,
-            answer_class: currentQuestion.answer_class,
+            answer_class: currentQuestion.answer_class
         };
+        if (currentQuestion.answer_class === "flashcard_answer"){
+            answer.flashcard_id = currentQuestion.payload.id;
+            answer.flashcard_answered_id = answeredId;
+            answer.question_type = currentQuestion.question_type;
+        }
+        if (currentQuestion.answer_class === "task_answer"){
+            answer.task_instance_id = currentQuestion.payload.id;
+            answer.correct = answeredId === currentQuestion.payload.id;
+        }
         if (meta) {
             answer.meta = {client_meta: meta};
         }
@@ -884,6 +1022,9 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
                     answer.option_ids.push(o.id);
                 }
             });
+        }
+        if (extra){
+            answer = angular.extend(answer, extra);
         }
         self.saveAnswer(answer);
     };
@@ -986,18 +1127,18 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
     var _loadContexts = function(){
         if (config.cache_context){
             queue.forEach(function(question){
-                if (question.context_id in contexts){
-                    if (contexts[question.context_id] !== "loading"){
-                        question.context = contexts[question.context_id];
+                if (question.payload.context_id in contexts){
+                    if (contexts[question.payload.context_id] !== "loading"){
+                        question.payload.context = contexts[question.payload.context_id];
                     }
                 }else{
-                    contexts[question.context_id] = "loading";
-                    $http.get("/flashcards/context/" + question.context_id, {cache: true})
+                    contexts[question.payload.context_id] = "loading";
+                    $http.get("/flashcards/context/" + question.payload.context_id, {cache: true})
                         .success(function(response){
-                            contexts[question.context_id] = response.data;
+                            contexts[question.payload.context_id] = response.data;
                             _resolvePromise();
                         }).error(function(){
-                            delete contexts[question.context_id];
+                            delete contexts[question.payload.context_id];
                             console.error("Error while loading context from backend");
                         });
                 }
@@ -1015,8 +1156,8 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
         }
         if (queue.length > 0) {
             if (config.cache_context){
-                if (typeof contexts[queue[0].context_id]  === 'object'){
-                    queue[0].context = contexts[queue[0].context_id];
+                if (typeof contexts[queue[0].payload.context_id]  === 'object'){
+                    queue[0].payload.context = contexts[queue[0].payload.context_id];
                 }else{
                     return;
                 }
@@ -1100,7 +1241,9 @@ m.service("userStatsService", ["$http", "$cookies", function($http, $cookies){
     };
 
     self.clean = function(){
-        filters = {};
+        filters = {
+          filters: {},
+        };
     };
 
     self.getGroups = function (){
@@ -1321,6 +1464,103 @@ m.service("userService", ["$http", function($http){
     };
 
     self.init();
+
+    self.updateClasses = function(){
+        self.status.loading = true;
+        _resetError();
+        var promise = $http.get("/user/classes/");
+        promise.success(function(response){
+                var classes = response.data;
+                angular.forEach(classes, function (cls) {
+                    delete cls.owner;
+                });
+                self.user.profile.owner_of = classes;
+            })
+            .error(function(response){
+                self.error = response;
+            })
+            .finally(function(response){
+                self.status.loading = false;
+            });
+        return promise;
+    };
+
+    self.createClass = function(name, code){
+        self.status.loading = true;
+        _resetError();
+        var promise = $http.post("/user/create_class/", {
+            name: name,
+            code: code
+        });
+        promise.success(function(response){
+                var cls = response.data;
+                delete cls.owner;
+                self.user.profile.owner_of.push(cls);
+            })
+            .error(function(response){
+                self.error = response;
+            })
+            .finally(function(response){
+                self.status.loading = false;
+            });
+        return promise;
+    };
+
+    self.joinClass = function (code) {
+        self.status.loading = true;
+        _resetError();
+        var promise = $http.post("/user/join_class/", {
+            code: code
+        });
+        promise.success(function(response){
+                self.user.profile.member_of.push(response.data);
+            })
+            .error(function(response){
+                self.error = response;
+            })
+            .finally(function(response){
+                self.status.loading = false;
+            });
+        return promise;
+    };
+
+    self.createStudent = function(data){
+        self.status.loading = true;
+        _resetError();
+        var promise = $http.post("/user/create_student/", data);
+        promise.success(function(response){
+                angular.forEach(self.user.profile.owner_of, function (cls) {
+                    if (cls.id === data.class){
+                        cls.members.push(response.data);
+                    }
+                });
+            })
+            .error(function(response){
+                self.error = response;
+            })
+            .finally(function(response){
+                self.status.loading = false;
+            });
+        return promise;
+    };
+
+    self.loginStudent = function (id) {
+        self.status.loading = true;
+        _resetError();
+        var promise = $http.post("/user/login_student/", {
+            student: id
+        });
+        promise.success(function(response){
+                _processUser(response.data);
+            })
+            .error(function(response){
+                self.error = response;
+            })
+            .finally(function(response){
+                self.status.loading = false;
+            });
+        return promise;
+    };
 
 }]);
 
