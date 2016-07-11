@@ -1,6 +1,6 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2016-05-25
+ * Version: 1.0.0 - 2016-07-11
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.models-practice","proso.apps.models-userStats","proso.apps.user-user","proso.apps.user-login","proso.apps.user-questions"]);
@@ -986,18 +986,18 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
     var _loadContexts = function(){
         if (config.cache_context){
             queue.forEach(function(question){
-                if (question.context_id in contexts){
-                    if (contexts[question.context_id] !== "loading"){
-                        question.context = contexts[question.context_id];
+                if (question.payload.context_id in contexts){
+                    if (contexts[question.payload.context_id] !== "loading"){
+                        question.payload.context = contexts[question.payload.context_id];
                     }
                 }else{
-                    contexts[question.context_id] = "loading";
-                    $http.get("/flashcards/context/" + question.context_id, {cache: true})
+                    contexts[question.payload.context_id] = "loading";
+                    $http.get("/flashcards/context/" + question.payload.context_id, {cache: true})
                         .success(function(response){
-                            contexts[question.context_id] = response.data;
+                            contexts[question.payload.context_id] = response.data;
                             _resolvePromise();
                         }).error(function(){
-                            delete contexts[question.context_id];
+                            delete contexts[question.payload.context_id];
                             console.error("Error while loading context from backend");
                         });
                 }
@@ -1015,8 +1015,8 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
         }
         if (queue.length > 0) {
             if (config.cache_context){
-                if (typeof contexts[queue[0].context_id]  === 'object'){
-                    queue[0].context = contexts[queue[0].context_id];
+                if (typeof contexts[queue[0].payload.context_id]  === 'object'){
+                    queue[0].payload.context = contexts[queue[0].payload.context_id];
                 }else{
                     return;
                 }
