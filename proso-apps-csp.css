@@ -219,6 +219,10 @@
     background-color: #ffff00;
 }
 
+.adjustment .btn {
+    margin: 10px;
+}
+
 .rating .btn {
     margin: 20px;
 }

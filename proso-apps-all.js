@@ -1,10 +1,10 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2016-07-08
+ * Version: 1.0.0 - 2016-09-23
  * License: MIT
  */
-angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.concept-concept","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.models-practice","proso.apps.models-userStats","proso.apps.user-user","proso.apps.user-login","proso.apps.user-questions"]);
-angular.module("proso.apps.tpls", ["templates/common-toolbar/toolbar.html","templates/feedback-comment/comment.html","templates/feedback-rating/rating.html","templates/user-login/login-modal.html","templates/user-login/signup-modal.html","templates/user-questions/user_questions_banner.html"]);
+angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.concept-concept","proso.apps.feedback-adjustment","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.models-practice","proso.apps.models-userStats","proso.apps.user-user","proso.apps.user-login","proso.apps.user-questions"]);
+angular.module("proso.apps.tpls", ["templates/common-toolbar/toolbar.html","templates/feedback-adjustment/adjustment.html","templates/feedback-comment/comment.html","templates/feedback-rating/rating.html","templates/user-login/login-modal.html","templates/user-login/signup-modal.html","templates/user-questions/user_questions_banner.html"]);
 angular.module("proso.apps.gettext", [])
 .value("gettext", window.gettext || function(x){return x;})
 .filter("trans", ["gettext", function(gettext) {
@@ -14,7 +14,7 @@ angular.module("proso.apps.gettext", [])
 }]);
 angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
 /* jshint -W100 */
-    gettextCatalog.setStrings('cs', {"Appropriate":"Tak akorát","Close":"Zavřít","Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.":"Narazili jste na chybu v aplikaci? Máte nápad na vylepšení? Nebo jakýkoliv jiný postřeh či komentář? Zajímá nás všechno, co nám chcete sdělit.","Don't know / Don't want to rate":"Nevím / Nechci hodnotit","E-mail":"E-mail","How difficult are the questions?":"Jak těžké se vám zdají otázky?","Password":"Heslo","Password again":"Heslo znovu","Registration was successful. You can continue to use the application.":"Registrace proběhla úspěšně. Můžete pokračovat v používání aplikace.","Save":"Uložit","Saving...":"Ukládání...","Send":"Odeslat","Sign In":"Přihlásit se","Sign Up":"Zaregistrovat se","Something wrong has happened.":"V aplikaci nastala chyba.","Thank you for the message. User feedback is very important for us.":"Děkujeme Vám za zaslané informace. Feedback od uživatelů je k nezaplacení.","Thank you for your rating.":"Děkujeme za vaše hodnocení.","Thank you for your response.":"Děkujeme za odpověď.","Too difficult":"Příliš těžké","Too easy":"Příliš lehké","Username":"Uživatelské jméno","Write to us":"Napište nám","Your answer helps us adjust difficulty of questions.":"Svou odpovědí nám pomáháte přizpůsobovat obtížnost otázek.","Your e-mail address (optional)":"Váš e-mail (nepovinné)","and get all the benefits of registered users.":"a získejte všechny výhody registrovaných uživatelů.","via E-mail":"přes E-mail","via Facebook":"přes Facebook","via Google":"přes Google"});
+    gettextCatalog.setStrings('cs', {"Appropriate":"Tak akorát","Bit easier":"Trochu lehčí","Bit harder":"Trochu těžší","Close":"Zavřít","Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.":"Narazili jste na chybu v aplikaci? Máte nápad na vylepšení? Nebo jakýkoliv jiný postřeh či komentář? Zajímá nás všechno, co nám chcete sdělit.","Don't know / Don't want to answer":"Nevím / Nechci odpovídat","Don't know / Don't want to rate":"Nevím / Nechci hodnotit","E-mail":"E-mail","How difficult are the questions?":"Jak těžké se vám zdají otázky?","How difficult would you like the questions to be?":"Jak těžké by měly být další otázky?","Much easier":"Mnohem lehčí","Much harder":"Mnohem těžší","Password":"Heslo","Password again":"Heslo znovu","Registration was successful. You can continue to use the application.":"Registrace proběhla úspěšně. Můžete pokračovat v používání aplikace.","Save":"Uložit","Saving...":"Ukládání...","Send":"Odeslat","Sign In":"Přihlásit se","Sign Up":"Zaregistrovat se","Something wrong has happened.":"V aplikaci nastala chyba.","Thank you for the message. User feedback is very important for us.":"Děkujeme Vám za zaslané informace. Feedback od uživatelů je k nezaplacení.","Thank you for your rating.":"Děkujeme za vaše hodnocení.","Thank you for your response.":"Děkujeme za odpověď.","The same":"Stejně těžké","Too difficult":"Příliš těžké","Too easy":"Příliš lehké","Username":"Uživatelské jméno","Write to us":"Napište nám","Your answer helps us adjust difficulty of questions.":"Svou odpovědí nám pomáháte přizpůsobovat obtížnost otázek.","Your e-mail address (optional)":"Váš e-mail (nepovinné)","and get all the benefits of registered users.":"a získejte všechny výhody registrovaných uživatelů.","via E-mail":"přes E-mail","via Facebook":"přes Facebook","via Google":"přes Google"});
     gettextCatalog.setStrings('de', {"Appropriate":"genau richtig","Close":"Schließen","Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.":"Haben Sie einen Fehler in der App gefunden? Haben Sie eine Idee, wie man diese App besser machen könnte? Oder einen anderen Tipp oder Kommentar? Wir interessieren uns für alles, was Sie uns mitteilen wollen.","Don't know / Don't want to rate":"ich weiß nicht/ ich will nicht antworten","E-mail":"E-Mail","How difficult are the questions?":"Wie schwierig sind die gestellten Fragen?","Password":"Passwort","Password again":"Passwort wiederholen","Registration was successful. You can continue to use the application.":"Die Registrierung wurde erfolgreich durgeführt. Sie können fortfahren, um die App zu nutzen.","Send":"Senden","Sign In":"Anmelden","Sign Up":"Registrieren","Something wrong has happened.":"Leider ist ein Fehler aufgetreten","Thank you for the message. User feedback is very important for us.":"Vielen Dank für Ihre gesendeten Informationen. Feedback der Benutzer ist für uns unbezahlbar.","Thank you for your rating.":"Vielen Dank für Ihre Einschätzung.","Too difficult":"zu schwierig","Too easy":"zu einfach","Username":"Benutzername","Write to us":"Schreiben Sie uns","Your answer helps us adjust difficulty of questions.":"Mit ihrer Antwort helfen sie uns die Schwierigkeit der Fragen anzupassen","Your e-mail address (optional)":"Ihre E-Mail-Adresse","and get all the benefits of registered users.":"und genießen Sie alle Vorteile der registrierten Benutzer.","via E-mail":"per E-Mail","via Facebook":"via Facebook","via Google":"via Google"});
     gettextCatalog.setStrings('en', {"Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.":"Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.","Don't know / Don't want to rate":"Don't know / Don't want to rate","E-mail":"E-mail","How difficult are the questions?":"How difficult are the questions?","Password":"Password","Password again":"Password again","Registration was successful. You can continue to use the application.":"Registration was successful. You can continue to use the application.","Send":"Send","Sign In":"Sign In","Sign Up":"Sign Up","Something wrong has happened.":"Something wrong has happened.","Thank you for the message. User feedback is very important for us.":"Thank you for the message. User feedback is very important for us.","Thank you for your rating.":"Thank you for your rating.","Too difficult":"Too difficult","Too easy":"Too easy","Username":"Username","Write to us":"Write to us","Your e-mail address (optional)":"Your e-mail address (optional)","and get all the benefits of registered users.":"and get all the benefits of registered users.","via E-mail":"via E-mail","via Facebook":"via Facebook","via Google":"via Google"});
     gettextCatalog.setStrings('es', {"Appropriate":"Adecuado","Close":"Cerrar","Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.":"¿Encontraste algún error en el programa? ¿Tienes alguna sugerencia sobre como podemos mejorar? ¿Quieres compartir tu opinión con nosotros? Nos gustaría escuchar lo que tengas que decir.","Don't know / Don't want to rate":"No sé/No quiero calificar","E-mail":"E-mail","How difficult are the questions?":"¿Qué tan difíciles son estas preguntas?","Password":"Contraseña","Password again":"Contraseña de nuevo","Registration was successful. You can continue to use the application.":"Registro exitoso. Puedes continuar usando la aplicación.","Send":"Enviar","Sign In":"Iniciar sesión","Sign Up":"Registrarse","Something wrong has happened.":"Algo malo ha ocurrido.","Thank you for the message. User feedback is very important for us.":"Gracias por tu mensaje. Tu opinión es muy importante para nosotros.","Thank you for your rating.":"Gracias por calificarnos.","Too difficult":"Muy dificil","Too easy":"Muy facil","Username":"Nombre de usuario","Write to us":"Sugerencias","Your answer helps us adjust difficulty of questions.":"Tu respuesta ayuda a ajustar la dificultad de las preguntas.","Your e-mail address (optional)":"Tu e-mail (opcional)","and get all the benefits of registered users.":"y accede a todos los benecifios de un usuario registrado.","via E-mail":"con E-mail","via Facebook":"con Facebook","via Google":"con Google"});
@@ -759,6 +759,121 @@ m.service("conceptService", ["$http", "$q", function($http, $q) {
         return $http.get("/concepts/user_stats_bulk", {params: {users: JSON.stringify(users)}});
     };
 }]);
+var m = angular.module('proso.apps.feedback-adjustment', ['ui.bootstrap', 'gettext']);
+
+m.controller('AdjustmentModalController', ['$scope', '$rootScope', '$modal', '$routeParams',
+        function ($scope, $rootScope, $modal, $routeParams) {
+
+    $scope.openAdjustmentModal = function(config) {
+        if ($scope.email) {
+            $scope.feedback.email = $scope.email;
+        }
+
+        $modal.open({
+            templateUrl: 'templates/feedback-adjustment/adjustment.html',
+            controller: 'AdjustmentModalInstanceController',
+            size: 'lg',
+            resolve: {
+                practiceFilter: function () {
+                    return config.filter;
+                },
+                feedback: function () {
+                    return $scope.feedback;
+                },
+            }
+        });
+    };
+
+    $rootScope.$on('questionSetFinished', function(event, args) {
+        $scope.openAdjustmentModal(args);
+    });
+
+    $scope.$on('$routeChangeSuccess', function() {
+        if ($routeParams.adjustmentrating) {
+          var filter = {
+            filter : [[
+              'proso_flashcards_context/' + $routeParams.context,
+            ]],
+          };
+          if ($routeParams.category) {
+            filter.filter.push(['proso_flashcards_category/' + $routeParams.category]);
+          } 
+
+          $rootScope.$emit('questionSetFinished', filter);
+        }
+    });
+}]);
+
+m.controller('AdjustmentModalInstanceController', [
+        '$scope', '$modalInstance', '$http', '$cookies', 'gettextCatalog', 'customConfig', 'practiceFilter',
+        function($scope, $modalInstance, $http, $cookies, gettextCatalog, customConfig, practiceFilter) {
+
+    $scope.alerts = [];
+
+    $scope.vote = function(answer) {
+        $scope.answer = answer;
+        $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+
+        $http.post('/feedback/rating/', {'value': answer / 10 + 6}).success(function(data){
+            $scope.alerts.push({
+                type : 'success',
+                msg : gettextCatalog.getString('Thank you for your rating.'),
+            });
+            $scope.sending = false;
+        }).error(function(){
+            $scope.alerts.push({
+                type : 'danger',
+                msg : gettextCatalog.getString("Something wrong has happened."),
+            });
+            $scope.sending = false;
+        });
+        $scope.sending = true;
+        customConfig.updateConfig(answer, practiceFilter);
+    };
+
+    $scope.closeAlert = function(index) {
+        $scope.alerts.splice(index, 1);
+        $modalInstance.dismiss('cancel');
+    };
+    $scope.cancel = function() {
+        $modalInstance.dismiss('cancel');
+    };
+}]);
+
+m.directive('adjustmentModal', ['$window', function ($window) {
+    return {
+        restrict: 'E',
+        controller: 'AdjustmentModalController',
+    };
+}]);
+
+m.factory('customConfig', ['$http', function($http) {
+  var that = {
+    updateConfig: function(answer, practiceFilter) {
+        var key = 'item_selector.parameters.target_probability';
+        var app_name = 'proso_models';
+        var filter = angular.toJson(practiceFilter);
+        $http.get('common/config/?filter=' + filter).success(function(config) {
+          var currentValue = 0;
+          try {
+            currentValue = config.data.proso_models.item_selector.parameters.target_probability;
+          } catch (e) {
+            console.error(e);
+          }
+          var data = {
+            app_name: app_name,
+            key : key,
+            value: Math.max(0, Math.min(1, currentValue + answer / 100)),
+            condition_key: 'practice_filter',
+            condition_value: filter,
+          };
+          var promise = $http.post('/common/custom_config/', data);
+        });
+    },
+  };
+  return that;
+}]);
+
 var m = angular.module('proso.apps.feedback-comment', ['ui.bootstrap', 'gettext']);
 
 m.directive('feedbackComment', ['$modal', '$window', 'gettextCatalog', function ($modal, $window, gettextCatalog) {
@@ -922,7 +1037,7 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
         config.set_length = configService.getConfig("proso_models", key + "set_length", 10);
         config.question_queue_size_max = configService.getConfig("proso_models", key + "question_queue_size_max", 1);
         config.question_queue_size_min = configService.getConfig("proso_models", key + "question_queue_size_min", 1);
-        config.save_answer_immediately = configService.getConfig("proso_models", key + "save_answer_immediately", false);
+        config.save_answer_immediately = false;
         config.cache_context = configService.getConfig("proso_models", key + "cache_context", false);
 
         self.setFilter({});
@@ -1008,11 +1123,11 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
         if (meta) {
             answer.meta = {client_meta: meta};
         }
-        if (currentQuestion.practice_meta) {
+        if (currentQuestion.meta) {
             if (answer.meta) {
-                answer.meta = angular.extend(answer.meta, currentQuestion.practice_meta);
+                answer.meta = angular.extend(answer.meta, currentQuestion.meta);
             } else {
-                answer.meta = currentQuestion.practice_meta;
+                answer.meta = currentQuestion.meta;
             }
         }
         if (currentQuestion.payload.options && currentQuestion.payload.options.length){
@@ -1901,6 +2016,46 @@ angular.module("templates/common-toolbar/toolbar.html", []).run(["$templateCache
     "");
 }]);
 
+angular.module("templates/feedback-adjustment/adjustment.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("templates/feedback-adjustment/adjustment.html",
+    "<div class=\"modal-header text-center\">\n" +
+    "    <h3 class=\"modal-title\">{{ \"How difficult would you like the questions to be?\" | translate }}</h3>\n" +
+    "    {{ \"Your answer helps us adjust difficulty of questions.\" | translate }}\n" +
+    "</div>\n" +
+    "<div class=\"adjustment modal-body\">\n" +
+    "    <div class=\" text-center\" ng-hide=\"answer\">\n" +
+    "        <a class=\"btn btn-lg btn-primary\" ng-click=\"vote(20)\" translate>\n" +
+    "            Much easier\n" +
+    "        </a>\n" +
+    "        <a class=\"btn btn-lg btn-info\" ng-click=\"vote(10)\" translate>\n" +
+    "            Bit easier\n" +
+    "        </a>\n" +
+    "        <a class=\"btn btn-lg btn-success\" ng-click=\"vote(0)\" translate>\n" +
+    "            The same\n" +
+    "        </a>\n" +
+    "        <a class=\"btn btn-lg btn-warning\" ng-click=\"vote(-10)\" translate>\n" +
+    "            Bit harder\n" +
+    "        </a>\n" +
+    "        <a class=\"btn btn-lg btn-danger\" ng-click=\"vote(-20)\" translate>\n" +
+    "            Much harder\n" +
+    "        </a>\n" +
+    "        <div class=\"clearfix\"></div>\n" +
+    "        <a class=\"pull-right dont-know\" href=\"\" ng-click=\"cancel()\">\n" +
+    "            {{ \"Don't know / Don't want to answer\" | translate }}\n" +
+    "        </a>\n" +
+    "        <div class=\"clearfix\"></div>\n" +
+    "    </div>\n" +
+    "    <alert ng-repeat=\"alert in alerts\" type=\"{{alert.type}}\" close=\"closeAlert($index)\">{{alert.msg}}</alert>\n" +
+    "</div>\n" +
+    "<div class=\"modal-footer\" ng-show=\"answer\">\n" +
+    "    <button class=\"btn btn-danger\" ng-click=\"cancel()\">\n" +
+    "        {{ \"Close\" | translate }}\n" +
+    "    </button>\n" +
+    "</div>\n" +
+    "\n" +
+    "");
+}]);
+
 angular.module("templates/feedback-comment/comment.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("templates/feedback-comment/comment.html",
     "<div class=\"modal-header\">\n" +
@@ -2133,4 +2288,5 @@ angular.module("templates/user-questions/user_questions_banner.html", []).run(["
     "");
 }]);
 !angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">#config-bar-show-button{position:fixed;right:-40px;top:250px;width:100px;transform:rotate(-90deg);-webkit-transform:rotate(-90deg);border:solid #808080 1px;margin:0;padding:10px;text-transform:capitalize;font-weight:bold;background-color:rgba(255,255,255,0.8);transition:all 0.2s;cursor:pointer;text-align:center;z-index:1000;}#config-bar-show-button:hover{background-color:#1f8dd6;color:white;}#config-bar{position:fixed;right:0;top:0;bottom:0;width:500px;border-left:solid #808080 1px;background-color:rgba(255,255,255,0.8);z-index:1000;}#config-bar.maximized{width:100%;}#config-bar-header{background-color:rgba(31,141,214,0.8);margin:0;padding:5px 10px;text-align:right;color:white;}#config-bar-content .section{background-color:rgba(31,141,214,0.8);margin:5px 0;padding:5px 10px;color:white;text-transform:uppercase;cursor:pointer;}#config-bar-maximize{text-align:right;cursor:pointer;margin-right:20px;}#config-bar-hide{text-align:right;width:100%;cursor:pointer;}#config-bar-content{margin:0;list-style:none;padding:0;}#config-bar-content > li{border-bottom:1px dashed #E9F4FB;padding:5px 10px;margin:0;}#config-bar-content > li:hover{background:#E9F4FB;}#config-bar-content .reset,#config-bar-content .add-to-override{cursor:pointer;font-weight:bolder;}#config-bar-content input{padding:5px 10px;}#config-bar-content label{margin-left:10px;cursor:pointer;}#config-bar-content .link{text-transform:uppercase;cursor:pointer;font-weight:bold;}#config-bar-logging{list-style:none;margin:0;padding:0;max-height:500px;overflow-y:scroll;font-size:12px;}#config-bar-logging > li{margin:0;padding:5px 10px;border-bottom:1px solid #E9F4FB;}#config-bar-logging > li:hover{background-color:#E9F4FB;}#config-bar-logging .level{display:block;float:left;width:10%;font-weight:bold;}#config-bar-logging .url{font-weight:bold;margin-left:10px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:50%;float:left;}#config-bar-logging .filename{display:block;float:right;text-align:right;width:30%;font-weight:bold;}#config-bar-logging .message{display:block;clear:both;margin-top:20px;margin-bottom:5px;}#config-bar-content .property-name{width:70%;}#config-bar-content .property-value{width:10%;text-align:center;}#config-bar-property-name{width:70%;}#config-bar-audit,#config-bar-ab,#config-bar-flashcards,#config-bar-recommendation{padding-left:5px;}#config-bar-audit li,#config-bar-ab li,#config-bar-flashcards li,#config-bar-recommendation li{padding-left:0;margin-left:0;list-style:none;margin-bottom:5px;}#config-bar-ab ul{padding-left:0;margin-left:0;}.ab-experiment-chart-button{font-size:13px;width:15%;}#config-bar-audit input,#config-bar-flashcards input,#config-bar-recommendation input{width:27%;}#config-bar-audit button,#config-bar-flashcards button,#config-bar-recommendation button{width:27%;}#auditChart{margin:10px auto;width:480px;}#abChart{margin:0 auto;width:480px;}#flashcardsChart{margin:0 auto;width:100%;height:1000px;}#abExperimentName{margin-left:20px;font-weight:bold;}#abSetupInfo > li > ul,#abSetupInfo > li > ul > li{display:inline;}#flashcardsAnswers{width:100%;}#flashcardsAnswers thead{color:#fff;background-color:rgba(31,141,214,0.8);}#flashcardsAnswers th,#flashcardsAnswers td{text-align:center;}#flashcardsAnswers tbody tr:nth-child(even){background-color:#E9F4FB;}#flashcardsAnswers tbody tr:nth-child(odd){background-color:#fff;}#flashcardsAnswers td.correct{background-color:#009933;color:white;}#flashcardsAnswers td.wrong{background-color:#cc0000;color:white;}#flashcardsAnswers td.direction-t2d{background-color:#ff9900;color:white;}#flashcardsAnswers td.direction-d2t{background-color:#ffff00;}</style>');
+!angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">.adjustment .btn{margin:10px;}</style>');
 !angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">.rating .btn{margin:20px;}</style>');
