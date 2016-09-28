@@ -1,6 +1,6 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2016-09-27
+ * Version: 1.0.0 - 2016-09-28
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.concept-concept","proso.apps.feedback-adjustment","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.models-practice","proso.apps.models-userStats","proso.apps.user-user","proso.apps.user-login","proso.apps.user-questions"]);
@@ -818,7 +818,7 @@ m.controller('AdjustmentModalInstanceController', [
         $scope.answer = answer;
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
 
-        $http.post('/feedback/rating/', {'value': answer / 10 + 6}).success(function(data){
+        $http.post('/feedback/rating/', {'value': answer}).success(function(data){
             $scope.alerts.push({
                 type : 'success',
                 msg : gettextCatalog.getString('Thank you for your rating.'),
@@ -833,7 +833,7 @@ m.controller('AdjustmentModalInstanceController', [
         });
         $scope.sending = true;
         if (!configService.getConfig("proso_feedback", "disable_difficulty_adjustment", false)) {
-            customConfig.updateConfig(answer, practiceFilter);
+            customConfig.updateConfig((answer - 6) * 10, practiceFilter);
         }
     };
 
@@ -2104,19 +2104,19 @@ angular.module("templates/feedback-adjustment/adjustment.html", []).run(["$templ
     "</div>\n" +
     "<div class=\"adjustment modal-body\">\n" +
     "    <div class=\" text-center\" ng-hide=\"answer\">\n" +
-    "        <a class=\"btn btn-lg btn-primary\" ng-click=\"vote(20)\" translate>\n" +
+    "        <a class=\"btn btn-lg btn-primary\" ng-click=\"vote(8)\" translate>\n" +
     "            Much easier\n" +
     "        </a>\n" +
-    "        <a class=\"btn btn-lg btn-info\" ng-click=\"vote(10)\" translate>\n" +
+    "        <a class=\"btn btn-lg btn-info\" ng-click=\"vote(7)\" translate>\n" +
     "            Bit easier\n" +
     "        </a>\n" +
-    "        <a class=\"btn btn-lg btn-success\" ng-click=\"vote(0)\" translate>\n" +
+    "        <a class=\"btn btn-lg btn-success\" ng-click=\"vote(6)\" translate>\n" +
     "            The same\n" +
     "        </a>\n" +
-    "        <a class=\"btn btn-lg btn-warning\" ng-click=\"vote(-10)\" translate>\n" +
+    "        <a class=\"btn btn-lg btn-warning\" ng-click=\"vote(5)\" translate>\n" +
     "            Bit harder\n" +
     "        </a>\n" +
-    "        <a class=\"btn btn-lg btn-danger\" ng-click=\"vote(-20)\" translate>\n" +
+    "        <a class=\"btn btn-lg btn-danger\" ng-click=\"vote(4)\" translate>\n" +
     "            Much harder\n" +
     "        </a>\n" +
     "        <div class=\"clearfix\"></div>\n" +
