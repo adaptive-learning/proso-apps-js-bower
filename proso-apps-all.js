@@ -1,6 +1,6 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2016-09-28
+ * Version: 1.0.0 - 2016-09-30
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.concept-concept","proso.apps.feedback-adjustment","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.models-practice","proso.apps.models-userStats","proso.apps.user-user","proso.apps.user-login","proso.apps.user-questions"]);
@@ -437,9 +437,9 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
             height: 300,
             intervals: {
                 styel: 'bars',
-                pointSize: 10,
+                pointSize: 2,
                 barWidth: 0,
-                lineWidth: 4,
+                lineWidth: 2,
             },
             chartArea: {'width': '80%', 'height': '80%'}
         };
@@ -490,8 +490,8 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
                 style: 'area',
                 fillOpacity: 0.2
             },
-            lineWidth: 4,
-            pointSize: 10,
+            lineWidth: 2,
+            pointSize: 2,
             curveType: 'function',
             width: 480,
             height: 300,
