@@ -1,6 +1,6 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2016-09-30
+ * Version: 1.0.0 - 2016-10-17
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.concept-concept","proso.apps.models-practice","proso.apps.models-userStats","proso.apps.user-user", "proso.apps.common-toolbar"])
@@ -1147,12 +1147,21 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
                         return;
                     }
                     $scope.abExperiment = data[0];
-                    $scope.drawABTestingBar('number_of_users');
+                    $scope.abExperiment.setups.forEach(function(setup) {
+                        setup.values.forEach(function(value) {
+                            $scope.abExperiment.variables.forEach(function(variable) {
+                                if (variable.id = value.variable_id) {
+                                    value.variable = variable;
+                                }
+                            });
+                        });
+                    });
+                    $scope.drawABTestingBar();
                 });
         }
-        $scope.drawABTestingBar('number_of_users');
+        $scope.drawABTestingBar();
     };
-
+    
     var getFlashcardFilterParams = function(){
         var params = {
             limit: $scope.flashcardsLimit
@@ -1199,18 +1208,32 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
         }
         var data = new google.visualization.DataTable();
         data.addColumn('string', 'Experiment Setup');
+        data.addColumn('number', 'Number of Answers');
+        data.addColumn({type: 'number', role: 'interval'});
+        data.addColumn({type: 'number', role: 'interval'});
         data.addColumn('number', 'Number of Users');
+        data.addColumn('number', 'Returning Chance');
+        data.addColumn({type: 'number', role: 'interval'});
+        data.addColumn({type: 'number', role: 'interval'});
         data.addRows($scope.abExperiment.setups.map(function(setup) {
             return [
                 'Setup #' + setup.id,
+                setup.stats.number_of_answers.value,
+                setup.stats.number_of_answers.confidence_interval.min,
+                setup.stats.number_of_answers.confidence_interval.max,
                 setup.stats.number_of_users,
+                setup.stats.returning_chance.value,
+                setup.stats.returning_chance.confidence_interval.min,
+                setup.stats.returning_chance.confidence_interval.max,
             ];
         }));
         var view = data;
         var title = 'All';
         if (column) {
             var columns = {
-                number_of_users: [0, 1],
+                number_of_answers: [0, 1, 2, 3],
+                number_of_users: [0, 4],
+                returning_chance: [0, 5, 6, 7],
             };
             title = column;
             view = new google.visualization.DataView(data);
@@ -1229,41 +1252,47 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
             height: 300,
             intervals: {
                 styel: 'bars',
-                pointSize: 2,
+                pointSize: 10,
                 barWidth: 0,
-                lineWidth: 2,
+                lineWidth: 4,
             },
             chartArea: {'width': '80%', 'height': '80%'}
         };
         chart.draw(view, options);
     };
 
-    $scope.drawABCurve = function(curve_accessor) {
+    $scope.drawABTestingLearning = function(all_users) {
         if (!$scope.abExperiment) {
             return;
         }
+        var learning_curve_accessor = 'learning_curve';
+        if (all_users) {
+            learning_curve_accessor = 'learning_curve_all_users';
+        }
         var data = new google.visualization.DataTable();
         data.addColumn({type: 'number', role: 'domain'});
-        var length = 9999999;
-        console.log(curve_accessor);
+        var length = 0;
         $scope.abExperiment.setups.forEach(function(setup) {
             data.addColumn('number', 'Setup #' + setup.id);
-            console.log(setup.stats);
-            length = Math.min(length, setup.stats[curve_accessor].values.length);
+            data.addColumn({type: 'number', role: 'interval'});
+            data.addColumn({type: 'number', role: 'interval'});
+            length = Math.max(setup.stats[learning_curve_accessor].success.length);
         });
         var rows = [];
         for (var i = 0; i < length; i++) {
             var row = [i];
             /*jshint -W083 */
             $scope.abExperiment.setups.forEach(function(setup) {
-                row.push(setup.stats[curve_accessor].values[i].value);
+                row.push(setup.stats[learning_curve_accessor].success[i].value);
+                row.push(setup.stats[learning_curve_accessor].success[i].confidence_interval.min);
+                row.push(setup.stats[learning_curve_accessor].success[i].confidence_interval.max);
             });
             rows.push(row);
         }
         data.addRows(rows);
         var chart = new google.visualization.LineChart(document.getElementById("abChart"));
         var options = {
-            title: curve_accessor,
+            title: 'Learning',
             legend: {
                 position: 'none'
             },
@@ -1271,11 +1300,15 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
                 format: '#.###'
             },
             hAxis: {
-                title: 'Progress',
+                title: 'Attempt',
                 position: 'center'
             },
-            lineWidth: 2,
-            pointSize: 2,
+            intervals: {
+                style: 'area',
+                fillOpacity: 0.2
+            },
+            lineWidth: 4,
+            pointSize: 10,
             curveType: 'function',
             width: 480,
             height: 300,
@@ -1435,10 +1468,12 @@ angular.module("templates/common-toolbar/toolbar.html", []).run(["$templateCache
     "                <li>\n" +
     "                <div id=\"abChart\"></div>\n" +
     "                <li>\n" +
+    "                    <button ng-click=\"drawABTestingBar()\" class=\"ab-experiment-chart-button\">All</button>\n" +
     "                    <button ng-click=\"drawABTestingBar('number_of_users')\" class=\"ab-experiment-chart-button\">Users</button>\n" +
-    "                    <button ng-click=\"drawABCurve('survival_curve_answers')\" class=\"ab-experiment-chart-button\" title=\"Answers\">Answers</button>\n" +
-    "                    <button ng-click=\"drawABCurve('survival_curve_time')\" class=\"ab-experiment-chart-button\" title=\"Time\">Time</button>\n" +
-    "                    <button ng-click=\"drawABCurve('learning_curve')\" class=\"ab-experiment-chart-button\" title=\"Learning\">Learning</button>\n" +
+    "                    <button ng-click=\"drawABTestingBar('number_of_answers')\" class=\"ab-experiment-chart-button\">Answers</button>\n" +
+    "                    <button ng-click=\"drawABTestingBar('returning_chance')\" class=\"ab-experiment-chart-button\">Return</button>\n" +
+    "                    <button ng-click=\"drawABTestingLearning(false)\" class=\"ab-experiment-chart-button\" title=\"Learning curve containing only users with at least the given number of testing answers\">Learn</button>\n" +
+    "                    <button ng-click=\"drawABTestingLearning(true)\" class=\"ab-experiment-chart-button\" title=\"Learning curve containing all users with at least one testing answer\">Learn (A)</button>\n" +
     "                </li>\n" +
     "            </ul>\n" +
     "            <div class='section' ng-click=\"flashcardsOpened = !flashcardsOpened\">Flashcards</div>\n" +

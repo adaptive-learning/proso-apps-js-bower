@@ -1,10 +1,10 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2016-09-30
+ * Version: 1.0.0 - 2016-10-17
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.concept-concept","proso.apps.feedback-adjustment","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.models-practice","proso.apps.models-userStats","proso.apps.user-user","proso.apps.user-login","proso.apps.user-questions"]);
-angular.module("proso.apps.tpls", ["templates/common-toolbar/toolbar.html","templates/feedback-adjustment/adjustment.html","templates/feedback-comment/comment.html","templates/feedback-rating/rating.html","templates/user-login/login-modal.html","templates/user-login/signup-modal.html","templates/user-questions/user_questions_banner.html"]);
+angular.module("proso.apps.tpls", ["templates/common-toolbar/toolbar.html","templates/feedback-adjustment/adjustment.html","templates/feedback-comment/comment.html","templates/feedback-rating/difficulty-rating.html","templates/feedback-rating/rating.html","templates/user-login/login-modal.html","templates/user-login/signup-modal.html","templates/user-questions/user_questions_banner.html"]);
 angular.module("proso.apps.gettext", [])
 .value("gettext", window.gettext || function(x){return x;})
 .filter("trans", ["gettext", function(gettext) {
@@ -18,6 +18,8 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
     gettextCatalog.setStrings('de', {"Appropriate":"genau richtig","Close":"Schließen","Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.":"Haben Sie einen Fehler in der App gefunden? Haben Sie eine Idee, wie man diese App besser machen könnte? Oder einen anderen Tipp oder Kommentar? Wir interessieren uns für alles, was Sie uns mitteilen wollen.","Don't know / Don't want to rate":"ich weiß nicht/ ich will nicht antworten","E-mail":"E-Mail","How difficult are the questions?":"Wie schwierig sind die gestellten Fragen?","Password":"Passwort","Password again":"Passwort wiederholen","Registration was successful. You can continue to use the application.":"Die Registrierung wurde erfolgreich durgeführt. Sie können fortfahren, um die App zu nutzen.","Send":"Senden","Sign In":"Anmelden","Sign Up":"Registrieren","Something wrong has happened.":"Leider ist ein Fehler aufgetreten","Thank you for the message. User feedback is very important for us.":"Vielen Dank für Ihre gesendeten Informationen. Feedback der Benutzer ist für uns unbezahlbar.","Thank you for your rating.":"Vielen Dank für Ihre Einschätzung.","Too difficult":"zu schwierig","Too easy":"zu einfach","Username":"Benutzername","Write to us":"Schreiben Sie uns","Your answer helps us adjust difficulty of questions.":"Mit ihrer Antwort helfen sie uns die Schwierigkeit der Fragen anzupassen","Your e-mail address (optional)":"Ihre E-Mail-Adresse","and get all the benefits of registered users.":"und genießen Sie alle Vorteile der registrierten Benutzer.","via E-mail":"per E-Mail","via Facebook":"via Facebook","via Google":"via Google"});
     gettextCatalog.setStrings('en', {"Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.":"Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.","Don't know / Don't want to rate":"Don't know / Don't want to rate","E-mail":"E-mail","How difficult are the questions?":"How difficult are the questions?","Password":"Password","Password again":"Password again","Registration was successful. You can continue to use the application.":"Registration was successful. You can continue to use the application.","Send":"Send","Sign In":"Sign In","Sign Up":"Sign Up","Something wrong has happened.":"Something wrong has happened.","Thank you for the message. User feedback is very important for us.":"Thank you for the message. User feedback is very important for us.","Thank you for your rating.":"Thank you for your rating.","Too difficult":"Too difficult","Too easy":"Too easy","Username":"Username","Write to us":"Write to us","Your e-mail address (optional)":"Your e-mail address (optional)","and get all the benefits of registered users.":"and get all the benefits of registered users.","via E-mail":"via E-mail","via Facebook":"via Facebook","via Google":"via Google"});
     gettextCatalog.setStrings('es', {"Appropriate":"Adecuado","Close":"Cerrar","Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.":"¿Encontraste algún error en el programa? ¿Tienes alguna sugerencia sobre como podemos mejorar? ¿Quieres compartir tu opinión con nosotros? Nos gustaría escuchar lo que tengas que decir.","Don't know / Don't want to rate":"No sé/No quiero calificar","E-mail":"E-mail","How difficult are the questions?":"¿Qué tan difíciles son estas preguntas?","Password":"Contraseña","Password again":"Contraseña de nuevo","Registration was successful. You can continue to use the application.":"Registro exitoso. Puedes continuar usando la aplicación.","Send":"Enviar","Sign In":"Iniciar sesión","Sign Up":"Registrarse","Something wrong has happened.":"Algo malo ha ocurrido.","Thank you for the message. User feedback is very important for us.":"Gracias por tu mensaje. Tu opinión es muy importante para nosotros.","Thank you for your rating.":"Gracias por calificarnos.","Too difficult":"Muy dificil","Too easy":"Muy facil","Username":"Nombre de usuario","Write to us":"Sugerencias","Your answer helps us adjust difficulty of questions.":"Tu respuesta ayuda a ajustar la dificultad de las preguntas.","Your e-mail address (optional)":"Tu e-mail (opcional)","and get all the benefits of registered users.":"y accede a todos los benecifios de un usuario registrado.","via E-mail":"con E-mail","via Facebook":"con Facebook","via Google":"con Google"});
+    gettextCatalog.setStrings('pt_BR', {"Appropriate":"Apropriado","Close":"Fechar","Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.":"Você achou um bug no aplicativo? Você tem uma idéia de melhoria ? Ou qualquer outro comentário? Estamos ansiosos para ouvir qualquer coisa que você gostaria de nos dizer.","Don't know / Don't want to rate":"Não sei/ Não quero votar","E-mail":"E-mail","How difficult are the questions?":"Quão difícil são as perguntas ?","Password":"Senha","Password again":"Digite a senha novamente","Registration was successful. You can continue to use the application.":"Registro realizado com sucesso. Agora você pode continuar a usar a aplicação.","Save":"Salva","Saving...":"Salvando","Send":"Enviar","Sign In":"Entrar","Sign Up":"Registrar","Something wrong has happened.":"Algo deu errado.","Thank you for the message. User feedback is very important for us.":"Obrigado pela mensagem. feedback do usuário é muito importante para nós.","Thank you for your rating.":"Obrigado pela sua avaliação.","Thank you for your response.":"Obrigado pela sua resposta.","Too difficult":"Muito dificil","Too easy":"Muito fácil","Username":"Usuário","Write to us":"Escreva para nós","Your answer helps us adjust difficulty of questions.":"A sua resposta nos ajuda a ajustar a dificuldade de perguntas.","Your e-mail address (optional)":"Seu endereço de E-mail (Opcional)","and get all the benefits of registered users.":"e obter todos os benefícios de usuários registrados.","via E-mail":"Por E-mail","via Facebook":"Pelo Facebook","via Google":"Pelo Google"});
+    gettextCatalog.setStrings('ru', {"Appropriate":"Подходящее","Close":"Закрыть","Did you find a bug in the app? Do you have an improvement idea? Or any other comment? We are eager to hear anything you'd like to tell us.":"Нашли ошибку в приложении? Есть идеи, как улучшить приложение? Какие-то комментарии? Мы будем рады узнать все, что вы хотите сказать нам.","Don't know / Don't want to rate":"Не знаю \\ Не хочу оценивать","E-mail":"E-mail ","How difficult are the questions?":"Насколько сложны эти вопросы?","Password":"Пароль","Password again":"Введите пароль снова","Registration was successful. You can continue to use the application.":"Регистрация прошла успешно. Вы можете продолжить работу с приложением.","Save":"Сохранить","Saving...":"Сохранение...","Send":"Отправить","Sign In":"Войти в систему","Sign Up":"Зарегистрироваться","Something wrong has happened.":"Что-то пошло не так.","Thank you for the message. User feedback is very important for us.":"Спасибо за ваше сообщение. Ваше мнение очень важно для нас.","Thank you for your rating.":"Спасибо за вашу оценку.","Thank you for your response.":"Спасибо за ваш ответ.","Too difficult":"Слишком сложно","Too easy":"Слишком легко","Username":"Имя пользователя","Write to us":"Напишите нам","Your answer helps us adjust difficulty of questions.":"Ваш ответ помогает нам регулировать сложность вопросов.","Your e-mail address (optional)":"Ваш имайл (необязaтельный)","and get all the benefits of registered users.":"и получить все выгоды из регистрации юзера","via E-mail":"с помощью имейла","via Facebook":"с помощью Facebook","via Google":"с помощью Google"});
 /* jshint +W100 */
 }]);
 var configServiceLoaded;
@@ -355,12 +357,21 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
                         return;
                     }
                     $scope.abExperiment = data[0];
-                    $scope.drawABTestingBar('number_of_users');
+                    $scope.abExperiment.setups.forEach(function(setup) {
+                        setup.values.forEach(function(value) {
+                            $scope.abExperiment.variables.forEach(function(variable) {
+                                if (variable.id = value.variable_id) {
+                                    value.variable = variable;
+                                }
+                            });
+                        });
+                    });
+                    $scope.drawABTestingBar();
                 });
         }
-        $scope.drawABTestingBar('number_of_users');
+        $scope.drawABTestingBar();
     };
-
+    
     var getFlashcardFilterParams = function(){
         var params = {
             limit: $scope.flashcardsLimit
@@ -407,18 +418,32 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
         }
         var data = new google.visualization.DataTable();
         data.addColumn('string', 'Experiment Setup');
+        data.addColumn('number', 'Number of Answers');
+        data.addColumn({type: 'number', role: 'interval'});
+        data.addColumn({type: 'number', role: 'interval'});
         data.addColumn('number', 'Number of Users');
+        data.addColumn('number', 'Returning Chance');
+        data.addColumn({type: 'number', role: 'interval'});
+        data.addColumn({type: 'number', role: 'interval'});
         data.addRows($scope.abExperiment.setups.map(function(setup) {
             return [
                 'Setup #' + setup.id,
+                setup.stats.number_of_answers.value,
+                setup.stats.number_of_answers.confidence_interval.min,
+                setup.stats.number_of_answers.confidence_interval.max,
                 setup.stats.number_of_users,
+                setup.stats.returning_chance.value,
+                setup.stats.returning_chance.confidence_interval.min,
+                setup.stats.returning_chance.confidence_interval.max,
             ];
         }));
         var view = data;
         var title = 'All';
         if (column) {
             var columns = {
-                number_of_users: [0, 1],
+                number_of_answers: [0, 1, 2, 3],
+                number_of_users: [0, 4],
+                returning_chance: [0, 5, 6, 7],
             };
             title = column;
             view = new google.visualization.DataView(data);
@@ -437,41 +462,47 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
             height: 300,
             intervals: {
                 styel: 'bars',
-                pointSize: 2,
+                pointSize: 10,
                 barWidth: 0,
-                lineWidth: 2,
+                lineWidth: 4,
             },
             chartArea: {'width': '80%', 'height': '80%'}
         };
         chart.draw(view, options);
     };
 
-    $scope.drawABCurve = function(curve_accessor) {
+    $scope.drawABTestingLearning = function(all_users) {
         if (!$scope.abExperiment) {
             return;
         }
+        var learning_curve_accessor = 'learning_curve';
+        if (all_users) {
+            learning_curve_accessor = 'learning_curve_all_users';
+        }
         var data = new google.visualization.DataTable();
         data.addColumn({type: 'number', role: 'domain'});
-        var length = 9999999;
-        console.log(curve_accessor);
+        var length = 0;
         $scope.abExperiment.setups.forEach(function(setup) {
             data.addColumn('number', 'Setup #' + setup.id);
-            console.log(setup.stats);
-            length = Math.min(length, setup.stats[curve_accessor].values.length);
+            data.addColumn({type: 'number', role: 'interval'});
+            data.addColumn({type: 'number', role: 'interval'});
+            length = Math.max(setup.stats[learning_curve_accessor].success.length);
         });
         var rows = [];
         for (var i = 0; i < length; i++) {
             var row = [i];
             /*jshint -W083 */
             $scope.abExperiment.setups.forEach(function(setup) {
-                row.push(setup.stats[curve_accessor].values[i].value);
+                row.push(setup.stats[learning_curve_accessor].success[i].value);
+                row.push(setup.stats[learning_curve_accessor].success[i].confidence_interval.min);
+                row.push(setup.stats[learning_curve_accessor].success[i].confidence_interval.max);
             });
             rows.push(row);
         }
         data.addRows(rows);
         var chart = new google.visualization.LineChart(document.getElementById("abChart"));
         var options = {
-            title: curve_accessor,
+            title: 'Learning',
             legend: {
                 position: 'none'
             },
@@ -479,11 +510,15 @@ m.controller("ToolbarController", ['$scope', '$cookies', 'configService', 'loggi
                 format: '#.###'
             },
             hAxis: {
-                title: 'Progress',
+                title: 'Attempt',
                 position: 'center'
             },
-            lineWidth: 2,
-            pointSize: 2,
+            intervals: {
+                style: 'area',
+                fillOpacity: 0.2
+            },
+            lineWidth: 4,
+            pointSize: 10,
             curveType: 'function',
             width: 480,
             height: 300,
@@ -915,6 +950,80 @@ m.directive('feedbackComment', ['$modal', '$window', 'gettextCatalog', function 
         }
     };
 }]);
+
+var m = angular.module('proso.apps.feedback-rating', ['ui.bootstrap', 'gettext']);
+console.log('ddd');
+
+m.controller('DifficultyRatingModalController', ['$scope', '$rootScope', '$modal', function ($scope, $rootScope, $modal) {
+    console.log('questionSetFinished', 12);
+
+    $scope.open = function() {
+        if ($scope.email) {
+            $scope.feedback.email = $scope.email;
+        }
+
+        $modal.open({
+            templateUrl: 'templates/feedback-rating/difficulty-rating.html',
+            controller: 'DifficultyRatingModalInstanceController',
+            size: 'lg',
+            resolve: {
+                feedback: function () {
+                    return $scope.feedback;
+                }
+            }
+        });
+    };
+
+    $rootScope.$on('questionSetFinished', function(event, args) {
+        $scope.open();
+    });
+    //TODO only for testing
+    $rootScope.$emit('questionSetFinished');
+}]);
+
+m.controller('DifficultyRatingModalInstanceController', ['$scope', '$modalInstance', '$http', '$cookies', 'gettextCatalog', function($scope, $modalInstance, $http, $cookies, gettextCatalog) {
+
+    $scope.alerts = [];
+
+    $scope.vote = function(answer) {
+        $scope.answer = answer;
+        $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+        $http.post('/feedback/rating/', {'value': answer}).success(function(data){
+            $scope.alerts.push({
+                type : 'success',
+                msg : gettextCatalog.getString('Thank you for your rating.'),
+            });
+            $scope.sending = false;
+        }).error(function(){
+            $scope.alerts.push({
+                type : 'danger',
+                msg : gettextCatalog.getString("Something wrong has happened."),
+            });
+            $scope.sending = false;
+        });
+        $scope.sending = true;
+    };
+
+    $scope.closeAlert = function(index) {
+        $scope.alerts.splice(index, 1);
+        $modalInstance.dismiss('cancel');
+    };
+    $scope.cancel = function() {
+        $modalInstance.dismiss('cancel');
+    };
+}]);
+
+m.directive('difficultyRatingModal', ['$window', function ($window) {
+    return {
+        restrict: 'E',
+        controller: 'DifficultyRatingModalController',
+        link: function() {
+          console.log('###DDD');
+        }
+    };
+}]);
+
+
 
 var m = angular.module('proso.apps.feedback-rating', ['ui.bootstrap', 'gettext']);
 
@@ -1652,8 +1761,8 @@ m.service("userService", ["$http", function($http){
 
 var m = angular.module('proso.apps.user-login', ['ui.bootstrap', 'gettext', 'proso.apps.user-user', 'angulartics', 'angulartics.google.analytics']);
 
-m.controller('LoginController', ['$scope', '$modalInstance', 'signupModal', 'userService', 'gettextCatalog', '$analytics',
-    function ($scope, $modalInstance, signupModal, userService, gettextCatalog, $analytics) {
+m.controller('LoginController', ['$scope', '$modalInstance', 'signupModal', 'userService', 'gettextCatalog', '$analytics', '$rootScope',
+    function ($scope, $modalInstance, signupModal, userService, gettextCatalog, $analytics, $rootScope) {
 
     $scope.credentials = {};
     $scope.alerts = [];
@@ -1687,6 +1796,7 @@ m.controller('LoginController', ['$scope', '$modalInstance', 'signupModal', 'use
             .login($scope.credentials.username, $scope.credentials.password)
             .error($scope.onError)
             .success(function() {
+                $rootScope.$emit('userLogin');
                 $scope.cancel();
             });
     };
@@ -1879,10 +1989,12 @@ angular.module("templates/common-toolbar/toolbar.html", []).run(["$templateCache
     "                <li>\n" +
     "                <div id=\"abChart\"></div>\n" +
     "                <li>\n" +
+    "                    <button ng-click=\"drawABTestingBar()\" class=\"ab-experiment-chart-button\">All</button>\n" +
     "                    <button ng-click=\"drawABTestingBar('number_of_users')\" class=\"ab-experiment-chart-button\">Users</button>\n" +
-    "                    <button ng-click=\"drawABCurve('survival_curve_answers')\" class=\"ab-experiment-chart-button\" title=\"Answers\">Answers</button>\n" +
-    "                    <button ng-click=\"drawABCurve('survival_curve_time')\" class=\"ab-experiment-chart-button\" title=\"Time\">Time</button>\n" +
-    "                    <button ng-click=\"drawABCurve('learning_curve')\" class=\"ab-experiment-chart-button\" title=\"Learning\">Learning</button>\n" +
+    "                    <button ng-click=\"drawABTestingBar('number_of_answers')\" class=\"ab-experiment-chart-button\">Answers</button>\n" +
+    "                    <button ng-click=\"drawABTestingBar('returning_chance')\" class=\"ab-experiment-chart-button\">Return</button>\n" +
+    "                    <button ng-click=\"drawABTestingLearning(false)\" class=\"ab-experiment-chart-button\" title=\"Learning curve containing only users with at least the given number of testing answers\">Learn</button>\n" +
+    "                    <button ng-click=\"drawABTestingLearning(true)\" class=\"ab-experiment-chart-button\" title=\"Learning curve containing all users with at least one testing answer\">Learn (A)</button>\n" +
     "                </li>\n" +
     "            </ul>\n" +
     "            <div class='section' ng-click=\"flashcardsOpened = !flashcardsOpened\">Flashcards</div>\n" +
@@ -2050,6 +2162,42 @@ angular.module("templates/feedback-comment/comment.html", []).run(["$templateCac
     "      {{ \"Close\" | translate }}\n" +
     "    </button>\n" +
     "</div>\n" +
+    "\n" +
+    "");
+}]);
+
+angular.module("templates/feedback-rating/difficulty-rating.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("templates/feedback-rating/difficulty-rating.html",
+    "<div class=\"modal-header text-center\">\n" +
+    "    <h3 class=\"modal-title\">{{ \"How difficult are the questions?\" | translate }}</h3>\n" +
+    "    {{ \"Your answer helps us adjust difficulty of questions.\" | translate }}\n" +
+    "</div>\n" +
+    "<div class=\"rating modal-body\">\n" +
+    "    <div class=\" text-center\" ng-hide=\"answer\">\n" +
+    "        <a class=\"btn btn-lg btn-success\" ng-click=\"vote(1)\">\n" +
+    "            {{\"Too easy\" | translate }}\n" +
+    "        </a>\n" +
+    "        <a class=\"btn btn-lg btn-primary\" ng-click=\"vote(2)\">\n" +
+    "            {{ \"Appropriate\" | translate }}\n" +
+    "        </a>\n" +
+    "        <a class=\"btn btn-lg btn-danger\" ng-click=\"vote(3)\">\n" +
+    "            {{ \"Too difficult\" | translate }}\n" +
+    "        </a>\n" +
+    "        <div class=\"clearfix\"></div>\n" +
+    "        <a class=\"pull-right dont-know\" href=\"\" ng-click=\"cancel()\">\n" +
+    "            {{ \"Don't know / Don't want to rate\" | translate }}\n" +
+    "        </a>\n" +
+    "        <div class=\"clearfix\"></div>\n" +
+    "    </div>\n" +
+    "    TODO\n" +
+    "    <alert ng-repeat=\"alert in alerts\" type=\"{{alert.type}}\" close=\"closeAlert($index)\">{{alert.msg}}</alert>\n" +
+    "</div>\n" +
+    "<div class=\"modal-footer\" ng-show=\"answer\">\n" +
+    "    <button class=\"btn btn-danger\" ng-click=\"cancel()\">\n" +
+    "        {{ \"Close\" | translate }}\n" +
+    "    </button>\n" +
+    "</div>\n" +
+    "\n" +
     "\n" +
     "");
 }]);
