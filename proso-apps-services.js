@@ -1,6 +1,6 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2016-10-17
+ * Version: 1.0.0 - 2016-09-30
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.concept-concept","proso.apps.models-practice","proso.apps.models-userStats","proso.apps.user-user", "proso.apps.common-toolbar"])
