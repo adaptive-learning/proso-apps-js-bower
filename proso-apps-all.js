@@ -1,6 +1,6 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2016-09-30
+ * Version: 1.0.0 - 2016-11-02
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.common-toolbar","proso.apps.concept-concept","proso.apps.feedback-adjustment","proso.apps.feedback-comment","proso.apps.feedback-rating","proso.apps.models-practice","proso.apps.models-userStats","proso.apps.user-user","proso.apps.user-login","proso.apps.user-questions"]);
@@ -1008,7 +1008,7 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
         config.set_length = configService.getConfig("proso_models", key + "set_length", 10);
         config.question_queue_size_max = configService.getConfig("proso_models", key + "question_queue_size_max", 1);
         config.question_queue_size_min = configService.getConfig("proso_models", key + "question_queue_size_min", 1);
-        config.save_answer_immediately = false;
+        config.save_answer_immediately = configService.getConfig("proso_models", key + "save_answer_immediately", false);
         config.cache_context = configService.getConfig("proso_models", key + "cache_context", false);
 
         self.setFilter({});
@@ -1652,8 +1652,8 @@ m.service("userService", ["$http", function($http){
 
 var m = angular.module('proso.apps.user-login', ['ui.bootstrap', 'gettext', 'proso.apps.user-user', 'angulartics', 'angulartics.google.analytics']);
 
-m.controller('LoginController', ['$scope', '$modalInstance', 'signupModal', 'userService', 'gettextCatalog', '$analytics',
-    function ($scope, $modalInstance, signupModal, userService, gettextCatalog, $analytics) {
+m.controller('LoginController', ['$scope', '$modalInstance', 'signupModal', 'userService', 'gettextCatalog', '$analytics', '$rootScope',
+    function ($scope, $modalInstance, signupModal, userService, gettextCatalog, $analytics, $rootScope) {
 
     $scope.credentials = {};
     $scope.alerts = [];
@@ -1687,6 +1687,7 @@ m.controller('LoginController', ['$scope', '$modalInstance', 'signupModal', 'use
             .login($scope.credentials.username, $scope.credentials.password)
             .error($scope.onError)
             .success(function() {
+                $rootScope.$emit('userLogin');
                 $scope.cancel();
             });
     };

@@ -1,6 +1,6 @@
 /*
  * proso-apps-js
- * Version: 1.0.0 - 2016-09-30
+ * Version: 1.0.0 - 2016-11-02
  * License: MIT
  */
 angular.module("proso.apps", ["proso.apps.tpls", "proso.apps.common-config","proso.apps.common-logging","proso.apps.concept-concept","proso.apps.models-practice","proso.apps.models-userStats","proso.apps.user-user", "proso.apps.common-toolbar"])
@@ -448,7 +448,7 @@ m.service("practiceService", ["$http", "$q", "configService", "$cookies", functi
         config.set_length = configService.getConfig("proso_models", key + "set_length", 10);
         config.question_queue_size_max = configService.getConfig("proso_models", key + "question_queue_size_max", 1);
         config.question_queue_size_min = configService.getConfig("proso_models", key + "question_queue_size_min", 1);
-        config.save_answer_immediately = false;
+        config.save_answer_immediately = configService.getConfig("proso_models", key + "save_answer_immediately", false);
         config.cache_context = configService.getConfig("proso_models", key + "cache_context", false);
 
         self.setFilter({});
